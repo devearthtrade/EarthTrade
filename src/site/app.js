@@ -42,6 +42,27 @@
     },
   };
 
+  /* --------------------------- image fallbacks ---------------------------- */
+
+  /**
+   * Product photography is served from the commerce CDN, so one missing asset
+   * would otherwise render a broken-image icon inside an otherwise finished
+   * card. Hiding the img reveals the typographic tile sitting behind it.
+   *
+   * Registered here rather than in boot() because it must survive a failure in
+   * any other module, and because "error" does not bubble (capture phase).
+   */
+  document.addEventListener(
+    "error",
+    (e) => {
+      const el = e.target;
+      if (el instanceof HTMLImageElement && el.hasAttribute("data-img-fallback")) {
+        el.hidden = true;
+      }
+    },
+    true,
+  );
+
   /* ------------------------------ analytics ------------------------------ */
 
   /**
@@ -583,7 +604,11 @@
       thumb.addEventListener("click", () => {
         const main = $("[data-gallery-main]");
         const src = thumb.getAttribute("data-gallery-thumb");
-        if (main && src) main.setAttribute("src", src);
+        if (main && src) {
+          // Give a previously failed main image a fresh chance to load.
+          main.hidden = false;
+          main.setAttribute("src", src);
+        }
         $$("[data-gallery-thumb]").forEach((t) => t.setAttribute("aria-current", String(t === thumb)));
       });
     });
@@ -785,6 +810,13 @@
     nodes.forEach((n) => io.observe(n));
   }
 
+  /** Images that failed before this script ran never fire the event again. */
+  function sweepFailedImages() {
+    $$("img[data-img-fallback]").forEach((img) => {
+      if (img.complete && img.naturalWidth === 0) img.hidden = true;
+    });
+  }
+
   /* --------------------------- header + progress -------------------------- */
 
   function initHeader() {
@@ -840,21 +872,37 @@
 
   /* --------------------------------- boot --------------------------------- */
 
+  /**
+   * Each module owns one surface, so a failure in one must not leave the rest
+   * of the page inert. Isolate them rather than letting the first throw stop
+   * every later init.
+   */
+  function run(name, fn) {
+    try {
+      fn();
+    } catch (err) {
+      console.error(`EarthTrade: ${name} failed to initialise`, err);
+    }
+  }
+
   function boot() {
-    cart.render();
-    wishlist.render();
-    recordRecentlyViewed();
-    renderRecentlyViewed();
-    initSearch();
-    initMobileNav();
-    initAccordions();
-    initProductOptions();
-    initQuiz();
-    initFinder();
-    initCollectionFilters();
-    initReveal();
-    initHeader();
-    initForms();
+    run("cart", () => cart.render());
+    run("wishlist", () => wishlist.render());
+    run("recentlyViewed", () => {
+      recordRecentlyViewed();
+      renderRecentlyViewed();
+    });
+    run("search", initSearch);
+    run("mobileNav", initMobileNav);
+    run("accordions", initAccordions);
+    run("productOptions", initProductOptions);
+    run("quiz", initQuiz);
+    run("finder", initFinder);
+    run("collectionFilters", initCollectionFilters);
+    run("reveal", initReveal);
+    run("imageFallbacks", sweepFailedImages);
+    run("header", initHeader);
+    run("forms", initForms);
 
     const checkout = $("[data-checkout]");
     if (checkout) {

@@ -679,13 +679,13 @@ export const navigation: NavItem[] = [
           { label: "Rainwater & Tanks", href: "/learn/rainwater" },
           { label: "Home Care", href: "/learn/home" },
           { label: "Gardening", href: "/learn/gardening" },
+          { label: "Sustainability", href: "/learn/sustainability" },
         ],
       },
       {
         title: "Reading",
         links: [
           { label: "The Journal", href: "/journal" },
-          { label: "Guides", href: "/learn/guides" },
           { label: "Filter Finder", href: "/filter-finder" },
           { label: "FAQs", href: "/faqs" },
         ],

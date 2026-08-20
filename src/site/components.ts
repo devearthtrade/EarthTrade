@@ -31,15 +31,26 @@ export function badges(list: Badge[] | undefined, limit = 1): SafeHtml {
  * been synced. Never substitute a generated image for a real product.
  */
 function cardMedia(p: Product): SafeHtml {
-  const image = p.images[0];
-  if (image) {
-    return html`<img src="${image.src}" alt="${image.alt}" loading="lazy" decoding="async" width="600" height="750">`;
-  }
   const brand = brandIndex.get(p.brand);
-  return html`<div class="card__glyph" aria-hidden="true">
+  const glyph = html`<div class="card__glyph" aria-hidden="true">
     <b>${cardName(p)}</b>
     <span>${brand?.name ?? "EarthTrade"}</span>
   </div>`;
+
+  const image = p.images[0];
+  if (!image) return glyph;
+
+  // The tile stays in the markup behind the photograph. If the CDN image fails
+  // the runtime hides the img and the tile shows through, so a card never
+  // degrades to a broken-image icon.
+  return html`${glyph}<img
+    src="${image.src}"
+    alt="${image.alt}"
+    loading="lazy"
+    decoding="async"
+    width="600" height="750"
+    data-img-fallback
+  >`;
 }
 
 export interface CardOptions {

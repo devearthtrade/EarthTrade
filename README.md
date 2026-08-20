@@ -144,6 +144,11 @@ launch. Any product with an empty `images` array renders a branded typographic
 tile rather than a stand-in photograph, because substituting a generated image
 for a real product would misrepresent it.
 
+That tile is also the failure state for products that *do* have photography: it
+sits behind the `<img>` in the markup, and if the commerce CDN does not return
+the asset the runtime hides the image so the tile shows through. A card never
+degrades to a broken-image icon.
+
 Art-directed environmental and editorial imagery in `public/images` is
 AI-generated for scene setting only. No product itself is ever AI-generated.
 

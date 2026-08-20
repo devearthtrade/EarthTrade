@@ -3,7 +3,7 @@
 import { html, join, raw } from "../lib/html.ts";
 import type { Product } from "../lib/types.ts";
 import { money, priceRange } from "../lib/format.ts";
-import { brandIndex, cardName, getProducts, productPrice } from "../data/catalog.ts";
+import { brandIndex, cardName, collectionIndex, getProducts, productPrice } from "../data/catalog.ts";
 import { layout } from "../site/layout.ts";
 import {
   accordion,
@@ -35,13 +35,19 @@ function gallery(p: Product): ReturnType<typeof html> {
     `;
   }
 
+  const brand = brandIndex.get(p.brand);
   return html`
     <div class="gallery">
       <div class="gallery__main">
+        <div class="card__glyph" aria-hidden="true">
+          <b>${cardName(p)}</b>
+          <span>${brand?.name ?? "EarthTrade"}</span>
+        </div>
         <img
           src="${p.images[0]!.src}"
           alt="${p.images[0]!.alt}"
           data-gallery-main
+          data-img-fallback
           width="900" height="900"
           fetchpriority="high" decoding="async"
         >
@@ -58,7 +64,7 @@ function gallery(p: Product): ReturnType<typeof html> {
                     aria-current="${i === 0 ? "true" : "false"}"
                     aria-label="View image ${String(i + 1)} of ${String(p.images.length)}"
                   >
-                    <img src="${img.src}" alt="" loading="lazy" decoding="async">
+                    <img src="${img.src}" alt="" loading="lazy" decoding="async" data-img-fallback>
                   </button>
                 `,
               ),
@@ -92,11 +98,12 @@ export function productPage(p: Product): string {
     image: p.images[0]?.src ?? "",
   });
 
+  // Use the collection's own title so the crumb reads "SolutionsHOCL", not the
+  // handle it is addressed by.
+  const parent = p.collections[0] ? collectionIndex.get(p.collections[0]) : undefined;
   const trail = [
     { label: "Home", href: "/" },
-    ...(p.collections[0]
-      ? [{ label: p.collections[0].replaceAll("-", " "), href: `/collections/${p.collections[0]}` }]
-      : []),
+    ...(parent ? [{ label: parent.title, href: `/collections/${parent.handle}` }] : []),
     { label: cardName(p), href: `/products/${p.handle}` },
   ];
 

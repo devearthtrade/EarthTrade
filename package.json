@@ -1,0 +1,16 @@
+{
+  "name": "earthtrade-storefront",
+  "version": "1.0.0",
+  "private": true,
+  "description": "EarthTrade premium storefront — dependency-free TypeScript static site generator. Node 22+ runs TypeScript natively; no npm install required.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "build": "node src/build.ts",
+    "dev": "node src/build.ts && node src/serve.ts",
+    "serve": "node src/serve.ts",
+    "check": "node --experimental-strip-types --check src/build.ts"
+  }
+}

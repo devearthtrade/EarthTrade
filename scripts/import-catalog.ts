@@ -29,6 +29,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 
 import { createHash } from "node:crypto";
 import { join, basename, extname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { screen } from "../src/lib/compliance.ts";
 
 const root = join(fileURLToPath(import.meta.url), "..", "..");
 
@@ -121,54 +122,11 @@ function titleCaseSlug(s: string): string {
 
 /* --------------------------- compliance screen -------------------------- */
 
-/**
- * Two tiers, matching how docs/COMPLIANCE.md is actually scoped.
- *
- * The kill/germ/safety/water/method rules govern SolutionsHOCL cleaning copy;
- * they are not general prohibitions. A water filter legitimately filters, and
- * COMPLIANCE.md explicitly permits "naturally occurring" in Hawaiian Volcanic
- * Organic gardening copy, where it describes minerals rather than a cleaner.
- * Applying the HOCL list to every brand would quarantine correct product names.
- *
- * The sitewide tier carries the brief's own rules, which bind every brand: no
- * invented certifications, no medical claims, no unsupported environmental
- * claims.
+/*
+ * The rule set lives in src/lib/compliance.ts so the importer and the future
+ * Admin Dashboard screen copy identically. A product created by hand must not
+ * be able to bypass what the importer enforces.
  */
-const SITEWIDE_RULES: { pattern: RegExp; reason: string }[] = [
-  { pattern: /\b(EPA|FDA|NSF|WHO|CDC|NIH)\b/g, reason: "regulatory or certification claim" },
-  { pattern: /\b(eco-?friendly|environmentally friendly)\b/gi, reason: "unsupported environmental claim" },
-  { pattern: /\bimmune system\b/gi, reason: "medical claim" },
-  { pattern: /\b(cures?|treats?|prevents?) (disease|illness|infection)/gi, reason: "medical claim" },
-];
-
-const HOCL_RULES: { pattern: RegExp; reason: string }[] = [
-  { pattern: /\b(disinfect\w*|sanitiz\w*|steriliz\w*)\b/gi, reason: "kill claim" },
-  { pattern: /\b(antimicrobial|antibacterial|antiviral|antifungal|biocide)\b/gi, reason: "kill claim" },
-  { pattern: /\b(pathogens?|germs?|bacteria|viruses?|virus|spores)\b/gi, reason: "organism claim" },
-  { pattern: /\bkills?\b/gi, reason: "kill claim" },
-  { pattern: /\b(non-?toxic|food safe|safe for (kids|pets|families))\b/gi, reason: "safety claim" },
-  { pattern: /\b(purif\w*|makes water safe to drink)\b/gi, reason: "water claim" },
-  { pattern: /\bnatural(ly)?[- ](derived|occurring)\b/gi, reason: "natural claim" },
-  { pattern: /\b(NaDCC|dichlor|sodium dichloroisocyanurate)\b/gi, reason: "chemical name" },
-  { pattern: /\b(fogger|misters?|atomizers?)\b/gi, reason: "application method" },
-  { pattern: /\b103\s?(x|times)\b/gi, reason: "retired comparison" },
-];
-
-function screen(text: string, brandId: string): { reason: string; term: string }[] {
-  const rules =
-    brandId === "solutionshocl" ? [...SITEWIDE_RULES, ...HOCL_RULES] : SITEWIDE_RULES;
-  const found: { reason: string; term: string }[] = [];
-  const seen = new Set<string>();
-  for (const { pattern, reason } of rules) {
-    for (const m of text.matchAll(pattern)) {
-      const key = `${reason}:${m[0].toLowerCase()}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      found.push({ reason, term: m[0] });
-    }
-  }
-  return found;
-}
 
 /* ------------------------------- mapping -------------------------------- */
 

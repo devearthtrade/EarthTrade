@@ -4,3 +4,7 @@ node_modules/
 *.log
 .env
 .env.*
+
+# Local database environment. Never commit real credentials.
+.env.db
+*.pgpass

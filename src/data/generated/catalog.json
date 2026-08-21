@@ -1,8 +1,11 @@
 {
   "meta": {
-    "source": "a618695a-Earthtrade_products.csv",
+    "sources": [
+      "a618695a-Earthtrade_products.csv"
+    ],
     "importedProducts": 110,
     "sourceRows": 110,
+    "duplicatesMerged": 0,
     "skipped": 0,
     "currency": "USD",
     "moneyFormat": "integer_cents",
@@ -85,6 +88,14 @@
         "missing_source_category",
         "missing_type",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 106,
+          "handle": "12-packs-of-flower-of-life-stickers",
+          "sku": null
+        }
       ]
     },
     {
@@ -142,6 +153,14 @@
         "missing_sku",
         "missing_source_category",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 101,
+          "handle": "25-bpa-free-tubing-3-foot-increments",
+          "sku": null
+        }
       ]
     },
     {
@@ -238,6 +257,14 @@
         "missing_image_alt",
         "missing_seo_title",
         "missing_type"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 32,
+          "handle": "3-stages-filters",
+          "sku": "3-Stage Filter System"
+        }
       ]
     },
     {
@@ -303,6 +330,14 @@
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 90,
+          "handle": "4-replacement-filter-bundle",
+          "sku": "Countertop 4 RF Bundle"
+        }
       ]
     },
     {
@@ -366,6 +401,14 @@
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 43,
+          "handle": "5-micron-carbon-block",
+          "sku": "4E-X8P9-3IIV"
+        }
       ]
     },
     {
@@ -433,6 +476,14 @@
       "flags": [
         "inventory_unknown",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 92,
+          "handle": "5-replacement-filter-bundle",
+          "sku": "Bio Energy 5 RF Bundle"
+        }
       ]
     },
     {
@@ -511,6 +562,14 @@
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 91,
+          "handle": "5-replacement-filter-bundle-1",
+          "sku": "Countertop 5 RF Bundle"
+        }
       ]
     },
     {
@@ -572,6 +631,14 @@
         "missing_seo_title",
         "missing_sku",
         "missing_type"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 34,
+          "handle": "5-stage-reverse-osmosis-system",
+          "sku": null
+        }
       ]
     },
     {
@@ -643,6 +710,14 @@
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 93,
+          "handle": "6-replacement-filter-bundle",
+          "sku": "Bio Energy 6 RF Bundle"
+        }
       ]
     },
     {
@@ -701,6 +776,14 @@
         "missing_seo_title",
         "missing_sku",
         "missing_type"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 33,
+          "handle": "6-stage-ro-system-with-mineral-cartridge-housing",
+          "sku": null
+        }
       ]
     },
     {
@@ -761,6 +844,14 @@
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 44,
+          "handle": "7500-7600-8000-8100-filter-2",
+          "sku": "Filter#2"
+        }
       ]
     },
     {
@@ -815,6 +906,14 @@
       "flags": [
         "inventory_unknown",
         "missing_image_alt"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 23,
+          "handle": "7700-9000-9100-9200-citric-acid-cleaning-filter",
+          "sku": "7700/9000/9100/9200 Citric Cleaning"
+        }
       ]
     },
     {
@@ -871,6 +970,14 @@
         "missing_seo_description",
         "missing_seo_title",
         "missing_short_benefit"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 24,
+          "handle": "7700-9000-9200-9200-filter-1",
+          "sku": "Y4-1LMD-68IX"
+        }
       ]
     },
     {
@@ -931,6 +1038,14 @@
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 26,
+          "handle": "7700-9000-9200-9200-m-series-not-mx-filter-2",
+          "sku": "Filter #2 7700"
+        }
       ]
     },
     {
@@ -997,6 +1112,14 @@
         "content_quarantined",
         "inventory_unknown",
         "missing_image_alt"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 50,
+          "handle": "active-chlorine-test-strips-50",
+          "sku": "50-Test-Strips"
+        }
       ]
     },
     {
@@ -1057,6 +1180,14 @@
         "missing_seo_title",
         "missing_source_category",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 107,
+          "handle": "alkaline-beverage-recipes",
+          "sku": "Alkaline Beverage Recipes Book"
+        }
       ]
     },
     {
@@ -1126,6 +1257,14 @@
         "missing_source_category",
         "missing_type",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 108,
+          "handle": "alkaline-water-pitcher-with-copper-bottle",
+          "sku": null
+        }
       ]
     },
     {
@@ -1206,6 +1345,14 @@
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 72,
+          "handle": "auto-ship-glass-pitcher-of-life-f007-ultra-replacement-filter-3-pack",
+          "sku": "AutoShip-F007-UF"
+        }
       ]
     },
     {
@@ -1275,6 +1422,14 @@
         "content_quarantined",
         "inventory_unknown",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 69,
+          "handle": "auto-ship-pitcher-of-life-2nd-gen-replacement-filter-3-pack",
+          "sku": "Auto Ship 3 Pack Blue RFs"
+        }
       ]
     },
     {
@@ -1344,6 +1499,14 @@
       "flags": [
         "content_quarantined",
         "inventory_unknown"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 70,
+          "handle": "auto-ship-replacement-filters-pack-of-3",
+          "sku": "Auto Ship 3 Pack White RFs"
+        }
       ]
     },
     {
@@ -1462,6 +1625,14 @@
         "inventory_unknown",
         "missing_sku",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 5,
+          "handle": "borosilicate-glass-pitcher-of-life-alkaline-water-purifier",
+          "sku": null
+        }
       ]
     },
     {
@@ -1518,6 +1689,14 @@
         "missing_image_alt",
         "missing_seo_description",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 46,
+          "handle": "catalytic-carbon-chloramines-filter-granular-activated-carbon",
+          "sku": "CHLORAMINES FILTER"
+        }
       ]
     },
     {
@@ -1613,6 +1792,14 @@
         "missing_sku",
         "missing_type",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 54,
+          "handle": "catchment-bomb",
+          "sku": null
+        }
       ]
     },
     {
@@ -1704,6 +1891,14 @@
         "missing_sku",
         "missing_type",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 55,
+          "handle": "catchment-bomb-500-grams",
+          "sku": null
+        }
       ]
     },
     {
@@ -1776,6 +1971,14 @@
         "missing_sku",
         "missing_type",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 4,
+          "handle": "cistern-catchment-bomb-500g",
+          "sku": null
+        }
       ]
     },
     {
@@ -1846,6 +2049,14 @@
         "missing_sku",
         "missing_type",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 3,
+          "handle": "cistern-catchment-bomb-tank-cleaner",
+          "sku": null
+        }
       ]
     },
     {
@@ -1920,6 +2131,14 @@
         "missing_sku",
         "missing_type",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 58,
+          "handle": "cistern-tank-cleaner-100-grams",
+          "sku": null
+        }
       ]
     },
     {
@@ -2006,6 +2225,14 @@
         "missing_sku",
         "missing_type",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 59,
+          "handle": "cistern-tank-cleaner-500-grams",
+          "sku": null
+        }
       ]
     },
     {
@@ -2061,6 +2288,14 @@
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 45,
+          "handle": "citric-acidic-cleaner-cartridge-7500-7600-8000-8100",
+          "sku": "Life 7500/7600 CACC"
+        }
       ]
     },
     {
@@ -2118,6 +2353,14 @@
       "status": "active",
       "flags": [
         "inventory_unknown"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 98,
+          "handle": "composite-filter-with-cotton-filter",
+          "sku": "Composite Filter with Cotton Filter"
+        }
       ]
     },
     {
@@ -2208,6 +2451,14 @@
       "flags": [
         "content_quarantined",
         "inventory_unknown"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 78,
+          "handle": "copper-bottle-black-and-copper-color",
+          "sku": "CB- Black and Copper Color"
+        }
       ]
     },
     {
@@ -2298,6 +2549,14 @@
       "flags": [
         "content_quarantined",
         "inventory_unknown"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 82,
+          "handle": "copper-bottle-blue-and-white-color-peacock-design",
+          "sku": "CB- Blue and White Color Peacock"
+        }
       ]
     },
     {
@@ -2388,6 +2647,14 @@
       "flags": [
         "content_quarantined",
         "inventory_unknown"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 84,
+          "handle": "copper-bottle-flowers-design",
+          "sku": "CB- Flower Design"
+        }
       ]
     },
     {
@@ -2478,6 +2745,14 @@
       "flags": [
         "content_quarantined",
         "inventory_unknown"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 83,
+          "handle": "copper-bottle-igrets-white-bird-design",
+          "sku": "CB- Igrets White Bird Design"
+        }
       ]
     },
     {
@@ -2569,6 +2844,14 @@
       "flags": [
         "content_quarantined",
         "inventory_unknown"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 79,
+          "handle": "copper-bottle-peacock-and-flower-design",
+          "sku": "CB- Peacock and Flower Design"
+        }
       ]
     },
     {
@@ -2659,6 +2942,14 @@
       "flags": [
         "content_quarantined",
         "inventory_unknown"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 81,
+          "handle": "copper-bottle-pounded-design",
+          "sku": "CB- Pounded Design"
+        }
       ]
     },
     {
@@ -2749,6 +3040,14 @@
       "flags": [
         "content_quarantined",
         "inventory_unknown"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 85,
+          "handle": "copper-bottle-pounded-drops-design",
+          "sku": "CB- Pounded Drops Design"
+        }
       ]
     },
     {
@@ -2839,6 +3138,14 @@
       "flags": [
         "content_quarantined",
         "inventory_unknown"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 80,
+          "handle": "copper-bottle-white-lotus-flowers-design",
+          "sku": "CB- White Lotus Flowers Design"
+        }
       ]
     },
     {
@@ -2918,6 +3225,14 @@
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 86,
+          "handle": "copper-pitcher-pounded-design",
+          "sku": "Copper Pitcher - Pounded"
+        }
       ]
     },
     {
@@ -2997,6 +3312,14 @@
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 87,
+          "handle": "copper-pitcher-white-birds-design",
+          "sku": "Copper Pitcher - White Birds"
+        }
       ]
     },
     {
@@ -3061,6 +3384,14 @@
       "flags": [
         "inventory_unknown",
         "missing_image_alt"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 42,
+          "handle": "coral-calcium-remineralizer",
+          "sku": "53-CNCS-TDO8"
+        }
       ]
     },
     {
@@ -3120,6 +3451,14 @@
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 97,
+          "handle": "cotton-filter-pack-of-3",
+          "sku": "3 Pack Cotton Filters"
+        }
       ]
     },
     {
@@ -3207,6 +3546,14 @@
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 74,
+          "handle": "countertop-alkaline-water-purifier",
+          "sku": "Alkaline Countertop System"
+        }
       ]
     },
     {
@@ -3273,6 +3620,14 @@
         "missing_sku",
         "missing_type",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 35,
+          "handle": "dolphin-xl-home-agriculture-filtration-system-1-inlet-outlet",
+          "sku": null
+        }
       ]
     },
     {
@@ -3333,6 +3688,14 @@
         "missing_seo_description",
         "missing_seo_title",
         "missing_type"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 37,
+          "handle": "double-pre-filter",
+          "sku": "DOUBLE PRE-FILTER HOUSING"
+        }
       ]
     },
     {
@@ -3391,6 +3754,14 @@
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 99,
+          "handle": "double-pre-filter-housing",
+          "sku": "Double Pre Filter"
+        }
       ]
     },
     {
@@ -3452,6 +3823,14 @@
         "missing_seo_title",
         "missing_sku",
         "missing_type"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 31,
+          "handle": "fluoride-reduction-system",
+          "sku": null
+        }
       ]
     },
     {
@@ -3529,6 +3908,14 @@
       "flags": [
         "content_quarantined",
         "inventory_unknown"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 66,
+          "handle": "glass-pitcher-of-life-f004-3pack-replacement-filters",
+          "sku": "Auto Ship GLASS-POL-RF-FOO4-3P"
+        }
       ]
     },
     {
@@ -3608,6 +3995,14 @@
         "content_quarantined",
         "inventory_unknown",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 71,
+          "handle": "glass-pitcher-of-life-f004-replacement-filters-3-pack",
+          "sku": "GPOL-RF-3P"
+        }
       ]
     },
     {
@@ -3686,6 +4081,14 @@
       "flags": [
         "content_quarantined",
         "inventory_unknown"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 65,
+          "handle": "glass-pitcher-of-life-f004-singlepack-replacement-filters",
+          "sku": "GLASS-POL-RF-FOO4"
+        }
       ]
     },
     {
@@ -3769,6 +4172,14 @@
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 64,
+          "handle": "glass-pitcher-of-life-f007-ultra-replacement-filter",
+          "sku": "GLASS-POL-URF-FOO7"
+        }
       ]
     },
     {
@@ -3827,6 +4238,14 @@
       "flags": [
         "inventory_unknown",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 60,
+          "handle": "glass-water-bottle-450ml",
+          "sku": "GWB-450mL"
+        }
       ]
     },
     {
@@ -3890,6 +4309,14 @@
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 40,
+          "handle": "granular-activated-carbon-kdf-85",
+          "sku": "IV-671H-R7F7"
+        }
       ]
     },
     {
@@ -3951,6 +4378,14 @@
         "missing_sku",
         "missing_source_category",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 8,
+          "handle": "hawaiian-bokashi-compost-starter",
+          "sku": null
+        }
       ]
     },
     {
@@ -4008,6 +4443,14 @@
         "missing_seo_title",
         "missing_sku",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 10,
+          "handle": "hawaiian-bokashi-inoculant",
+          "sku": null
+        }
       ]
     },
     {
@@ -4067,6 +4510,14 @@
         "missing_type",
         "missing_weight",
         "zero_price"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 2,
+          "handle": "hawaiian-volcanic-organic-compost",
+          "sku": null
+        }
       ]
     },
     {
@@ -4146,6 +4597,14 @@
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 39,
+          "handle": "heavy-metal-removal-kdf-55-plus",
+          "sku": "VA-8DJ0-48BV"
+        }
       ]
     },
     {
@@ -4203,6 +4662,14 @@
         "missing_image_alt",
         "missing_seo_description",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 52,
+          "handle": "hocl-powerwash-powder-1gram",
+          "sku": "1Gram-Sample-Pack"
+        }
       ]
     },
     {
@@ -4262,6 +4729,14 @@
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 73,
+          "handle": "housing-single-pre-filter",
+          "sku": "Single Pre Filter"
+        }
       ]
     },
     {
@@ -4321,6 +4796,14 @@
         "missing_seo_title",
         "missing_source_category",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 105,
+          "handle": "housing-triple-pre-filter",
+          "sku": "Triple Pre Filter"
+        }
       ]
     },
     {
@@ -4412,6 +4895,14 @@
         "missing_sku",
         "missing_source_category",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 9,
+          "handle": "hvo-beneficial-microbial-inoculant",
+          "sku": null
+        }
       ]
     },
     {
@@ -4478,6 +4969,14 @@
         "missing_sku",
         "missing_type",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 7,
+          "handle": "hvo-organic-fertilizer",
+          "sku": null
+        }
       ]
     },
     {
@@ -4567,6 +5066,14 @@
         "content_quarantined",
         "inventory_unknown",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 75,
+          "handle": "hydrogen-alkaline-bio-energy-water-system",
+          "sku": "Bio Energy System"
+        }
       ]
     },
     {
@@ -4624,6 +5131,14 @@
         "missing_seo_title",
         "missing_source_category",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 103,
+          "handle": "life-faucet-diverter-valve-new-improved",
+          "sku": "Diverter Valve"
+        }
       ]
     },
     {
@@ -4681,6 +5196,14 @@
         "missing_seo_title",
         "missing_short_benefit",
         "missing_type"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 28,
+          "handle": "life-ionizer-5100-internal-replacement-filter-1",
+          "sku": "5100 Filter #1"
+        }
       ]
     },
     {
@@ -4738,6 +5261,14 @@
         "missing_seo_title",
         "missing_short_benefit",
         "missing_type"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 27,
+          "handle": "life-ionizer-5100-internal-replacement-filter-2",
+          "sku": "5100 Filter #2"
+        }
       ]
     },
     {
@@ -4795,6 +5326,14 @@
         "missing_seo_title",
         "missing_short_benefit",
         "missing_type"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 29,
+          "handle": "life-ionizer-5100-internal-replacement-filter-citric-acid-cleaning-cartridge",
+          "sku": "5100 Citric Acid Cleaning Cartridge"
+        }
       ]
     },
     {
@@ -4852,6 +5391,14 @@
         "missing_seo_description",
         "missing_seo_title",
         "missing_type"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 30,
+          "handle": "life-ionizer-7500-7600-8000-8100-filter-1",
+          "sku": "7500/7600/8000/8100 - Filter #1"
+        }
       ]
     },
     {
@@ -4919,6 +5466,14 @@
         "missing_sku",
         "missing_source_category",
         "missing_type"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 13,
+          "handle": "life-reverse-osmosis-post-filter-™",
+          "sku": null
+        }
       ]
     },
     {
@@ -4979,6 +5534,14 @@
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 76,
+          "handle": "life-shower-filter-with-showerhead",
+          "sku": "LSF with Shower Head"
+        }
       ]
     },
     {
@@ -5039,6 +5602,14 @@
       "flags": [
         "inventory_unknown",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 77,
+          "handle": "life-shower-filter-without-showerhead",
+          "sku": "LSF without Shower Head"
+        }
       ]
     },
     {
@@ -5095,6 +5666,14 @@
         "missing_seo_description",
         "missing_seo_title",
         "missing_short_benefit"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 22,
+          "handle": "life-water-filter-mx-mxl-1-internal-replacement-filter",
+          "sku": "FB-SIOQ-QSGA"
+        }
       ]
     },
     {
@@ -5151,6 +5730,14 @@
         "missing_seo_description",
         "missing_seo_title",
         "missing_short_benefit"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 20,
+          "handle": "mx-mxl-2-internal-replacement-filter",
+          "sku": "8F-P860-NM7I"
+        }
       ]
     },
     {
@@ -5206,6 +5793,14 @@
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 21,
+          "handle": "mx-mxl5-15-filter-citric-acid-cleaning",
+          "sku": "MX/MXL 5-15 Citric Cleaning"
+        }
       ]
     },
     {
@@ -5262,6 +5857,14 @@
         "missing_image_alt",
         "missing_seo_description",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 15,
+          "handle": "nitrate-cartridge",
+          "sku": "NITRATE CARTRIDGE"
+        }
       ]
     },
     {
@@ -5333,6 +5936,14 @@
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 68,
+          "handle": "pitcher-of-life-2nd-generation-3pack-replacement-filter",
+          "sku": "2NDGEN-POL-RF-3P"
+        }
       ]
     },
     {
@@ -5403,6 +6014,14 @@
         "content_quarantined",
         "inventory_unknown",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 67,
+          "handle": "pitcher-of-life-2nd-generation-replacement-filter",
+          "sku": "2NDGEN-POL-RF"
+        }
       ]
     },
     {
@@ -5479,6 +6098,14 @@
       "flags": [
         "content_quarantined",
         "inventory_unknown"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 61,
+          "handle": "pitcher-of-life-improved-2024",
+          "sku": "BPA Free POL"
+        }
       ]
     },
     {
@@ -5551,6 +6178,14 @@
         "content_quarantined",
         "inventory_unknown",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 62,
+          "handle": "pitcher-of-life-replacement-filter",
+          "sku": "BPA Free POL RF SP"
+        }
       ]
     },
     {
@@ -5623,6 +6258,14 @@
         "content_quarantined",
         "inventory_unknown",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 63,
+          "handle": "pitcher-of-life-replacement-filter-3pack",
+          "sku": "BPA Free POL RF 3P"
+        }
       ]
     },
     {
@@ -5685,6 +6328,14 @@
       "status": "active",
       "flags": [
         "inventory_unknown"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 110,
+          "handle": "pitcher-of-life-with-flower-of-life",
+          "sku": "BPA Free POL with FOL"
+        }
       ]
     },
     {
@@ -5742,6 +6393,14 @@
         "missing_type",
         "missing_weight",
         "zero_price"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 111,
+          "handle": "pitcher-of-life-with-stainless-steel-infuser",
+          "sku": null
+        }
       ]
     },
     {
@@ -5816,6 +6475,14 @@
         "missing_source_category",
         "missing_type",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 109,
+          "handle": "pitcher-with-copper-bottle",
+          "sku": null
+        }
       ]
     },
     {
@@ -5879,6 +6546,14 @@
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 41,
+          "handle": "pre-filter-fluoride-arsenic-lead-reduction",
+          "sku": "G2-OKRR-5JW1"
+        }
       ]
     },
     {
@@ -5940,6 +6615,14 @@
         "missing_sku",
         "missing_source_category",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 100,
+          "handle": "pre-filter-wrench",
+          "sku": null
+        }
       ]
     },
     {
@@ -6042,6 +6725,14 @@
         "missing_image_alt",
         "missing_short_benefit",
         "title_not_publishable"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 51,
+          "handle": "rechargeable-atomizer-sprayer",
+          "sku": "Rechargeable-Atomizer"
+        }
       ]
     },
     {
@@ -6139,6 +6830,14 @@
         "inventory_unknown",
         "missing_sku",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 96,
+          "handle": "reverse-osmosis-alkaline-water-purifier-undercounter",
+          "sku": null
+        }
       ]
     },
     {
@@ -6207,6 +6906,14 @@
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 94,
+          "handle": "ro-5-replacement-filter-bundle",
+          "sku": "RO RF 5 Bundle"
+        }
       ]
     },
     {
@@ -6278,6 +6985,14 @@
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 95,
+          "handle": "ro-6-replacement-filter-bundle",
+          "sku": "RO RF 6 Bundle"
+        }
       ]
     },
     {
@@ -6340,6 +7055,14 @@
         "missing_sku",
         "missing_source_category",
         "missing_type"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 12,
+          "handle": "ro-membrane-50-gpd-1",
+          "sku": null
+        }
       ]
     },
     {
@@ -6396,6 +7119,14 @@
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 89,
+          "handle": "ro-membrane-filter",
+          "sku": "RO Membrane Filter"
+        }
       ]
     },
     {
@@ -6489,6 +7220,14 @@
         "missing_seo_description",
         "missing_seo_title",
         "title_not_publishable"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 48,
+          "handle": "ryobi-one-cordless-fogger-plus-two-10g-power-wash",
+          "sku": "Fogger+2-10Gram-Pack"
+        }
       ]
     },
     {
@@ -6552,6 +7291,14 @@
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 19,
+          "handle": "scale-block",
+          "sku": "09-HNQY-C8NV"
+        }
       ]
     },
     {
@@ -6616,6 +7363,14 @@
         "missing_sku",
         "missing_source_category",
         "missing_type"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 14,
+          "handle": "shower-filter-replacement-composite-filter-with-four-4-pp-polymer-cotton-filters",
+          "sku": null
+        }
       ]
     },
     {
@@ -6676,6 +7431,14 @@
         "missing_image_alt",
         "missing_seo_description",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 36,
+          "handle": "single-pre-filter-housing",
+          "sku": "SINGLE PRE-FILTER HOUSING"
+        }
       ]
     },
     {
@@ -6735,6 +7498,14 @@
         "missing_image_alt",
         "missing_seo_description",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 17,
+          "handle": "sodium-reduction-filter",
+          "sku": "SODIUM REDUCTION FILTER"
+        }
       ]
     },
     {
@@ -6855,6 +7626,14 @@
         "content_quarantined",
         "inventory_unknown",
         "missing_image_alt"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 47,
+          "handle": "solutions-hocl-powder-10-packs-10-grams",
+          "sku": "SHP10.1"
+        }
       ]
     },
     {
@@ -6928,6 +7707,14 @@
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 25,
+          "handle": "super-filter-lf-100f",
+          "sku": "2B-45JC-9H2Q"
+        }
       ]
     },
     {
@@ -7001,6 +7788,14 @@
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 16,
+          "handle": "super-filters-sets",
+          "sku": "SuperFiltersSet"
+        }
       ]
     },
     {
@@ -7063,6 +7858,14 @@
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 18,
+          "handle": "super-lf100",
+          "sku": "9D-T1EK-TLU6"
+        }
       ]
     },
     {
@@ -7126,6 +7929,14 @@
         "missing_sku",
         "missing_source_category",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 11,
+          "handle": "superthrive®",
+          "sku": null
+        }
       ]
     },
     {
@@ -7204,6 +8015,14 @@
         "missing_image_alt",
         "missing_seo_description",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 49,
+          "handle": "superwash-powder-organic-lemon-scent-10pack-10grams",
+          "sku": "10Gram-Lemon-HOCL-Powder"
+        }
       ]
     },
     {
@@ -7295,6 +8114,14 @@
         "missing_sku",
         "missing_type",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 56,
+          "handle": "toilet-bomb-fragrance-free",
+          "sku": null
+        }
       ]
     },
     {
@@ -7376,6 +8203,14 @@
         "missing_sku",
         "missing_type",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 57,
+          "handle": "toilet-bomb-organic-lemon",
+          "sku": null
+        }
       ]
     },
     {
@@ -7442,6 +8277,14 @@
         "missing_source_category",
         "missing_type",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 6,
+          "handle": "top-soil",
+          "sku": null
+        }
       ]
     },
     {
@@ -7501,6 +8344,14 @@
         "missing_image_alt",
         "missing_seo_description",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 38,
+          "handle": "triple-pre-filter",
+          "sku": "TRIPLE PRE-FILTER HOUSING"
+        }
       ]
     },
     {
@@ -7580,6 +8431,14 @@
         "missing_image_alt",
         "missing_seo_description",
         "missing_seo_title"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 53,
+          "handle": "two-2-ready-to-use-2-fl-oz-4-fl-oz-total-each-sprayers-plus-two-2-powerwash-powder-packets-that-makes-2-gallons",
+          "sku": "SHPL2.o"
+        }
       ]
     },
     {
@@ -7646,6 +8505,14 @@
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 88,
+          "handle": "ultrafiltration-filter",
+          "sku": "Ultrafiltration Filter"
+        }
       ]
     },
     {
@@ -7703,6 +8570,14 @@
         "missing_seo_title",
         "missing_source_category",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 102,
+          "handle": "under-counter-cold-water-connect-valve",
+          "sku": "UC Cold Water Valve"
+        }
       ]
     },
     {
@@ -7760,8 +8635,17 @@
         "missing_seo_title",
         "missing_source_category",
         "missing_weight"
+      ],
+      "sources": [
+        {
+          "file": "a618695a-Earthtrade_products.csv",
+          "row": 104,
+          "handle": "under-counter-water-supply-adapter-kit",
+          "sku": "UC Water Supply Kit"
+        }
       ]
     }
   ],
+  "duplicates": [],
   "skipped": []
 }

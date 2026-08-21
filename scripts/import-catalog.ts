@@ -18,7 +18,11 @@
  *
  * Money is stored as integer cents, matching the commerce architecture.
  *
- * Usage: node scripts/import-catalog.ts <csv-path>
+ * Multiple CSVs merge into one catalog. A product arriving twice is matched on
+ * handle, then on SKU, and the records are folded together: gaps fill from the
+ * later source, disagreements are recorded rather than resolved.
+ *
+ * Usage: node scripts/import-catalog.ts <csv-path> [csv-path...]
  */
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
@@ -233,6 +237,13 @@ interface PendingImage {
   sourceUrl: string;
 }
 
+interface ProductSource {
+  file: string;
+  row: number;
+  handle: string;
+  sku: string | null;
+}
+
 interface ImportedProduct {
   handle: string;
   title: string;
@@ -256,6 +267,8 @@ interface ImportedProduct {
   titleMatches: { reason: string; term: string }[];
   status: "active" | "needs_review";
   flags: string[];
+  /** Every source row this product was built from, in order of arrival. */
+  sources: ProductSource[];
 }
 
 /** Stable EarthTrade-native id. Deterministic, carries no foreign identifier. */
@@ -274,13 +287,18 @@ function money(raw: string): number | null {
 
 /* -------------------------------- import -------------------------------- */
 
-const csvPath = process.argv[2];
-if (!csvPath) {
-  console.error("usage: node scripts/import-catalog.ts <csv-path>");
+const csvPaths = process.argv.slice(2);
+if (!csvPaths.length) {
+  console.error("usage: node scripts/import-catalog.ts <csv-path> [csv-path...]");
   process.exit(1);
 }
 
-const records = toRecords(parseCsv(readFileSync(csvPath, "utf8")));
+/** Every source row, tagged with the file it came from. */
+const sourced: { file: string; row: number; r: Record<string, string> }[] = [];
+for (const path of csvPaths) {
+  const rows = toRecords(parseCsv(readFileSync(path, "utf8")));
+  rows.forEach((r, i) => sourced.push({ file: basename(path), row: i + 2, r }));
+}
 
 // Assets already present locally are linked; the rest are reported as pending.
 // The export names some files with an extension the uploaded asset does not
@@ -300,14 +318,27 @@ function localAsset(file: string): string | null {
 }
 
 const products: ImportedProduct[] = [];
-const skipped: { handle: string; reason: string }[] = [];
+const skipped: { handle: string; reason: string; file?: string }[] = [];
 
-for (const r of records) {
+/** Index for deduplication: handle first, then SKU. */
+const byHandle = new Map<string, ImportedProduct>();
+const bySku = new Map<string, ImportedProduct>();
+const duplicates: {
+  keptHandle: string;
+  duplicateOf: string;
+  matchedOn: "handle" | "sku";
+  file: string;
+  row: number;
+  filled: string[];
+  conflicts: { field: string; kept: string; ignored: string }[];
+}[] = [];
+
+for (const { file, row: sourceRow, r } of sourced) {
   const handle = r["Handle"];
   const title = r["Title"];
 
   if (!handle || !title) {
-    skipped.push({ handle: handle || "(none)", reason: "missing handle or title" });
+    skipped.push({ handle: handle || "(none)", reason: "missing handle or title", file });
     continue;
   }
 
@@ -453,7 +484,7 @@ for (const r of records) {
   const publishable = !flags.some((f) => withheld.includes(f));
   const status = !publishable || flags.some((f) => reviewOnly.includes(f)) ? "needs_review" : "active";
 
-  products.push({
+  const candidate: ImportedProduct = {
     handle,
     title,
     brandId,
@@ -476,6 +507,149 @@ for (const r of records) {
     titleMatches,
     status,
     flags: [...new Set(flags)].sort(),
+    sources: [{ file, row: sourceRow, handle, sku }],
+  };
+
+  // Same product arriving from another file. Handle wins; SKU is the fallback
+  // identity, since a second export may slug the same item differently.
+  const existing = byHandle.get(handle) ?? (sku ? bySku.get(sku.toLowerCase()) : undefined);
+
+  if (!existing) {
+    products.push(candidate);
+    byHandle.set(handle, candidate);
+    if (sku) bySku.set(sku.toLowerCase(), candidate);
+    continue;
+  }
+
+  mergeInto(existing, candidate, file, sourceRow, byHandle.has(handle) ? "handle" : "sku");
+}
+
+/**
+ * Folds a later source into the record already held.
+ *
+ * Gaps are filled from the newer row, because that is real data the first
+ * source simply lacked. A field that both sources supply with different values
+ * is never overwritten: the first value stands and the disagreement is recorded
+ * for a human, since choosing between two stated facts would be inventing one.
+ */
+function mergeInto(
+  kept: ImportedProduct,
+  incoming: ImportedProduct,
+  file: string,
+  row: number,
+  matchedOn: "handle" | "sku",
+): void {
+  const filled: string[] = [];
+  const conflicts: { field: string; kept: string; ignored: string }[] = [];
+
+  const scalar = <K extends keyof ImportedProduct>(field: K, label = String(field)) => {
+    const a = kept[field];
+    const b = incoming[field];
+    if (b === null || b === undefined || b === "") return;
+    if (a === null || a === undefined || a === "") {
+      kept[field] = b;
+      filled.push(label);
+    } else if (String(a) !== String(b)) {
+      conflicts.push({ field: label, kept: String(a), ignored: String(b) });
+    }
+  };
+
+  scalar("categoryId");
+  scalar("productType");
+  scalar("shortBenefit");
+  if (kept.brandId !== incoming.brandId) {
+    conflicts.push({ field: "brandId", kept: kept.brandId, ignored: incoming.brandId });
+  }
+  if (!kept.seo.title && incoming.seo.title) {
+    kept.seo.title = incoming.seo.title;
+    filled.push("seo.title");
+  }
+  if (!kept.seo.description && incoming.seo.description) {
+    kept.seo.description = incoming.seo.description;
+    filled.push("seo.description");
+  }
+  if (!kept.description.length && incoming.description.length) {
+    kept.description = incoming.description;
+    filled.push("description");
+  }
+  if (!kept.images.length && incoming.images.length) {
+    kept.images = incoming.images;
+    filled.push("images");
+  }
+  if (!kept.pendingImages.length && incoming.pendingImages.length) {
+    kept.pendingImages = incoming.pendingImages;
+  }
+
+  // Collections and tags are additive: membership in one source does not
+  // cancel membership from another.
+  kept.collections = [...new Set([...kept.collections, ...incoming.collections])];
+  kept.sourceTags = [...new Set([...kept.sourceTags, ...incoming.sourceTags])];
+  kept.subscription = kept.subscription || incoming.subscription;
+  kept.quarantinedContent.push(...incoming.quarantinedContent);
+
+  // A genuinely different variant (distinct SKU or option) joins the product.
+  for (const v of incoming.variants) {
+    const dup = kept.variants.some(
+      (k) => (v.sku && k.sku && k.sku.toLowerCase() === v.sku.toLowerCase()) || k.id === v.id,
+    );
+    if (dup) {
+      const same = kept.variants.find(
+        (k) => k.id === v.id || (v.sku && k.sku?.toLowerCase() === v.sku.toLowerCase()),
+      );
+      if (!same) continue;
+
+      // Fill the gaps this variant had; disagreements stay unresolved.
+      if (!same.sku && v.sku) {
+        same.sku = v.sku;
+        filled.push(`variant:${v.title}.sku`);
+      }
+      if (same.weightGrams === null && v.weightGrams !== null) {
+        same.weightGrams = v.weightGrams;
+        filled.push(`variant:${v.title}.weight`);
+      }
+      if (same.barcode === null && v.barcode !== null) same.barcode = v.barcode;
+      if (same.compareAtCents === null && v.compareAtCents !== null) same.compareAtCents = v.compareAtCents;
+      if (same.priceCents !== v.priceCents) {
+        conflicts.push({
+          field: `variant:${v.sku ?? v.title}.price`,
+          kept: String(same.priceCents),
+          ignored: String(v.priceCents),
+        });
+      }
+      continue;
+    }
+    kept.variants.push(v);
+    filled.push(`variant:${v.sku ?? v.title}`);
+  }
+
+  kept.sources.push(...incoming.sources);
+  if (conflicts.length) kept.flags.push("source_conflict");
+  // Re-derive the gap flags: a field filled from a later source is no longer
+  // missing, and one the merge did not resolve must stay reported.
+  const resolved = new Set<string>();
+  if (kept.variants.every((v) => v.sku)) resolved.add("missing_sku");
+  if (kept.variants.every((v) => v.weightGrams !== null)) resolved.add("missing_weight");
+  if (kept.seo.title) resolved.add("missing_seo_title");
+  if (kept.seo.description) resolved.add("missing_seo_description");
+  if (kept.description.length) resolved.add("missing_description");
+  if (kept.images.length || kept.pendingImages.length) resolved.add("missing_image");
+  if (kept.shortBenefit) resolved.add("missing_short_benefit");
+  if (kept.categoryId) resolved.add("missing_category");
+  if (kept.productType) resolved.add("missing_type");
+  if (kept.collections.length) resolved.add("no_collection_mapping");
+
+  kept.flags = [...new Set([...kept.flags, ...incoming.flags])]
+    .filter((f) => !resolved.has(f))
+    .sort();
+
+  duplicates.push({
+    keptHandle: kept.handle,
+    duplicateOf: incoming.handle,
+    matchedOn,
+    file,
+    row,
+    filled,
+    conflicts,
   });
 }
 
@@ -486,9 +660,10 @@ const collectionsUsed = [...new Set(products.flatMap((p) => p.collections))].sor
 
 const catalog = {
   meta: {
-    source: basename(csvPath),
+    sources: csvPaths.map((c) => basename(c)),
     importedProducts: products.length,
-    sourceRows: records.length,
+    sourceRows: sourced.length,
+    duplicatesMerged: duplicates.length,
     skipped: skipped.length,
     currency: "USD",
     moneyFormat: "integer_cents",
@@ -497,6 +672,7 @@ const catalog = {
   brands,
   collections: collectionsUsed,
   products: products.sort((a, b) => a.handle.localeCompare(b.handle)),
+  duplicates,
   skipped,
 };
 
@@ -509,7 +685,12 @@ writeFileSync(join(outDir, "catalog.json"), `${JSON.stringify(catalog, null, 2)}
 const flagCounts = new Map<string, number>();
 for (const p of products) for (const f of p.flags) flagCounts.set(f, (flagCounts.get(f) ?? 0) + 1);
 
-console.log(`imported ${products.length} of ${records.length} source rows`);
+console.log(`sources  ${csvPaths.length} file(s), ${sourced.length} rows`);
+console.log(`imported ${products.length} unique products`);
+if (duplicates.length) {
+  const conf = duplicates.filter((d) => d.conflicts.length).length;
+  console.log(`merged   ${duplicates.length} duplicate row(s)${conf ? `, ${conf} with conflicting values` : ""}`);
+}
 if (skipped.length) console.log(`skipped  ${skipped.length}`);
 console.log(`  publishable   ${products.filter((p) => p.publishable).length}`);
 console.log(`  withheld      ${products.filter((p) => !p.publishable).length}`);

@@ -10,6 +10,9 @@ toolchain to keep alive.
 ```bash
 node src/build.ts     # generate dist/
 node src/serve.ts     # preview at http://localhost:4173
+
+node scripts/import-catalog.ts <csv> [csv...]   # rebuild the catalog record
+node scripts/catalog-report.ts                  # census + review queue
 ```
 
 Or via the scripts: `npm run build`, `npm run dev`, `npm run serve`.
@@ -88,7 +91,6 @@ with a horizontal product rail below 62rem that becomes a grid above it.
 
 Targets WCAG 2.2 AA:
 
-- Every page is readable and navigable with JavaScript disabled.
 - Skip link, semantic landmarks, and heading order preserved per template.
 - Visible focus rings that adapt on dark sections.
 - Cart, menu and search are `role="dialog" aria-modal="true"` with focus trapping
@@ -97,6 +99,10 @@ Targets WCAG 2.2 AA:
 - `prefers-reduced-motion` disables reveal animations, the hero drift and smooth
   scrolling.
 - Decorative imagery uses empty `alt`; meaningful imagery is described.
+
+**Known exception:** sections marked `data-reveal` start at `opacity: 0` and are
+revealed by `app.js`. If that file fails to load, everything below the hero stays
+invisible. A `noscript` fallback is outstanding.
 
 ## Analytics
 
@@ -134,12 +140,15 @@ timeline for exactly this reason.
 | Source | What it covers | Status |
 |---|---|---|
 | `Earthtrade_products.csv` | The 110-product catalog: handles, titles, prices, SKUs, weights, copy, SEO fields | Imported, see `docs/IMPORT-REPORT.md` |
-| Product photography | Referenced by the CSV but not present in the repository | Pending upload to `public/images/products/` |
+| Product photography | 109 files in `public/images/`, served from EarthTrade's own origin | Imported |
 | Stock quantities | Not present in the CSV | Unresolved for all 110 products |
 
-The catalog is generated, not hand-written. `scripts/import-catalog.ts` reads the
-CSV and writes `src/data/generated/catalog.json`, which `src/data/imported.ts`
-adapts into the shape the templates render. Money is stored as integer cents so
+The catalog is generated, not hand-written. `scripts/import-catalog.ts` reads one
+or more CSVs and writes `src/data/generated/catalog.json`, which
+`src/data/imported.ts` adapts into the shape the templates render. Passing
+several files merges them: a product arriving twice is matched on handle, then
+on SKU, gaps fill from the later source, and any disagreement between sources is
+recorded rather than resolved. Every product keeps the file and row it came from. Money is stored as integer cents so
 the record maps directly onto the future Postgres schema. Re-running the importer
 is safe and picks up corrections and newly uploaded images.
 
@@ -148,12 +157,11 @@ variant identifiers, and no third-party CDN in the asset path.
 
 Any product with an empty `images` array renders a branded typographic tile
 rather than a stand-in photograph, because substituting a generated image for a
-real product would misrepresent it. Every imported product is in that state until
-the photography is added to `public/images/products/`.
+real product would misrepresent it.
 
 That tile is also the failure state for products that *do* have photography: it
-sits behind the `<img>` in the markup, and if the commerce CDN does not return
-the asset the runtime hides the image so the tile shows through. A card never
+sits behind the `<img>` in the markup, hidden while the image is there. If the
+image fails to load the runtime hides it and the tile takes over, so a card never
 degrades to a broken-image icon.
 
 Art-directed environmental and editorial imagery in `public/images` is
@@ -161,8 +169,8 @@ AI-generated for scene setting only. No product itself is ever AI-generated.
 
 ## Known gaps before launch
 
-1. Upload the product photography to `public/images/products/` and re-run the
-   importer, then resolve the review items in `docs/IMPORT-REPORT.md`.
+1. Resolve the review items in `docs/CATALOG-REPORT.md`, and add the `noscript`
+   fallback for `data-reveal` so a JavaScript failure cannot blank the page.
 2. Connect checkout. The cart is complete client-side (localStorage, quantities,
    free-shipping progress) but the checkout button is a stub.
 3. Connect authentication, order history and the loyalty balance. `/account` is

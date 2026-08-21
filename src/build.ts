@@ -57,12 +57,12 @@ const root = joinPath(here, "..");
 const dist = joinPath(root, "dist");
 
 /** Pages that belong in the sitemap, with a relative priority. */
-const sitemap: { path: string; priority: number; changefreq: string }[] = [];
+const sitemap: { path: string; priority: number; changefreq: string; lastmod?: string }[] = [];
 
 async function emit(
   routePath: string,
   htmlString: string,
-  seo?: { priority: number; changefreq?: string },
+  seo?: { priority: number; changefreq?: string; lastmod?: string },
 ): Promise<void> {
   // "/" -> dist/index.html, "/a/b" -> dist/a/b/index.html
   const filePath =
@@ -74,7 +74,12 @@ async function emit(
   await writeFile(filePath, htmlString, "utf8");
 
   if (seo) {
-    sitemap.push({ path: routePath, priority: seo.priority, changefreq: seo.changefreq ?? "monthly" });
+    sitemap.push({
+      path: routePath,
+      priority: seo.priority,
+      changefreq: seo.changefreq ?? "monthly",
+      ...(seo.lastmod ? { lastmod: seo.lastmod } : {}),
+    });
   }
 }
 
@@ -109,15 +114,19 @@ function buildSitemapXml(): string {
     .sort((a, b) => b.priority - a.priority)
     .map(
       (entry) => `  <url>
-    <loc>${SITE_URL}${entry.path === "/" ? "/" : entry.path}</loc>
+    <loc>${SITE_URL}${entry.path === "/" ? "/" : entry.path}</loc>${
+      entry.lastmod ? `\n    <lastmod>${entry.lastmod}</lastmod>` : ""
+    }
     <changefreq>${entry.changefreq}</changefreq>
     <priority>${entry.priority.toFixed(1)}</priority>
   </url>`,
     )
     .join("\n");
 
+  // The default namespace must be exactly the sitemap schema. Anything else
+  // and the whole file is rejected rather than partially read.
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.w3.org/1999/sitemap-image/1.1 http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:sitemap="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls}
 </urlset>
 `;
@@ -180,7 +189,13 @@ async function main(): Promise<void> {
   }
   await emit("/journal", journalPage(articles), { priority: 0.7, changefreq: "weekly" });
   for (const a of articles) {
-    await emit(`/journal/${a.slug}`, articlePage(a, articles), { priority: 0.6 });
+    // Articles are the only routes carrying a real date, so they are the only
+    // ones given a lastmod. A build-time stamp on every URL would just tell
+    // search engines the whole site changed on every deploy.
+    await emit(`/journal/${a.slug}`, articlePage(a, articles), {
+      priority: 0.6,
+      ...(a.date ? { lastmod: a.date } : {}),
+    });
   }
 
   // ---- Static pages

@@ -100,9 +100,11 @@ Targets WCAG 2.2 AA:
   scrolling.
 - Decorative imagery uses empty `alt`; meaningful imagery is described.
 
-**Known exception:** sections marked `data-reveal` start at `opacity: 0` and are
-revealed by `app.js`. If that file fails to load, everything below the hero stays
-invisible. A `noscript` fallback is outstanding.
+Sections marked `data-reveal` start at `opacity: 0` and are revealed by
+`app.js`. Two fallbacks cover the case where that never happens: a `noscript`
+rule reveals them immediately when scripting is off, and a CSS animation with a
+four-second deadline reveals them if `app.js` fails to load or throws before
+`initReveal`. `is-in` cancels the deadline, so a working page never reaches it.
 
 ## Analytics
 
@@ -169,8 +171,7 @@ AI-generated for scene setting only. No product itself is ever AI-generated.
 
 ## Known gaps before launch
 
-1. Resolve the review items in `docs/CATALOG-REPORT.md`, and add the `noscript`
-   fallback for `data-reveal` so a JavaScript failure cannot blank the page.
+1. Resolve the review items in `docs/CATALOG-REPORT.md`.
 2. Connect checkout. The cart is complete client-side (localStorage, quantities,
    free-shipping progress) but the checkout button is a stub.
 3. Connect authentication, order history and the loyalty balance. `/account` is

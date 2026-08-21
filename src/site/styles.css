@@ -1361,13 +1361,27 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
 
 /* --------------------------- scroll reveal ------------------------------ */
 
+/*
+ * Scroll reveal, with a failsafe.
+ *
+ * These sections start hidden and app.js reveals them. If app.js never runs,
+ * whether because it failed to load or threw before initReveal, everything
+ * below the hero would stay invisible and the page would look empty. The
+ * animation below is a pure-CSS deadline: at four seconds the content appears
+ * regardless. `is-in` cancels it, so a working page never reaches the deadline.
+ */
 [data-reveal] {
   opacity: 0;
   transform: translateY(18px);
   transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
   transition-delay: var(--reveal-delay, 0s);
+  animation: reveal-failsafe 0s linear 4s forwards;
 }
-[data-reveal].is-in { opacity: 1; transform: none; }
+[data-reveal].is-in { opacity: 1; transform: none; animation: none; }
+
+@keyframes reveal-failsafe {
+  to { opacity: 1; transform: none; }
+}
 
 /* Scroll progress rail */
 .scroll-rail {

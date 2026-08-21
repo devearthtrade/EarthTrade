@@ -80,8 +80,27 @@ export function breadcrumbLd(trail: { label: string; href: string }[]) {
   };
 }
 
+/**
+ * Product structured data.
+ *
+ * A product whose price is provisional emits no `offers` block. A human-visible
+ * notice on the page does not reach a search engine, and publishing a price we
+ * have not confirmed as a machine-readable offer is a pricing claim we cannot
+ * stand behind.
+ */
 export function productLd(p: Product, brandName: string) {
   const prices = p.variants.map((v) => v.price);
+  if (p.pricePlaceholder) {
+    return {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: p.title,
+      description: p.shortBenefit,
+      sku: p.variants[0]?.sku ?? p.handle,
+      brand: { "@type": "Brand", name: brandName },
+      ...(p.images.length ? { image: p.images.map((i) => i.src) } : {}),
+    };
+  }
   return {
     "@context": "https://schema.org",
     "@type": "Product",

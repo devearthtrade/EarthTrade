@@ -16,13 +16,13 @@ Or via the scripts: `npm run build`, `npm run dev`, `npm run serve`.
 
 ## What gets generated
 
-93 pages, from `src/build.ts`:
+164 pages, from `src/build.ts`:
 
 | Route | Template | Count |
 |---|---|---|
 | `/` | `pages/home.ts` | 1 |
 | `/collections/:handle` | `pages/collection.ts` | 14 |
-| `/products/:handle` | `pages/product.ts` | 35 |
+| `/products/:handle` | `pages/product.ts` | 106 |
 | `/brands`, `/brands/:id` | `pages/brand.ts` | 6 |
 | `/quiz`, `/filter-finder`, `/compare/ionizers`, `/build-your-system`, `/bundles`, `/faqs` | `pages/tools.ts` | 6 |
 | `/learn`, `/learn/:category`, `/journal`, `/journal/:slug` | `pages/content.ts` | 21 |
@@ -43,9 +43,9 @@ src/
     format.ts         Money, price ranges, dates, slugs.
     seo.ts            Metadata plus JSON-LD builders.
   data/
-    products-hocl.ts  SolutionsHOCL. Live Shopify data. Compliance-governed.
-    products-hvo.ts   Hawaiian Volcanic Organic. Live Shopify data.
-    products-water.ts Life Ionizers and Pitcher of Life. Verified specs.
+    generated/        catalog.json, written by scripts/import-catalog.ts.
+    imported.ts       Adapter from the generated record to the Product shape.
+    aliases.ts        Handle renames and editorial link resolution.
     articles.ts       14 editorial articles.
     catalog.ts        Aggregation: collections, brands, bundles, nav, quiz, search.
   site/
@@ -58,8 +58,8 @@ src/
 ```
 
 **The data layer is the seam.** Templates only ever read from `data/catalog.ts`,
-so swapping in a live Storefront API or a CMS means replacing that module without
-touching a single template.
+so swapping in the commerce API means replacing that module without touching a
+single template.
 
 ### HTML escaping
 
@@ -133,16 +133,23 @@ timeline for exactly this reason.
 
 | Source | What it covers | Status |
 |---|---|---|
-| Connected Shopify store (solutionshocl.com) | SolutionsHOCL and Hawaiian Volcanic Organic: handles, variant IDs, SKUs, prices, product imagery | Live, captured 2026-08-20 |
-| Public brand listings | Life Ionizers MXL model names, plate counts, installation options, warranties; Pitcher of Life capacity, stages, pH range | Verified specifications |
-| Placeholder | Life Ionizers and Pitcher of Life **prices**, and their product photography | See below |
+| `Earthtrade_products.csv` | The 110-product catalog: handles, titles, prices, SKUs, weights, copy, SEO fields | Imported, see `docs/IMPORT-REPORT.md` |
+| Product photography | Referenced by the CSV but not present in the repository | Pending upload to `public/images/products/` |
+| Stock quantities | Not present in the CSV | Unresolved for all 110 products |
 
-Products carrying `pricePlaceholder: true` render a visible note on the product
-page and in the comparison table. Their stores were not reachable from the build
-environment, so figures must be synced from the live EarthTrade catalog before
-launch. Any product with an empty `images` array renders a branded typographic
-tile rather than a stand-in photograph, because substituting a generated image
-for a real product would misrepresent it.
+The catalog is generated, not hand-written. `scripts/import-catalog.ts` reads the
+CSV and writes `src/data/generated/catalog.json`, which `src/data/imported.ts`
+adapts into the shape the templates render. Money is stored as integer cents so
+the record maps directly onto the future Postgres schema. Re-running the importer
+is safe and picks up corrections and newly uploaded images.
+
+EarthTrade has no Shopify dependency: no store connection, no API, no product or
+variant identifiers, and no third-party CDN in the asset path.
+
+Any product with an empty `images` array renders a branded typographic tile
+rather than a stand-in photograph, because substituting a generated image for a
+real product would misrepresent it. Every imported product is in that state until
+the photography is added to `public/images/products/`.
 
 That tile is also the failure state for products that *do* have photography: it
 sits behind the `<img>` in the markup, and if the commerce CDN does not return
@@ -154,8 +161,8 @@ AI-generated for scene setting only. No product itself is ever AI-generated.
 
 ## Known gaps before launch
 
-1. Sync Life Ionizers and Pitcher of Life prices and product photography, then
-   remove the `pricePlaceholder` flags.
+1. Upload the product photography to `public/images/products/` and re-run the
+   importer, then resolve the review items in `docs/IMPORT-REPORT.md`.
 2. Connect checkout. The cart is complete client-side (localStorage, quantities,
    free-shipping progress) but the checkout button is a stub.
 3. Connect authentication, order history and the loyalty balance. `/account` is

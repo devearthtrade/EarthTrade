@@ -3,7 +3,8 @@
 import { html, join, raw } from "../lib/html.ts";
 import type { Article, ArticleCategory } from "../lib/types.ts";
 import { displayDate } from "../lib/format.ts";
-import { getProducts } from "../data/catalog.ts";
+import { getProduct, getProducts } from "../data/catalog.ts";
+import { resolveProductLinks } from "../data/aliases.ts";
 import { layout } from "../site/layout.ts";
 import {
   breadcrumbs,
@@ -322,7 +323,7 @@ export function articlePage(a: Article, all: Article[]): string {
 
       <section class="section">
         <div class="wrap wrap--narrow">
-          <div class="prose">${raw(a.body)}</div>
+          <div class="prose">${raw(resolveProductLinks(a.body, (h) => Boolean(getProduct(h)), `journal:${a.slug}`))}</div>
           <div class="rule"></div>
           <p class="tiny muted">
             Published ${displayDate(a.date)} in

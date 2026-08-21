@@ -131,6 +131,27 @@ These are on compliance hold and are **intentionally absent** from
 
 ## Verifying a change
 
+Product copy now arrives through `scripts/import-catalog.ts` and lands in
+`src/data/generated/catalog.json`, so the checks below must cover that file as
+well as `src/`. The importer screens every imported paragraph and every product
+title before writing, and quarantines anything that matches; these greps confirm
+that nothing slipped past it.
+
+Screening is scoped the way this document is scoped. The kill, organism, safety,
+water and application-method rules govern SolutionsHOCL copy. Every brand is
+screened for regulatory or certification claims, medical claims and unsupported
+environmental claims. Applying the HOCL list to all brands would quarantine
+accurate product names, since a water filter legitimately filters and
+"naturally occurring" is correct in Hawaiian Volcanic Organic gardening copy.
+
+The most reliable check is the rendered output, because that is what a customer
+and a regulator actually see:
+
+```bash
+node src/build.ts
+# then screen dist/ for banned terms under each product's governing rule set
+```
+
 Run these from the repository root. The first three must return nothing.
 
 ```bash

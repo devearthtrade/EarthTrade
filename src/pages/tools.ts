@@ -6,6 +6,7 @@ import {
   bundleProducts,
   bundleTotal,
   bundles,
+  sellableBundles,
   cardName,
   filterFinder,
   getProduct,
@@ -15,6 +16,7 @@ import {
   quizResults,
   quizSteps,
 } from "../data/catalog.ts";
+import { resolveHandle } from "../data/aliases.ts";
 import { layout } from "../site/layout.ts";
 import {
   breadcrumbs,
@@ -55,6 +57,14 @@ export function comparePage(): string {
 
     <section class="section">
       <div class="wrap">
+        ${items.length === 0
+          ? html`<p class="notice">
+              The Life Ionizer machines are not in the current catalogue, so there is nothing to
+              compare yet. Replacement filters and parts for these models are available, and the
+              filter finder will match one to your model.
+            </p>
+            <div class="u-mt-lg"><a class="btn" href="/filter-finder">Find your filter</a></div>`
+          : html`
         <div class="table-scroll">
           <table class="compare">
             <caption class="visually-hidden">Life Ionizer MXL series comparison</caption>
@@ -96,7 +106,7 @@ export function comparePage(): string {
         <p class="notice">
           Pricing for the ionizer range is being synced from the live EarthTrade catalog and is shown
           here for layout purposes.
-        </p>
+        </p>`}
       </div>
     </section>
 
@@ -307,16 +317,31 @@ export function finderPage(): string {
                   <div class="finder__grid u-mt-lg">
                     ${join(
                       node.models.map((m) => {
-                        const filter = getProduct(m.filterHandle);
+                        const handle = resolveHandle(m.filterHandle, (h) => Boolean(getProduct(h)));
+                        const filter = handle ? getProduct(handle) : undefined;
+
+                        // The model itself is still useful to show. Without a
+                        // matching filter in the catalog it stays on the page
+                        // as plain text rather than linking nowhere.
+                        if (!filter || !handle) {
+                          return html`
+                            <div class="finder__opt">
+                              <b>${m.model}</b>
+                              <span>${m.note}</span>
+                              <span style="display:block;margin-top:.6rem;color:var(--ink-3);font-size:.8rem">
+                                Matching filter not in the catalogue yet
+                              </span>
+                            </div>
+                          `;
+                        }
+
                         return html`
-                          <a class="finder__opt" href="/products/${m.filterHandle}" style="text-decoration:none;display:block">
+                          <a class="finder__opt" href="/products/${handle}" style="text-decoration:none;display:block">
                             <b>${m.model}</b>
                             <span>${m.note}</span>
-                            ${filter
-                              ? html`<span style="display:block;margin-top:.6rem;color:var(--forest);font-size:.8rem">
-                                  Takes: ${cardName(filter)} ${icon("arrow", 14)}
-                                </span>`
-                              : raw("")}
+                            <span style="display:block;margin-top:.6rem;color:var(--forest);font-size:.8rem">
+                              Takes: ${cardName(filter)} ${icon("arrow", 14)}
+                            </span>
                           </a>
                         `;
                       }),
@@ -486,7 +511,7 @@ export function bundlesPage(): string {
     </section>
 
     ${join(
-      bundles.map((b, i) => {
+      sellableBundles().map((b, i) => {
         const items = bundleProducts(b);
         return html`
           <section class="section ${i % 2 === 1 ? "u-cream" : ""}" id="${b.handle}">

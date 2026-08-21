@@ -15,15 +15,9 @@ import type {
   QuizResult,
   QuizStep,
 } from "../lib/types.ts";
-import { hoclProducts } from "./products-hocl.ts";
-import { hvoProducts } from "./products-hvo.ts";
-import { waterProducts } from "./products-water.ts";
+import { importedCollectionMembers, importedProducts } from "./imported.ts";
 
-export const products: Product[] = [
-  ...waterProducts,
-  ...hoclProducts,
-  ...hvoProducts,
-];
+export const products: Product[] = importedProducts;
 
 const productIndex = new Map(products.map((p) => [p.handle, p]));
 
@@ -512,8 +506,45 @@ export const collections: Collection[] = [
 
 export const collectionIndex = new Map(collections.map((c) => [c.handle, c]));
 
+/**
+ * Bundles whose members still resolve. A bundle that has lost most of its
+ * products to a catalog change is not a bundle, so it is withheld from the
+ * storefront and listed in the import report instead of rendering hollow.
+ */
+export function sellableBundles(): Bundle[] {
+  return bundles.filter((b) => bundleProducts(b).length >= 2);
+}
+
+
+/**
+ * Collection membership is the union of two sources: the hand-curated order in
+ * `productHandles`, which controls how the first products read, and the
+ * membership derived from the imported source tags. Curated handles that no
+ * longer resolve are dropped by `getProducts`; the imported members keep the
+ * collection populated while curation catches up with the larger catalog.
+ */
 export function collectionProducts(c: Collection): Product[] {
-  return getProducts(c.productHandles);
+  const curated = getProducts(c.productHandles);
+  const seen = new Set(curated.map((p) => p.handle));
+  const derived = getProducts(importedCollectionMembers.get(c.handle) ?? []).filter(
+    (p) => !seen.has(p.handle),
+  );
+  return [...curated, ...derived];
+}
+
+/**
+ * Curated handles that no longer exist in the catalog. Surfaced so the import
+ * report can list what needs re-curating rather than letting it rot silently.
+ */
+export function staleCuratedHandles(): { source: string; handle: string }[] {
+  const stale: { source: string; handle: string }[] = [];
+  const check = (source: string, handles: string[]) => {
+    for (const h of handles) if (!productIndex.has(h)) stale.push({ source, handle: h });
+  };
+  for (const c of collections) check(`collection:${c.handle}`, c.productHandles);
+  for (const b of bundles) check(`bundle:${b.handle}`, b.productHandles);
+  for (const r of quizResults) check(`quiz:${r.id}`, r.productHandles ?? []);
+  return stale;
 }
 
 export const bundles: Bundle[] = [

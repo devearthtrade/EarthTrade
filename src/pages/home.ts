@@ -4,6 +4,7 @@ import { html, join, raw } from "../lib/html.ts";
 import type { Article } from "../lib/types.ts";
 import {
   bundles,
+  sellableBundles,
   collectionIndex,
   collectionProducts,
   getProducts,
@@ -402,7 +403,7 @@ export function homePage(articles: Article[]): string {
         })}
         <div class="grid grid--3">
           ${join(
-            bundles.slice(0, 3).map(
+            sellableBundles().slice(0, 3).map(
               (b, i) => html`
                 <a class="post post--tile" href="/bundles#${b.handle}" data-reveal style="--reveal-delay:${String(i * 0.06)}s">
                   <div>

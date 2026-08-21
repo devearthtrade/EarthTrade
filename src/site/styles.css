@@ -732,6 +732,10 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
 }
 .card:hover .card__media img { transform: scale(1.045); }
 
+/* The fallback tile yields to a real photograph, and returns if one fails. */
+.card__media.has-image .card__glyph,
+.gallery__main.has-image .card__glyph { display: none; }
+
 /* Typographic fallback tile when no product photograph is synced yet */
 .card__glyph {
   position: absolute;

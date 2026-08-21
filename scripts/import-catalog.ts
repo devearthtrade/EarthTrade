@@ -283,8 +283,21 @@ if (!csvPath) {
 const records = toRecords(parseCsv(readFileSync(csvPath, "utf8")));
 
 // Assets already present locally are linked; the rest are reported as pending.
-const assetDir = join(root, "public", "images", "products");
+// The export names some files with an extension the uploaded asset does not
+// use, so a same-stem file of a different type counts as the same image.
+const assetDir = join(root, "public", "images");
 const presentAssets = new Set(existsSync(assetDir) ? readdirSync(assetDir) : []);
+const assetByStem = new Map<string, string>();
+for (const f of presentAssets) {
+  const stem = f.slice(0, f.length - extname(f).length);
+  if (!assetByStem.has(stem)) assetByStem.set(stem, f);
+}
+
+/** Resolves a referenced filename to a file that actually exists. */
+function localAsset(file: string): string | null {
+  if (presentAssets.has(file)) return file;
+  return assetByStem.get(file.slice(0, file.length - extname(file).length)) ?? null;
+}
 
 const products: ImportedProduct[] = [];
 const skipped: { handle: string; reason: string }[] = [];
@@ -381,13 +394,13 @@ for (const r of records) {
       continue;
     }
     if (!file || !extname(file)) continue;
-    if (pendingImages.some((p) => p.sourceUrl === url) || images.some((i) => i.src.endsWith(file))) continue;
+    if (pendingImages.some((p) => p.sourceUrl === url)) continue;
 
-    const servedPath = `/images/products/${file}`;
-    if (presentAssets.has(file)) {
-      images.push({ src: servedPath, alt: altText ?? title });
+    const local = localAsset(file);
+    if (local) {
+      images.push({ src: `/images/${local}`, alt: altText ?? title });
     } else {
-      pendingImages.push({ path: servedPath, alt: altText, sourceUrl: url });
+      pendingImages.push({ path: `/images/${file}`, alt: altText, sourceUrl: url });
     }
   }
   if (!images.length && !pendingImages.length) flags.push("missing_image");

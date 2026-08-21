@@ -40,9 +40,10 @@ function cardMedia(p: Product): SafeHtml {
   const image = p.images[0];
   if (!image) return glyph;
 
-  // The tile stays in the markup behind the photograph. If the CDN image fails
-  // the runtime hides the img and the tile shows through, so a card never
-  // degrades to a broken-image icon.
+  // The tile stays in the markup behind the photograph but is hidden while the
+  // photograph is there, so it cannot show through a transparent or letterboxed
+  // image. If the image fails, the runtime drops the marker class and the tile
+  // takes over, so a card never degrades to a broken-image icon.
   return html`${glyph}<img
     src="${image.src}"
     alt="${image.alt}"
@@ -89,7 +90,7 @@ export function productCard(p: Product, opts: CardOptions = {}): SafeHtml {
       data-name="${cardName(p)}"
       data-order="${String(opts.order ?? 0)}"
     >
-      <div class="card__media">
+      <div class="card__media${p.images.length ? " has-image" : ""}">
         ${badges(p.badges)}
         <button
           class="card__wish"

@@ -47,14 +47,13 @@
         "The Flower of Life symbol is a sacred geometry symbol that has been revered by many cultures for centuries. It represents the interconnectedness of all living things and the unity of the universe. This powerful symbol has been known to have a transformative effect on the energy of its surroundings, including water. Water is a fundamental element of life, and it plays a crucial role in our health and well-being. The quality of the water we drink is essential, as it can affect our body’s ability to function optimally. The Flower of Life symbol can help enhance the quality of drinking water by infusing it with positive energy and aligning it with the natural rhythms of the universe. One way to use the Flower of Life symbol to enhance drinking water is by placing a printed copy of the symbol on a bottle of water and allowing it to sit for several hours. The water will absorb the energy of the symbol, resulting in a more harmonious and balanced structure. This process is similar to the ancient practice of placing crystals in water to charge it with their healing energy."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/floweroflife_1.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/floweroflife_1.png"
+          "src": "/images/floweroflife_1.png",
+          "alt": "12 packs of Flower of Life Decals"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_28b77445a659c2c8",
@@ -80,7 +79,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_sku",
@@ -108,14 +106,13 @@
         "Enter the quantity for 3 foot increments. For example, a “4” quantity would result in 12 feet of RO tubing total (not 4 separate 3 foot sections)."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/25-bpa-free-tubing-3-foot-increments-523349.jpg",
-          "alt": "tubing 3 foot increments",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/25-bpa-free-tubing-3-foot-increments-523349.jpg"
+          "src": "/images/25-bpa-free-tubing-3-foot-increments-523349.jpg",
+          "alt": "tubing 3 foot increments"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_b117acd74a236195",
@@ -141,7 +138,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_sku",
         "missing_source_category",
@@ -205,14 +201,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/3stagesfiltersystem.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/3stagesfiltersystem.png"
+          "src": "/images/3stagesfiltersystem.png",
+          "alt": "Full Spectrum 3-Stage Filter System Counter Top or Under Counter System"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_4dcae8ee24314c59",
@@ -239,7 +234,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title",
@@ -274,14 +268,13 @@
         "Register your product for our Lifetime Warranty - Click Here"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/countertop-4-replacement-filter-bundle-525584.jpg",
-          "alt": "Countertop 4 Replacement Filter Bundle",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/countertop-4-replacement-filter-bundle-525584.jpg"
+          "src": "/images/countertop-4-replacement-filter-bundle-525584.jpg",
+          "alt": "Countertop 4 Replacement Filter Bundle"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_d0151051f2419bc7",
@@ -307,7 +300,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
@@ -339,14 +331,13 @@
         "We recommend you change HOUSINGS every 3 to 5 years as they become brittle from all the chemicals being filtered out of your drinking water"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/LifeIonizer_s5MicronCarbonBlockWaterFilterReplacement_Pre-Filter.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/LifeIonizer_s5MicronCarbonBlockWaterFilterReplacement_Pre-Filter.jpg"
+          "src": "/images/LifeIonizer_s5MicronCarbonBlockWaterFilterReplacement_Pre-Filter.jpg",
+          "alt": "5 Micron Carbon Block Pre-Filter"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_8f272f89b88b2e31",
@@ -372,7 +363,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
@@ -409,14 +399,13 @@
         "Register your product for our Lifetime Warranty - Click Here"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/alkaline-bio-energy-5-replacement-filter-bundle-971819.jpg",
-          "alt": "Alkaline Bio Energy 5 Replacement Filter bundle",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/alkaline-bio-energy-5-replacement-filter-bundle-971819.jpg"
+          "src": "/images/alkaline-bio-energy-5-replacement-filter-bundle-971819.jpg",
+          "alt": "Alkaline Bio Energy 5 Replacement Filter bundle"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_7d4dc4906c6b9825",
@@ -442,7 +431,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_source_category"
       ]
@@ -487,14 +475,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/countertop-5-replacement-filter-bundle-562831.jpg",
-          "alt": "Countertop 5 Replacement Filter Bundle",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/countertop-5-replacement-filter-bundle-562831.jpg"
+          "src": "/images/countertop-5-replacement-filter-bundle-562831.jpg",
+          "alt": "Countertop 5 Replacement Filter Bundle"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_b2314ffa6c08dd17",
@@ -521,7 +508,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
@@ -548,14 +534,13 @@
         "AMI Point of Use RO Systems provide a continuous supply of clean, fresh drinking water. Our AAA Series residential RO water filtration systems use state of the art reverse osmosis technology to produce pure water for drinking, cooking and other household uses. Perfect for the home or office kitchen, these compact under-the-counter HRO systems are complete with pre filters and post filters and come with a faucet, 3 gallon storage tank and installation kit. Systems are assembled on a heavy-duty SS bracket for wall-mounting under the sink or in a nearby location."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/5-Stage-RO-System.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/5-Stage-RO-System.jpg"
+          "src": "/images/5-Stage-RO-System.jpg",
+          "alt": "5 STAGE REVERSE OSMOSIS SYSTEM (5 filters without Coral Calcium)"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_a6e6e7cc499c43ef",
@@ -581,7 +566,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -624,14 +608,13 @@
         "Register your product for our Lifetime Warranty - Click Here"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/alkaline-bio-energy-6-replacement-filter-bundle-528197.jpg",
-          "alt": "Alkaline Bio Energy 6 Replacement Filter bundle",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/alkaline-bio-energy-6-replacement-filter-bundle-528197.jpg"
+          "src": "/images/alkaline-bio-energy-6-replacement-filter-bundle-528197.jpg",
+          "alt": "Alkaline Bio Energy 6 Replacement Filter bundle"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_81b503b350c23949",
@@ -657,7 +640,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
@@ -681,14 +663,13 @@
         "Get the benefits of alkaline minerals that others leave out! LIFE’s 6 stage system uses cutting edge technology to filter water for drinking, cooking and other household uses, and then our patent-pending Ceramic Alkalizing Media® adds beneficial minerals that reverse osmosis strips out! If you are a Life customer your cost is only $499!"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/filter.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/filter.png"
+          "src": "/images/filter.png",
+          "alt": "6 STAGE RO SYSTEM WITH MINERAL CARTRIDGE & HOUSING"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_63adadc45287b160",
@@ -714,7 +695,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -746,14 +726,13 @@
         "OFFICIAL MANUFACTURER - This is the only filter that optimizes your Life Ionizer water filtration system."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/Set2-LifeSciencesWaterSiteImages.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/Set2-LifeSciencesWaterSiteImages.jpg"
+          "src": "/images/Set2-LifeSciencesWaterSiteImages.jpg",
+          "alt": "Life Ionizer 7500/7600/8000/8100 - Internal Replacement Filter #2"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_ee948197d1ac4755",
@@ -779,7 +758,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
@@ -803,14 +781,13 @@
         "Keep your Life Ionizer running at peak performance with regular uses of our citric acid cleaning cartridges. It is recommended to clean your Ionizer at least 3 times a year at regular intervals (every 4 months). Utilizing a proprietary citric acid cleaning compound, remove hard-water buildup from your plates, chamber, and internal plastics. If not used, your machine will not optimize the alkaline mineral production nor the antioxidant production. If not cleaned, your electrolysis chamber, platinum/titanium plates, faucet, and internal tubing will have build-up or layer of minerals and your machine will then bust an internal system and you may have a water leak."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/LifeWaterFiltersCitricAcidCleaningSystem-for7700_9000_9100_9200.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/LifeWaterFiltersCitricAcidCleaningSystem-for7700_9000_9100_9200.jpg"
+          "src": "/images/LifeWaterFiltersCitricAcidCleaningSystem-for7700_9000_9100_9200.jpg",
+          "alt": "Life Ionizer 7700/9000/9100/9200M Series (not MX) - Citric Acid Cleaning Cartridge"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_98dc1156942afa86",
@@ -836,7 +813,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt"
       ]
@@ -857,14 +833,13 @@
       "shortBenefitSource": null,
       "description": [],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/LifeWaterFiltersFilter_1ForModels7700_9000_9200_9200.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/LifeWaterFiltersFilter_1ForModels7700_9000_9200_9200.jpg"
+          "src": "/images/LifeWaterFiltersFilter_1ForModels7700_9000_9200_9200.jpg",
+          "alt": "Life Ionizer 7700/9000/9200/9200/M Series (not MX) - Internal Replacement Filter #1"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_3b9d462e910d6492",
@@ -890,7 +865,6 @@
       "titleMatches": [],
       "status": "needs_review",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_description",
         "missing_image_alt",
@@ -922,14 +896,13 @@
         "OFFICIAL MANUFACTURER - This is the only filter that optimizes your Life Ionizer water filtration system."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/LifeIonizerFilter_2forModels7700_9000_9200_9200_MSeries_notMX.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/LifeIonizerFilter_2forModels7700_9000_9200_9200_MSeries_notMX.jpg"
+          "src": "/images/LifeIonizerFilter_2forModels7700_9000_9200_9200_MSeries_notMX.jpg",
+          "alt": "Life Ionizer 7700/9000/9200/9200/M Series (not MX) - Internal Replacement Filter #2"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_b3074f711f068f23",
@@ -955,7 +928,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
@@ -990,14 +962,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/71w2Jz6cnCL._SL1500.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/71w2Jz6cnCL._SL1500.jpg"
+          "src": "/images/71w2Jz6cnCL._SL1500.jpg",
+          "alt": "Active Chlorine Test Strips - 50"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_385d7932c7598260",
@@ -1024,7 +995,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt"
       ]
@@ -1050,14 +1020,13 @@
         "Use Code \"Life100\" to get a Free Book"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/AlkalineBeverageRecipesForHealth_Longevity.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/AlkalineBeverageRecipesForHealth_Longevity.png"
+          "src": "/images/AlkalineBeverageRecipesForHealth_Longevity.png",
+          "alt": "Alkaline Beverage Recipes for Health and Longevity"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_ccfbc9bf6358e29b",
@@ -1083,7 +1052,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title",
@@ -1116,19 +1084,17 @@
         "Save 16%! use Customer Code \" POL16 \" at checkout"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/lotus.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/lotus.png"
+          "src": "/images/lotus.png",
+          "alt": "Purified Alkaline Water to Go! Take Your Health with You"
         },
         {
-          "path": "/images/products/lotus.png",
-          "alt": null,
-          "sourceUrl": "https://cdn.shopify.com/s/files/1/0688/7001/3166/files/lotus.png?v=1713125222"
+          "src": "/images/lotus.png",
+          "alt": "Purified Alkaline Water to Go! Take Your Health with You"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_3af8a248f30ce9cd",
@@ -1154,7 +1120,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_sku",
@@ -1205,14 +1170,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/auto-ship-glass-pitcher-of-life-f007-ultra-replacement-filter-3-filters-bundle-171269.jpg",
-          "alt": "auto ship f007 ultra replacement filter",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/auto-ship-glass-pitcher-of-life-f007-ultra-replacement-filter-3-filters-bundle-171269.jpg"
+          "src": "/images/auto-ship-glass-pitcher-of-life-f007-ultra-replacement-filter-3-filters-bundle-171269.jpg",
+          "alt": "auto ship f007 ultra replacement filter"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_a00b2d4f15d8ff28",
@@ -1239,7 +1203,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
@@ -1277,14 +1240,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/auto-ship-pitcher-of-life-2nd-gen-replacement-filter-3-pack-234196.jpg",
-          "alt": "Auto Ship Pitcher of Life® (2nd Gen) Replacement Filter - 3 Pack",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/auto-ship-pitcher-of-life-2nd-gen-replacement-filter-3-pack-234196.jpg"
+          "src": "/images/auto-ship-pitcher-of-life-2nd-gen-replacement-filter-3-pack-234196.jpg",
+          "alt": "Auto Ship Pitcher of Life® (2nd Gen) Replacement Filter - 3 Pack"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_fd3700440e970f16",
@@ -1311,7 +1273,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_source_category"
       ]
@@ -1349,14 +1310,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/auto-ship-pitcher-of-life-replacement-filters-pack-of-3-655460.jpg",
-          "alt": "auto ship replacement filter 3 pack",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/auto-ship-pitcher-of-life-replacement-filters-pack-of-3-655460.jpg"
+          "src": "/images/auto-ship-pitcher-of-life-replacement-filters-pack-of-3-655460.jpg",
+          "alt": "auto ship replacement filter 3 pack"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_a06a2235581d5259",
@@ -1383,7 +1343,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown"
       ]
     },
@@ -1467,14 +1426,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/Borosilicate_Glass_Pitcher_of_Life_Alkaline_Water_Purifier_with_Food-Grade_Stainless_Steel_Infuser.png",
-          "alt": "Borosilicate Glass Pitcher of Life Alkaline Water main",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/Borosilicate_Glass_Pitcher_of_Life_Alkaline_Water_Purifier_with_Food-Grade_Stainless_Steel_Infuser.png"
+          "src": "/images/Borosilicate_Glass_Pitcher_of_Life_Alkaline_Water_Purifier_with_Food-Grade_Stainless_Steel_Infuser.png",
+          "alt": "Borosilicate Glass Pitcher of Life Alkaline Water main"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_28cd1cba1ed0cda9",
@@ -1501,7 +1459,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_sku",
         "missing_weight"
@@ -1525,14 +1482,13 @@
         "For full lab results on our Catalytic Carbon for Chloramines Filter - Granular Activated Carbon Removes Chloramines and filter performance, you can view the full independent lab report here ."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/Evaluationresult2.41of10ClickimagetoopenexpandedviewLifeIonizer-CatalyticCarbonforChloraminesFilter-GranularActivatedCarbonRemovesChloramines.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/Evaluationresult2.41of10ClickimagetoopenexpandedviewLifeIonizer-CatalyticCarbonforChloraminesFilter-GranularActivatedCarbonRemovesChloramines.jpg"
+          "src": "/images/Evaluationresult2.41of10ClickimagetoopenexpandedviewLifeIonizer-CatalyticCarbonforChloraminesFilter-GranularActivatedCarbonRemovesChloramines.jpg",
+          "alt": "Catalytic Carbon for Chloramines Filter - Granular Activated Carbon Removes Chloramines"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_e7b9e369c284ddc6",
@@ -1558,7 +1514,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -1621,14 +1576,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/Catchment_bomb_100g.webp",
-          "alt": "Solutions of HOCl Catchment Bomb powder in a resealable stand-up pouch with a blue and white design, featuring a graphic of a metal water tank and product claims.",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/Catchment_bomb_100g.webp"
+          "src": "/images/Catchment_bomb_100g.jpg",
+          "alt": "Solutions of HOCl Catchment Bomb powder in a resealable stand-up pouch with a blue and white design, featuring a graphic of a metal water tank and product claims."
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_de801518c95862cf",
@@ -1655,7 +1609,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_sku",
         "missing_type",
@@ -1714,14 +1667,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/Catchment_bomb_500g.webp",
-          "alt": "A bag of Solutions HOCl Catchment Bomb cleaner powder, featuring a blue and white design with an image of a corrugated metal catchment tank.",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/Catchment_bomb_500g.webp"
+          "src": "/images/Catchment_bomb_500g.jpg",
+          "alt": "A bag of Solutions HOCl Catchment Bomb cleaner powder, featuring a blue and white design with an image of a corrugated metal catchment tank."
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_d138bb5759664e53",
@@ -1748,7 +1700,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_sku",
         "missing_type",
@@ -1789,14 +1740,13 @@
         "This is a cleaning product for tank walls and surfaces, for use in non-potable water systems."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/Cistern_Catchment_Bomb_500g_1.webp",
-          "alt": "A stand-up pouch of Solutions HOCL Cistern & Catchment Bomb rainwater tank cleaner, featuring a green, yellow, blue, and white label with a photo of a metal cistern and a white tank.",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/Cistern_Catchment_Bomb_500g_1.webp"
+          "src": "/images/Cistern_Catchment_Bomb_500g_1.webp",
+          "alt": "A stand-up pouch of Solutions HOCL Cistern & Catchment Bomb rainwater tank cleaner, featuring a green, yellow, blue, and white label with a photo of a metal cistern and a white tank."
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_2e0e31baa15659a4",
@@ -1822,7 +1772,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_sku",
         "missing_type",
@@ -1861,14 +1810,13 @@
         "This is a cleaning product for tank walls and surfaces, for use in non-potable water systems."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/Cistern_Catchment_Bomb_100g.webp",
-          "alt": "Packaging of Cistern & Catchment Bomb Water Tank Cleaner with an image of a gray-colored cistern and a logo of earth brand.",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/Cistern_Catchment_Bomb_100g.webp"
+          "src": "/images/Cistern_Catchment_Bomb_100g.webp",
+          "alt": "Packaging of Cistern & Catchment Bomb Water Tank Cleaner with an image of a gray-colored cistern and a logo of earth brand."
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_7648420fde1f2075",
@@ -1894,7 +1842,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_sku",
         "missing_type",
@@ -1937,14 +1884,13 @@
         "This is a cleaning product for tank walls and surfaces, for use in non-potable water systems."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/Cisternbomb100g1.webp",
-          "alt": "A stand-up pouch of Solutions HOCl Cistern Bomb powder, featuring a white reservoir tank graphic on the front over a forest background, with blue and green branding and a 'Made in USA' badge.",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/Cisternbomb100g1.webp"
+          "src": "/images/Cisternbomb100g1.jpg",
+          "alt": "A stand-up pouch of Solutions HOCl Cistern Bomb powder, featuring a white reservoir tank graphic on the front over a forest background, with blue and green branding and a 'Made in USA' badge."
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_184664a940914b0d",
@@ -1970,7 +1916,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_sku",
         "missing_type",
@@ -2024,14 +1969,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/Cistern_Bomb_500g_1.webp",
-          "alt": "A bag of Solutions HOCl Cistern Bomb cleaner powder, featuring a white cistern tank graphic on the front of the packaging, set against a plain white background.",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/Cistern_Bomb_500g_1.webp"
+          "src": "/images/Cistern_Bomb_500g_1.jpg",
+          "alt": "A bag of Solutions HOCl Cistern Bomb cleaner powder, featuring a white cistern tank graphic on the front of the packaging, set against a plain white background."
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_b0107f46af3384be",
@@ -2058,7 +2002,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_sku",
         "missing_type",
@@ -2083,14 +2026,13 @@
         "Keep your Life Ionizer running at peak performance with regular uses of our citric acid cleaning cartridges. It is recommended to clean your Ionizer at least 3 times a year at regular intervals (every 4 months). Utilizing a proprietary citric acid cleaning compound, remove hard-water buildup from your plates, chamber, and internal plastics. If not used, your machine will not optimize the alkaline mineral production nor the antioxidant production. If not cleaned, your electrolysis chamber, platinum/titanium plates, faucet, and internal tubing will have build-up or layer of minerals and your machine will then bust an internal system and you may have a water leak."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/LifeFilters_7500_7600_8000_8100CITRICACIDICCLEANERCARTRIDGE.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/LifeFilters_7500_7600_8000_8100CITRICACIDICCLEANERCARTRIDGE.jpg"
+          "src": "/images/LifeFilters_7500_7600_8000_8100CITRICACIDICCLEANERCARTRIDGE.jpg",
+          "alt": "Life Ionizer 7500/7600/8000/8100 - Internal Replacement Filter Citric Acid Cleaning Cartridge"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_a038c642eae71bb4",
@@ -2116,7 +2058,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
@@ -2144,14 +2085,13 @@
         "The Only Compatible Replacement Filter - This is the only replacement filter compatible with your Life Ionizer shower filtration system. Purchase now to keep your shower water filtered, clean and healthy."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/life-shower-double-filtration-replacement-composite-filter-with-cotton-filter-276802.jpg",
-          "alt": "composite filter with cotton filter",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/life-shower-double-filtration-replacement-composite-filter-with-cotton-filter-276802.jpg"
+          "src": "/images/life-shower-double-filtration-replacement-composite-filter-with-cotton-filter-276802.jpg",
+          "alt": "composite filter with cotton filter"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_a55c2468a245cf81",
@@ -2177,7 +2117,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown"
       ]
     },
@@ -2235,14 +2174,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/950ml-copper-bottle-black-and-copper-color-459523.jpg",
-          "alt": "copper bottle black",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/950ml-copper-bottle-black-and-copper-color-459523.jpg"
+          "src": "/images/950ml-copper-bottle-black-and-copper-color-459523.jpg",
+          "alt": "copper bottle black"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_4b2c4addf30ba346",
@@ -2269,7 +2207,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown"
       ]
     },
@@ -2327,14 +2264,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/950ml-copper-bottle-blue-and-white-color-peacock-design-606048.jpg",
-          "alt": "copper bottle blue and white peacock",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/950ml-copper-bottle-blue-and-white-color-peacock-design-606048.jpg"
+          "src": "/images/950ml-copper-bottle-blue-and-white-color-peacock-design-606048.jpg",
+          "alt": "copper bottle blue and white peacock"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_c97532cdf4bbeaeb",
@@ -2361,7 +2297,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown"
       ]
     },
@@ -2419,14 +2354,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/950ml-copper-bottle-flowers-design-174448.jpg",
-          "alt": "Flowers Design copper bottle",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/950ml-copper-bottle-flowers-design-174448.jpg"
+          "src": "/images/950ml-copper-bottle-flowers-design-174448.jpg",
+          "alt": "Flowers Design copper bottle"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_595f4d5bcdf3f148",
@@ -2453,7 +2387,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown"
       ]
     },
@@ -2511,14 +2444,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/950ml-copper-bottle-igrets-white-bird-design-648506.jpg",
-          "alt": "copper bottle igrets bird design",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/950ml-copper-bottle-igrets-white-bird-design-648506.jpg"
+          "src": "/images/950ml-copper-bottle-igrets-white-bird-design-648506.jpg",
+          "alt": "copper bottle igrets bird design"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_13fe5e95f9c3484f",
@@ -2545,7 +2477,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown"
       ]
     },
@@ -2604,14 +2535,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/950ml-copper-bottle-flamingo-in-the-jungle-144867.jpg",
-          "alt": "Peacock and Flower Design copper bottle",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/950ml-copper-bottle-flamingo-in-the-jungle-144867.jpg"
+          "src": "/images/950ml-copper-bottle-flamingo-in-the-jungle-144867.jpg",
+          "alt": "Peacock and Flower Design copper bottle"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_f051144f23932a92",
@@ -2638,7 +2568,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown"
       ]
     },
@@ -2696,14 +2625,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/950ml-copper-bottle-pounded-design-999087.jpg",
-          "alt": "paunch design copper bottle",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/950ml-copper-bottle-pounded-design-999087.jpg"
+          "src": "/images/950ml-copper-bottle-pounded-design-999087.jpg",
+          "alt": "paunch design copper bottle"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_dd7705f82499870a",
@@ -2730,7 +2658,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown"
       ]
     },
@@ -2788,14 +2715,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/950ml-copper-bottle-pounded-drops-design-619135.jpg",
-          "alt": "copper bottle pounded drop",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/950ml-copper-bottle-pounded-drops-design-619135.jpg"
+          "src": "/images/950ml-copper-bottle-pounded-drops-design-619135.jpg",
+          "alt": "copper bottle pounded drop"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_eccbc49024d9bf7c",
@@ -2822,7 +2748,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown"
       ]
     },
@@ -2880,14 +2805,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/950ml-copper-bottle-white-lotus-flowers-design-372333.jpg",
-          "alt": "copper bottle white lotus",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/950ml-copper-bottle-white-lotus-flowers-design-372333.jpg"
+          "src": "/images/950ml-copper-bottle-white-lotus-flowers-design-372333.jpg",
+          "alt": "copper bottle white lotus"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_5b8f1648f341492c",
@@ -2914,7 +2838,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown"
       ]
     },
@@ -2960,14 +2883,13 @@
         "Remember, the patina that develops on copper can be considered desirable by some, as it gives the metal an antique look. However, if you prefer your copper shiny and bright, regular cleaning is necessary."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/pitcher-of-life-1500ml-copper-pitcher-pounded-design-147377.jpg",
-          "alt": "copper pitcher pounded design",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/pitcher-of-life-1500ml-copper-pitcher-pounded-design-147377.jpg"
+          "src": "/images/pitcher-of-life-1500ml-copper-pitcher-pounded-design-147377.jpg",
+          "alt": "copper pitcher pounded design"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_f6181e51365846e7",
@@ -2993,7 +2915,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
@@ -3041,14 +2962,13 @@
         "Remember, the patina that develops on copper can be considered desirable by some, as it gives the metal an antique look. However, if you prefer your copper shiny and bright, regular cleaning is necessary."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/pitcher-of-life-1500ml-copper-pitcher-white-birds-design-966321.jpg",
-          "alt": "copper pitcher white birds design",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/pitcher-of-life-1500ml-copper-pitcher-white-birds-design-966321.jpg"
+          "src": "/images/pitcher-of-life-1500ml-copper-pitcher-white-birds-design-966321.jpg",
+          "alt": "copper pitcher white birds design"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_155285539b0dac10",
@@ -3074,7 +2994,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
@@ -3108,14 +3027,13 @@
         "We recommend you change HOUSINGS every 3 to 5 years as they become brittle from all the chemicals being filtered out of your drinking water"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/LifeIonizerCoralCalciumRemineralizerPre-Filter_Pre-Filter.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/LifeIonizerCoralCalciumRemineralizerPre-Filter_Pre-Filter.jpg"
+          "src": "/images/LifeIonizerCoralCalciumRemineralizerPre-Filter_Pre-Filter.jpg",
+          "alt": "Coral Calcium Remineralizer"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_5f297b2e228500e0",
@@ -3141,7 +3059,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt"
       ]
@@ -3168,14 +3085,13 @@
         "The Only Compatible Replacement Filter - This is the only replacement filter compatible with your Life Ionizer shower filtration system. Purchase now to keep your shower water filtered, clean and healthy."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/life-shower-double-filtration-replacement-cotton-filter-pack-of-3-351753.jpg",
-          "alt": "life shower filter cotton pack",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/life-shower-double-filtration-replacement-cotton-filter-pack-of-3-351753.jpg"
+          "src": "/images/life-shower-double-filtration-replacement-cotton-filter-pack-of-3-351753.jpg",
+          "alt": "life shower filter cotton pack"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_40d61d230c07d274",
@@ -3201,7 +3117,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
@@ -3256,14 +3171,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/countertop-alkaline-water-purifier-570319.jpg",
-          "alt": "countertop alkaline water purifier",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/countertop-alkaline-water-purifier-570319.jpg"
+          "src": "/images/countertop-alkaline-water-purifier-570319.jpg",
+          "alt": "countertop alkaline water purifier"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_cacbd9bc269e735e",
@@ -3290,7 +3204,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
@@ -3321,14 +3234,13 @@
         "Manganese ‘greensand’ filters to eliminate iron in your water."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/5810-SXT-SOFTENER.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/5810-SXT-SOFTENER.png"
+          "src": "/images/5810-SXT-SOFTENER.png",
+          "alt": "DOLPHIN XL HOME & AGRICULTURE FILTRATION SYSTEM 1\" INLET/OUTLET"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_cc4cbfc98aef62e2",
@@ -3354,7 +3266,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -3385,14 +3296,13 @@
         "All internal filters are designed to snap into place securely and easily. Pre-filters will require pre-filter housing."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/2_7cb98082-d744-4262-b1d6-1be6618b7de8.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/2_7cb98082-d744-4262-b1d6-1be6618b7de8.png"
+          "src": "/images/2_7cb98082-d744-4262-b1d6-1be6618b7de8.png",
+          "alt": "DOUBLE PRE-FILTER HOUSING"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_2550e54b869fb59e",
@@ -3418,7 +3328,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -3447,14 +3356,13 @@
         "All internal filters are designed to snap into place securely and easily. Pre-filters will require pre-filter housing."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/double-pre-filter-housing-815234.webp",
-          "alt": "double housing",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/double-pre-filter-housing-815234.webp"
+          "src": "/images/double-pre-filter-housing-815234.jpg",
+          "alt": "double housing"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_9c6bb1e17174f757",
@@ -3480,7 +3388,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
@@ -3508,14 +3415,13 @@
         "All internal filters are designed to snap into place securely and easily. Pre-filters will require pre-filter housing."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/2-Filter-Softening-System-600x600.jpg",
-          "alt": "water filter",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/2-Filter-Softening-System-600x600.jpg"
+          "src": "/images/2-Filter-Softening-System-600x600.jpg",
+          "alt": "water filter"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_ea113bc3fc784e72",
@@ -3541,7 +3447,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_description",
         "missing_seo_title",
@@ -3590,14 +3495,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/auto-ship-glass-pitcher-of-life-f004-replacement-filters-3-pack-647544.jpg",
-          "alt": "auto ship glass pitcher of life replacement filters - 3 Pack",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/auto-ship-glass-pitcher-of-life-f004-replacement-filters-3-pack-647544.jpg"
+          "src": "/images/auto-ship-glass-pitcher-of-life-f004-replacement-filters-3-pack-647544.jpg",
+          "alt": "auto ship glass pitcher of life replacement filters - 3 Pack"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_aa70ca4b5ae14398",
@@ -3624,7 +3528,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown"
       ]
     },
@@ -3670,14 +3573,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/glass-pitcher-of-life-f004-replacement-filters-3-pack-430040.jpg",
-          "alt": "f004 replacement filters 3 pack",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/glass-pitcher-of-life-f004-replacement-filters-3-pack-430040.jpg"
+          "src": "/images/glass-pitcher-of-life-f004-replacement-filters-3-pack-430040.jpg",
+          "alt": "f004 replacement filters 3 pack"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_479425907565f639",
@@ -3704,7 +3606,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title"
       ]
@@ -3751,14 +3652,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/glass-pitcher-of-life-f004-replacement-filter-455405.jpg",
-          "alt": "f004 replacement filter",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/glass-pitcher-of-life-f004-replacement-filter-455405.jpg"
+          "src": "/images/glass-pitcher-of-life-f004-replacement-filter-455405.jpg",
+          "alt": "f004 replacement filter"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_7fca24839d98c563",
@@ -3785,7 +3685,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown"
       ]
     },
@@ -3834,14 +3733,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/glass-pitcher-of-life-f007-ultra-replacement-filter-251025.jpg",
-          "alt": "f007 ultra replacement filter",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/glass-pitcher-of-life-f007-ultra-replacement-filter-251025.jpg"
+          "src": "/images/glass-pitcher-of-life-f007-ultra-replacement-filter-251025.jpg",
+          "alt": "f007 ultra replacement filter"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_f535655461dc047b",
@@ -3868,7 +3766,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
@@ -3896,14 +3793,13 @@
         "GLASS TASTES BETTER™ drink water that tastes like water! Life Ionizer’s Borosilicate Glass Water Bottle has a unique design, which preserves the original \"tasty\" of your refreshing and delicious water - EVERYTHING TASTES BETTER IN GLASS™."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/borosilicate-glass-water-bottle-compact-450ml-size-531126.jpg",
-          "alt": "water bottle 450ml",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/borosilicate-glass-water-bottle-compact-450ml-size-531126.jpg"
+          "src": "/images/borosilicate-glass-water-bottle-compact-450ml-size-531126.jpg",
+          "alt": "water bottle 450ml"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_a938b6ff4fb92659",
@@ -3929,7 +3825,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_source_category"
       ]
@@ -3960,14 +3855,13 @@
         "We recommend you change HOUSINGS every 3 to 5 years as they become brittle from all the chemicals being filtered out of your drinking water"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/LifeIonizerGranularActivatedCarbonCartridgeKdf-85Pre-filterMadeinUSA.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/LifeIonizerGranularActivatedCarbonCartridgeKdf-85Pre-filterMadeinUSA.jpg"
+          "src": "/images/LifeIonizerGranularActivatedCarbonCartridgeKdf-85Pre-filterMadeinUSA.jpg",
+          "alt": "Granular Activated Carbon KDF-85"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_a00c616276c8bd49",
@@ -3993,7 +3887,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
@@ -4019,14 +3912,13 @@
         "34 Naturally Occurring Minerals"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/compost-stater.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/compost-stater.jpg"
+          "src": "/images/compost-stater.jpg",
+          "alt": "Hawaiian Bokashi Compost Starter with 34 Naturally Occurring Minerals"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_6f5288894bde2aff",
@@ -4052,7 +3944,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -4080,14 +3971,13 @@
         "Hawaiian Bokashi™ Inoculant is a powerful tool for enhancing the microbial ecosystem in a grow bed or outdoor garden. It is designed to introduce indigenous beneficial microorganisms into the setup, establishing a symbiotic relationship between these microbes and the plants. Let's break down how Hawaiian Bokashi™ Inoculant works, its benefits, and the results it can yield:"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/bokashi-2.webp",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/bokashi-2.webp"
+          "src": "/images/bokashi-2.jpg",
+          "alt": "Hawaiian Bokashi Inoculant™"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_5c247937bdd814c2",
@@ -4113,7 +4003,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title",
@@ -4141,14 +4030,13 @@
         "We originally started out making our own Jadam-style indigenous micro-organisms but found EM1 to be vastly superior. Natural farmers use it because of the beneficial effects both on the soil and the crops. And since I always want the best, we now use it as our exclusive beneficial micro-organisms. EM1 has a tremendous amount of microbes, far more than the Indigenous micro-organisms (IMO). We are now manufacturing Hawaiian Bokashi Inoculant™ which is the Japanese version of an inoculant that is a granular version with a much longer shelf life. We add this to our HVO Compost to increase the number of microbes and microorganisms to create a Super Healthy Soil! We now have this available for Gardeners and Farmers"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/Compost_HVO.webp",
-          "alt": "Compost HVO Growing Soil",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/Compost_HVO.webp"
+          "src": "/images/Compost_HVO.webp",
+          "alt": "Compost HVO Growing Soil"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_05f771a3b661f16c",
@@ -4174,7 +4062,6 @@
       "titleMatches": [],
       "status": "needs_review",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_sku",
         "missing_type",
@@ -4223,14 +4110,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/LifeIonizerHeavyMetalRemovalWaterFilterCartridgeKDF-55_Pre-Filter.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/LifeIonizerHeavyMetalRemovalWaterFilterCartridgeKDF-55_Pre-Filter.jpg"
+          "src": "/images/LifeIonizerHeavyMetalRemovalWaterFilterCartridgeKDF-55_Pre-Filter.jpg",
+          "alt": "Heavy Metal Removal KDF-55 PLUS"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_6af243d5c86806a3",
@@ -4257,7 +4143,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
@@ -4282,14 +4167,13 @@
         "A one (1) gram pack with FREE delivery - we pay for the shipping. Once you try it you'll understand why we are so excited about this Environmentally, Child & Pet Friendly cleaner."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/green1_8dfe1ebd-666f-4cac-ba2c-fe6a94c971aa.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/green1_8dfe1ebd-666f-4cac-ba2c-fe6a94c971aa.png"
+          "src": "/images/green1_8dfe1ebd-666f-4cac-ba2c-fe6a94c971aa.png",
+          "alt": "One sample packet - includes free shipping of Solutions HOCL PowerWash Powder - 1 gram Original"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_c1995eb495d4ec0e",
@@ -4315,7 +4199,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -4344,14 +4227,13 @@
         "All internal filters are designed to snap into place securely and easily. Pre-filters will require pre-filter housing."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/housing-single-pre-filter-993570.webp",
-          "alt": "housing single pre filter",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/housing-single-pre-filter-993570.webp"
+          "src": "/images/housing-single-pre-filter-993570.jpg",
+          "alt": "housing single pre filter"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_182d197ba06c505b",
@@ -4377,7 +4259,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
@@ -4404,14 +4285,13 @@
         "All internal filters are designed to snap into place securely and easily. Pre-filters will require pre-filter housing."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/housing-triple-pre-filter-524149.webp",
-          "alt": "housing triple pre filter",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/housing-triple-pre-filter-524149.webp"
+          "src": "/images/housing-triple-pre-filter-524149.jpg",
+          "alt": "housing triple pre filter"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_f0b27b873347a6c2",
@@ -4437,7 +4317,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category",
@@ -4490,19 +4369,17 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/HVO1-16-ounce-1.webp",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/HVO1-16-ounce-1.webp"
+          "src": "/images/HVO1-16-ounce-1.jpg",
+          "alt": "HVO Beneficial Microbial Inoculant Liquid Concentrate (for spraying)"
         },
         {
-          "path": "/images/products/HVO1-16-ounce-1.webp",
-          "alt": null,
-          "sourceUrl": "https://cdn.shopify.com/s/files/1/0688/7001/3166/files/HVO1-16-ounce-1.webp?v=1713307504"
+          "src": "/images/HVO1-16-ounce-1.jpg",
+          "alt": "HVO Beneficial Microbial Inoculant Liquid Concentrate (for spraying)"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_1110026c8d2e4ce0",
@@ -4529,7 +4406,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title",
@@ -4563,14 +4439,13 @@
         "Organic 100%"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/hvofertilizer_443865da-bd15-4a83-ae8e-e0541cac6b30.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/hvofertilizer_443865da-bd15-4a83-ae8e-e0541cac6b30.png"
+          "src": "/images/hvofertilizer_443865da-bd15-4a83-ae8e-e0541cac6b30.png",
+          "alt": "HVO Organic Fertilizer"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_77d934efa5c94122",
@@ -4596,7 +4471,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -4658,14 +4532,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/life-sciences-hydrogen-alkaline-bio-energy-water-system-includes-free-bonus-life-borosilicate-glass-water-pitcher-with-infuser-360109.jpg",
-          "alt": "Life Sciences Hydrogen Alkaline Bio Energy Water System Includes Free Bonus Life Borosilicate Glass Water Pitcher with Infuser",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/life-sciences-hydrogen-alkaline-bio-energy-water-system-includes-free-bonus-life-borosilicate-glass-water-pitcher-with-infuser-360109.jpg"
+          "src": "/images/life-sciences-hydrogen-alkaline-bio-energy-water-system-includes-free-bonus-life-borosilicate-glass-water-pitcher-with-infuser-360109.jpg",
+          "alt": "Life Sciences Hydrogen Alkaline Bio Energy Water System Includes Free Bonus Life Borosilicate Glass Water Pitcher with Infuser"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_8258c917ab5f71eb",
@@ -4692,7 +4565,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_source_category"
       ]
@@ -4716,14 +4588,13 @@
         "Threads onto existing faucet. Allows one to choose to use faucet normally or divert water to filter. Female 13/16″X27 threads and 1/4″ compression barb for al filter with 1/4″ inlet tubing."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/life-faucet-diverter-valve-new-improved-411417.webp",
-          "alt": "life faucet diverter valve new improved",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/life-faucet-diverter-valve-new-improved-411417.webp"
+          "src": "/images/life-faucet-diverter-valve-new-improved-411417.jpg",
+          "alt": "life faucet diverter valve new improved"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_605198a7c4ea97ea",
@@ -4749,7 +4620,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category",
@@ -4772,14 +4642,13 @@
       "shortBenefitSource": null,
       "description": [],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/5100Filter1.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/5100Filter1.png"
+          "src": "/images/5100Filter1.png",
+          "alt": "Life Ionizer 5100 Internal Replacement Filter #1"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_4e7e129d89c5c73a",
@@ -4805,7 +4674,6 @@
       "titleMatches": [],
       "status": "needs_review",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_description",
         "missing_image_alt",
@@ -4831,14 +4699,13 @@
       "shortBenefitSource": null,
       "description": [],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/5100Filter2.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/5100Filter2.png"
+          "src": "/images/5100Filter2.png",
+          "alt": "Life Ionizer 5100 Internal Replacement Filter #2"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_246e023d737399e2",
@@ -4864,7 +4731,6 @@
       "titleMatches": [],
       "status": "needs_review",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_description",
         "missing_image_alt",
@@ -4890,14 +4756,13 @@
       "shortBenefitSource": null,
       "description": [],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/5100CitricAcidCleaningCartridge.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/5100CitricAcidCleaningCartridge.png"
+          "src": "/images/5100CitricAcidCleaningCartridge.png",
+          "alt": "Life Ionizer 5100 Internal Replacement Filter Citric Acid Cleaning Cartridge"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_c05e5116979969f6",
@@ -4923,7 +4788,6 @@
       "titleMatches": [],
       "status": "needs_review",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_description",
         "missing_image_alt",
@@ -4951,14 +4815,13 @@
         "Keep your Life Ionizer running at peak performance with regular uses of our citric acid cleaning cartridges. It is recommended to clean your Ionizer at least 3 times a year at regular intervals (every 4 months). Utilizing a proprietary citric acid cleaning compound, remove hard-water buildup from your plates, chamber, and internal plastics. If not used, your machine will not optimize the alkaline mineral production nor the antioxidant production. If not cleaned, your electrolysis chamber, platinum/titanium plates, faucet, and internal tubing will have build-up or layer of minerals and your machine will then bust an internal system and you may have a water leak."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/filter_2.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/filter_2.png"
+          "src": "/images/filter_2.png",
+          "alt": "Life Ionizer 7500/7600/8000/8100 - Internal Replacement Filter #1"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_e8e3ec29609b2d0e",
@@ -4984,7 +4847,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -5018,14 +4880,13 @@
         "It's worth mentioning that the effectiveness of a reverse osmosis post filter can depend on the specific media used and the quality of the water being filtered."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/RO-Post-Mineral-Cartridge-Inline.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/RO-Post-Mineral-Cartridge-Inline.jpg"
+          "src": "/images/RO-Post-Mineral-Cartridge-Inline.jpg",
+          "alt": "LIFE REVERSE OSMOSIS POST FILTER ™"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_f9328cc295937401",
@@ -5051,7 +4912,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -5084,14 +4944,13 @@
         "120-Day Quality Guarantee - We use superior-grade activated carbon fiber specifically designed to make the perfect filter. In fact, we are so confident that we guarantee you will see a 99% reduction in chlorine."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/life-shower-double-filtration-filter-with-shower-head-187860.webp",
-          "alt": "shower filter with head",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/life-shower-double-filtration-filter-with-shower-head-187860.webp"
+          "src": "/images/life-shower-double-filtration-filter-with-shower-head-187860.jpg",
+          "alt": "shower filter with head"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_ac27a5b44fd581bb",
@@ -5117,7 +4976,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
@@ -5147,14 +5005,13 @@
         "FREE SHIPPING"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/life-shower-double-filtration-filter-without-shower-head-287675.jpg",
-          "alt": "shower filter without head",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/life-shower-double-filtration-filter-without-shower-head-287675.jpg"
+          "src": "/images/life-shower-double-filtration-filter-without-shower-head-287675.jpg",
+          "alt": "shower filter without head"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_2fe5cc218c089cbb",
@@ -5180,7 +5037,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_source_category"
       ]
@@ -5201,14 +5057,13 @@
       "shortBenefitSource": null,
       "description": [],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/LifeWaterFiltersMX_MXL_1InternalReplacementFilter.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/LifeWaterFiltersMX_MXL_1InternalReplacementFilter.jpg"
+          "src": "/images/LifeWaterFiltersMX_MXL_1InternalReplacementFilter.jpg",
+          "alt": "Life Ionizer MX & MXL 5-15 Internal Replacement Filter #1"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_b3066f4a87c5a9f6",
@@ -5234,7 +5089,6 @@
       "titleMatches": [],
       "status": "needs_review",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_description",
         "missing_image_alt",
@@ -5259,14 +5113,13 @@
       "shortBenefitSource": null,
       "description": [],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/LifeIonizerMX_MXL_2InternalReplacementFilter.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/LifeIonizerMX_MXL_2InternalReplacementFilter.jpg"
+          "src": "/images/LifeIonizerMX_MXL_2InternalReplacementFilter.jpg",
+          "alt": "Life Ionizer MX & MXL 5-15 Internal Replacement Filter #2"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_f59ddf7b2fe8445e",
@@ -5292,7 +5145,6 @@
       "titleMatches": [],
       "status": "needs_review",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_description",
         "missing_image_alt",
@@ -5319,14 +5171,13 @@
         "Keep your Life Ionizer running at peak performance with regular uses of our citric acid cleaning cartridges. It is recommended to clean your Ionizer at least 3 times a year at regular intervals (every 4 months). Utilizing a proprietary citric acid cleaning compound, remove hard-water buildup from your plates, chamber, and internal plastics. If not used, your machine will not optimize the alkaline mineral production nor the antioxidant production. If not cleaned, your electrolysis chamber, platinum/titanium plates, faucet, and internal tubing will have build-up or layer of minerals and your machine will then bust an internal system and you may have a water leak."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/LifeWaterFiltersCitricAcidCleaningCartridge-MX_MXL5-15Filter.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/LifeWaterFiltersCitricAcidCleaningCartridge-MX_MXL5-15Filter.jpg"
+          "src": "/images/LifeWaterFiltersCitricAcidCleaningCartridge-MX_MXL5-15Filter.jpg",
+          "alt": "Life Ionizer MX & MXL 5-15 Internal Replacement Filter Citric Acid Cleaning Cartridge"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_f9c73be9b396d846",
@@ -5352,7 +5203,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description"
@@ -5376,14 +5226,13 @@
         "The Life Ionizers Nitrate Cartridge is specifically designed to remove nitrates utilizing a white bead strong base anion resin. This filter sits discretely inside of filter housing either on top of or underneath your counter."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/NITRATECARTRIDGE.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/NITRATECARTRIDGE.png"
+          "src": "/images/NITRATECARTRIDGE.png",
+          "alt": "NITRATE CARTRIDGE"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_77527d48e318c7c1",
@@ -5409,7 +5258,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -5449,14 +5297,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/pitcher-of-life-alkaline-water-pitcher-2nd-generation-replacement-filter-3-pack-603305.jpg",
-          "alt": "Pitcher of Life Alkaline Water Pitcher (2nd Generation) Replacement Filter - 3 Pack",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/pitcher-of-life-alkaline-water-pitcher-2nd-generation-replacement-filter-3-pack-603305.jpg"
+          "src": "/images/pitcher-of-life-alkaline-water-pitcher-2nd-generation-replacement-filter-3-pack-603305.jpg",
+          "alt": "Pitcher of Life Alkaline Water Pitcher (2nd Generation) Replacement Filter - 3 Pack"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_ad1da977189a0f95",
@@ -5483,7 +5330,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
@@ -5522,14 +5368,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/pitcher-of-life-alkaline-water-pitcher-2nd-generation-replacement-filter-369036.jpg",
-          "alt": "blue 2nd generation replacement filter",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/pitcher-of-life-alkaline-water-pitcher-2nd-generation-replacement-filter-369036.jpg"
+          "src": "/images/pitcher-of-life-alkaline-water-pitcher-2nd-generation-replacement-filter-369036.jpg",
+          "alt": "blue 2nd generation replacement filter"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_71325ef858951176",
@@ -5556,7 +5401,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_source_category"
       ]
@@ -5601,14 +5445,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/alkaline-water-pitcher-of-life-improved-2024-super-alkaline-water-filter-pitcher-335557.jpg",
-          "alt": "alkaline water Pitcher of life",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/alkaline-water-pitcher-of-life-improved-2024-super-alkaline-water-filter-pitcher-335557.jpg"
+          "src": "/images/alkaline-water-pitcher-of-life-improved-2024-super-alkaline-water-filter-pitcher-335557.jpg",
+          "alt": "alkaline water Pitcher of life"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_3f468696b9703688",
@@ -5635,7 +5478,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown"
       ]
     },
@@ -5674,14 +5516,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/pitcher-of-life-improved-2022-alkaline-water-replacement-filter-368620.jpg",
-          "alt": "alkaline water replacement filter",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/pitcher-of-life-improved-2022-alkaline-water-replacement-filter-368620.jpg"
+          "src": "/images/pitcher-of-life-improved-2022-alkaline-water-replacement-filter-368620.jpg",
+          "alt": "alkaline water replacement filter"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_d3327ba54ca4390c",
@@ -5708,7 +5549,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title"
       ]
@@ -5748,14 +5588,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/pitcher-of-life-improved-2022-alkaline-water-replacement-filter-pack-of-3-952976.jpg",
-          "alt": "3 pack alkaline water replacement filter",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/pitcher-of-life-improved-2022-alkaline-water-replacement-filter-pack-of-3-952976.jpg"
+          "src": "/images/pitcher-of-life-improved-2022-alkaline-water-replacement-filter-pack-of-3-952976.jpg",
+          "alt": "3 pack alkaline water replacement filter"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_e251e0804b1d40d3",
@@ -5782,7 +5621,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title"
       ]
@@ -5814,14 +5652,13 @@
         "The Flower of Life , is an ancient symbol that promotes harmony and balance. When applied to a container of drinking water or a water system producing alkaline water, it imbues the alkaline mineral water with positive energy, enhancing overall well-being and vitality."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/alkaline-water-pitcher-of-life-with-flower-of-life-super-alkaline-water-filter-pitcher-691453.jpg",
-          "alt": "Alkaline Water PITCHER OF LIFE®  with Flower of Life - Super Alkaline Water Filter Pitcher",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/alkaline-water-pitcher-of-life-with-flower-of-life-super-alkaline-water-filter-pitcher-691453.jpg"
+          "src": "/images/alkaline-water-pitcher-of-life-with-flower-of-life-super-alkaline-water-filter-pitcher-691453.jpg",
+          "alt": "Alkaline Water PITCHER OF LIFE®  with Flower of Life - Super Alkaline Water Filter Pitcher"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_d8b76e9117a48b93",
@@ -5847,7 +5684,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown"
       ]
     },
@@ -5934,15 +5770,15 @@
         "Leak-Proof and Easy to Carry - Designed with a secure cap, our copper bottle prevents leaks and spills, making it the perfect companion for travel, work, and everyday use. Say goodbye to messy spills and enjoy worry-free hydration on the go."
       ],
       "quarantinedContent": [],
-      "images": [],
+      "images": [
+        {
+          "src": "/images/FlowerofLifeAlkalineWaterPITCHERwithCopperBottle-LotusFlowerDesign.png",
+          "alt": "Flower of Life Alkaline Water PITCHER with Copper Bottle"
+        }
+      ],
       "pendingImages": [
         {
-          "path": "/images/products/FlowerofLifeAlkalineWaterPITCHERwithCopperBottle-LotusFlowerDesign.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/FlowerofLifeAlkalineWaterPITCHERwithCopperBottle-LotusFlowerDesign.png"
-        },
-        {
-          "path": "/images/products/FlowerofLifeAlkalineWaterPITCHERwithCopperBottle-PeacockandFlowerDesign.png",
+          "path": "/images/FlowerofLifeAlkalineWaterPITCHERwithCopperBottle-PeacockandFlowerDesign.png",
           "alt": null,
           "sourceUrl": "https://cdn.shopify.com/s/files/1/0688/7001/3166/files/FlowerofLifeAlkalineWaterPITCHERwithCopperBottle-PeacockandFlowerDesign.png?v=1713125205"
         }
@@ -5972,7 +5808,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -6009,14 +5844,13 @@
         "We recommend you change HOUSINGS every 3 to 5 years as they become brittle from all the chemicals being filtered out of your drinking water"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/LifeIonizerFluoride_Arsenic_LeadReductionPre-Filter_Pre-Filter.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/LifeIonizerFluoride_Arsenic_LeadReductionPre-Filter_Pre-Filter.jpg"
+          "src": "/images/LifeIonizerFluoride_Arsenic_LeadReductionPre-Filter_Pre-Filter.jpg",
+          "alt": "Fluoride, Arsenic & Lead Reduction"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_5f6e5df03f2efd7d",
@@ -6042,7 +5876,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
@@ -6070,14 +5903,13 @@
         "All internal filters are designed to snap into place securely and easily. Pre-filters will require pre-filter housing."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/pre-filter-wrench-514105.jpg",
-          "alt": "pre filter wrench",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/pre-filter-wrench-514105.jpg"
+          "src": "/images/pre-filter-wrench-514105.jpg",
+          "alt": "pre filter wrench"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_721cfdf0e9025e5d",
@@ -6103,7 +5935,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_sku",
@@ -6168,14 +5999,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/spra_1.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/spra_1.png"
+          "src": "/images/spra_1.png",
+          "alt": "HOCL Cleaner with Rechargeable Atomizer Sprayer for Home/Office/Auto Kit"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_ccbd2c8f5bde0c50",
@@ -6208,7 +6038,6 @@
       "flags": [
         "all_content_quarantined",
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_short_benefit",
@@ -6274,14 +6103,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/life-sciences-reverse-osmosis-alkaline-water-purifying-generator-under-counter-include-free-bonus-life-borosilicate-glass-water-pitcher-with-infuser-363509.jpg",
-          "alt": "reverse osmosis alkaline water purifier",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/life-sciences-reverse-osmosis-alkaline-water-purifying-generator-under-counter-include-free-bonus-life-borosilicate-glass-water-pitcher-with-infuser-363509.jpg"
+          "src": "/images/life-sciences-reverse-osmosis-alkaline-water-purifying-generator-under-counter-include-free-bonus-life-borosilicate-glass-water-pitcher-with-infuser-363509.jpg",
+          "alt": "reverse osmosis alkaline water purifier"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_ccf9ab83d05de328",
@@ -6308,7 +6136,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_sku",
         "missing_source_category"
@@ -6345,14 +6172,13 @@
         "Register your product for our Lifetime Warranty - Click Here"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/reverse-osmosis-5-replacement-filter-bundle-627585.jpg",
-          "alt": "Reverse Osmosis 5 Replacement Filter bundle",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/reverse-osmosis-5-replacement-filter-bundle-627585.jpg"
+          "src": "/images/reverse-osmosis-5-replacement-filter-bundle-627585.jpg",
+          "alt": "Reverse Osmosis 5 Replacement Filter bundle"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_7b23a9976d937f96",
@@ -6378,7 +6204,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
@@ -6418,14 +6243,13 @@
         "Register your product for our Lifetime Warranty - Click Here"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/reverse-osmosis-6-replacement-filter-bundle-863261.jpg",
-          "alt": "Reverse Osmosis 6 Replacement Filter Bundle",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/reverse-osmosis-6-replacement-filter-bundle-863261.jpg"
+          "src": "/images/reverse-osmosis-6-replacement-filter-bundle-863261.jpg",
+          "alt": "Reverse Osmosis 6 Replacement Filter Bundle"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_70ef67595ddb7753",
@@ -6451,7 +6275,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
@@ -6478,14 +6301,13 @@
         "In summary, a 50 GPD RO membrane is a vital component of a reverse osmosis water filtration system. It efficiently removes impurities, contaminants, and dissolved solids, ensuring clean and purified water for drinking, cooking, and other household applications."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/romembrane.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/romembrane.png"
+          "src": "/images/romembrane.png",
+          "alt": "RO Membrane 50 GPD / 1"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_81037c7258450d43",
@@ -6511,7 +6333,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -6540,14 +6361,13 @@
         "Register your product for our Lifetime Warranty - Click Here"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/reverse-osmosis-membrane-filter-465228.jpg",
-          "alt": "reverse osmosis membrane filter",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/reverse-osmosis-membrane-filter-465228.jpg"
+          "src": "/images/reverse-osmosis-membrane-filter-465228.jpg",
+          "alt": "reverse osmosis membrane filter"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_ba7f52eb91c91349",
@@ -6573,7 +6393,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
@@ -6627,14 +6446,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/SolutionsHOCLWithRyobiFogger.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/SolutionsHOCLWithRyobiFogger.png"
+          "src": "/images/SolutionsHOCLWithRyobiFogger.png",
+          "alt": "Ryobi ONE+ Cordless Fogger PLUS Two (2) Powder 10 Pack (1 gram packets total 10 g X 2) of Solutions HOCL Power Wash Formulated for Foggers"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_3699aa0f5fe1a48f",
@@ -6666,7 +6484,6 @@
       "status": "needs_review",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -6700,14 +6517,13 @@
         "We recommend you change HOUSINGS every 3 to 5 years as they become brittle from all the chemicals being filtered out of your drinking water"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/LifeIonizerScaleBlockPre-Filter-StopsMineralBuildUp_Pre-Filter.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/LifeIonizerScaleBlockPre-Filter-StopsMineralBuildUp_Pre-Filter.jpg"
+          "src": "/images/LifeIonizerScaleBlockPre-Filter-StopsMineralBuildUp_Pre-Filter.jpg",
+          "alt": "Scale Block Pre-Filter - Stops Mineral Build Up"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_c0e356a549a4e2bb",
@@ -6733,7 +6549,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
@@ -6762,14 +6577,13 @@
         "The Only Compatible Replacement Filter - This is the only replacement filter compatible with your Life Ionizer shower filtration system. Purchase now to keep your shower water filtered, clean, and healthy."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/showerfilters.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/showerfilters.png"
+          "src": "/images/showerfilters.png",
+          "alt": "Shower Filter Replacement Composite Filter with four (4) PP Polymer Cotton Filters"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_86dec9a6fa4bb8a3",
@@ -6795,7 +6609,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -6827,14 +6640,13 @@
         "All internal filters are designed to snap into place securely and easily. Pre-filters will require pre-filter housing."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/3_93b7358e-1c5e-412c-9821-964b9915557d.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/3_93b7358e-1c5e-412c-9821-964b9915557d.png"
+          "src": "/images/3_93b7358e-1c5e-412c-9821-964b9915557d.png",
+          "alt": "HOUSING SINGLE PRE-FILTER"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_a7a6da103338d542",
@@ -6860,7 +6672,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -6888,14 +6699,13 @@
         "We recommend you change HOUSINGS every 3 to 5 years as they become brittle from all the chemicals being filtered out of your drinking water"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/SODIUMREDUCTIONFILTER.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/SODIUMREDUCTIONFILTER.png"
+          "src": "/images/SODIUMREDUCTIONFILTER.png",
+          "alt": "SODIUM REDUCTION FILTER"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_70b40f9de2cd83e3",
@@ -6921,7 +6731,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -7011,14 +6820,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/SolutionsHOCLUnscented.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/SolutionsHOCLUnscented.png"
+          "src": "/images/SolutionsHOCLUnscented.png",
+          "alt": "Solutions HOCL SuperWash Powder - 10 Packs (10 grams)"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_daa2b4873cdb6bd5",
@@ -7045,7 +6853,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt"
       ]
@@ -7085,14 +6892,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/LifeIonizerHeavyMetalplusFluorideRemovalFilterLF-100F.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/LifeIonizerHeavyMetalplusFluorideRemovalFilterLF-100F.jpg"
+          "src": "/images/LifeIonizerHeavyMetalplusFluorideRemovalFilterLF-100F.jpg",
+          "alt": "Super Filter LF-100F"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_4f9ff81974b687d9",
@@ -7119,7 +6925,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
@@ -7160,14 +6965,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/PreFilterSet.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/PreFilterSet.png"
+          "src": "/images/PreFilterSet.png",
+          "alt": "Super Filters Sets - Super Filter & Heavy Metal plus Fluoride Removal Filter Set"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_86326b097ac03eb7",
@@ -7194,7 +6998,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
@@ -7225,14 +7028,13 @@
         "We recommend you change HOUSINGS every 3 to 5 years as they become brittle from all the chemicals being filtered out of your drinking water"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/LifeIonizerSuperFilterLF-100Pre-Filter_Pre-Filter.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/LifeIonizerSuperFilterLF-100Pre-Filter_Pre-Filter.jpg"
+          "src": "/images/LifeIonizerSuperFilterLF-100Pre-Filter_Pre-Filter.jpg",
+          "alt": "Super Filter LF-100"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_367855a8239daa27",
@@ -7258,7 +7060,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_title"
@@ -7282,19 +7083,17 @@
         "Superthrive is a non-toxic vitamin solution that directly stimulates seed and root development, resulting in vigorous roots and robust plants. It is widely used by professionals worldwide, including landscapers, growers, turf, and golf course supervisors, for tree transplantation, improved crop yield, and the cultivation of lush lawns, both indoors and outdoors. Whether you're transplanting a tree or aiming for the greenest garden in the neighborhood, Superthrive will help you achieve your planting goals."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/4oz-superthrive.webp",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/4oz-superthrive.webp"
+          "src": "/images/4oz-superthrive.jpg",
+          "alt": "SuperThrive® Plant Growth Enhancer"
         },
         {
-          "path": "/images/products/4oz-superthrive.webp",
-          "alt": null,
-          "sourceUrl": "https://cdn.shopify.com/s/files/1/0688/7001/3166/files/4oz-superthrive.webp?v=1713310010"
+          "src": "/images/4oz-superthrive.jpg",
+          "alt": "SuperThrive® Plant Growth Enhancer"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_f7dc3360d2386c31",
@@ -7320,7 +7119,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -7369,14 +7167,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/lemone.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/lemone.png"
+          "src": "/images/lemone.png",
+          "alt": "Solutions HOCL SuperWash Powder - Organic Lemon Scent - 10 Packs (10 grams)"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_71ebeddb62ef8d05",
@@ -7403,7 +7200,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -7458,19 +7254,17 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/Toilet_bomb_13T_frag-free.webp",
-          "alt": "A stand-up pouch of Solutions HOCl Toilet Bomb cleaner, featuring a blue and white design with a toilet illustration and promotional badges.",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/Toilet_bomb_13T_frag-free.webp"
+          "src": "/images/Toilet_bomb_13T_frag-free.jpg",
+          "alt": "A stand-up pouch of Solutions HOCl Toilet Bomb cleaner, featuring a blue and white design with a toilet illustration and promotional badges."
         },
         {
-          "path": "/images/products/Toilet_bomb_13T_frag-free.webp",
-          "alt": "A stand-up pouch of Solutions HOCl Toilet Bomb cleaner, featuring a blue and white design with a toilet illustration and promotional badges.",
-          "sourceUrl": "https://cdn.shopify.com/s/files/1/0688/7001/3166/files/Toilet_bomb_13T_frag-free.webp?v=1787097530"
+          "src": "/images/Toilet_bomb_13T_frag-free.jpg",
+          "alt": "A stand-up pouch of Solutions HOCl Toilet Bomb cleaner, featuring a blue and white design with a toilet illustration and promotional badges."
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_5c956b9d11560558",
@@ -7497,7 +7291,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_sku",
         "missing_type",
@@ -7543,19 +7336,17 @@
         "Experience the power of HOCL and lemon essential oils, because a clean toilet shouldn't come with harsh chemicals."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/Toilet_bomb_13T_lemon.webp",
-          "alt": "A stand-up pouch of Solutions HOCl Toilet Bomb toilet bowl cleaner, organic lemon scent.",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/Toilet_bomb_13T_lemon.webp"
+          "src": "/images/Toilet_bomb_13T_lemon.jpg",
+          "alt": "A stand-up pouch of Solutions HOCl Toilet Bomb toilet bowl cleaner, organic lemon scent."
         },
         {
-          "path": "/images/products/Toilet_bomb_13T_lemon.webp",
-          "alt": "A stand-up pouch of Solutions HOCl Toilet Bomb toilet bowl cleaner, organic lemon scent.",
-          "sourceUrl": "https://cdn.shopify.com/s/files/1/0688/7001/3166/files/Toilet_bomb_13T_lemon.webp?v=1787098717"
+          "src": "/images/Toilet_bomb_13T_lemon.jpg",
+          "alt": "A stand-up pouch of Solutions HOCl Toilet Bomb toilet bowl cleaner, organic lemon scent."
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_64f545d9523d4c0e",
@@ -7581,7 +7372,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_sku",
         "missing_type",
@@ -7612,14 +7402,13 @@
         "Compost & Black Cinder are Optional"
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/438240312_739804194987750_573832680759290176_n.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/438240312_739804194987750_573832680759290176_n.jpg"
+          "src": "/images/438240312_739804194987750_573832680759290176_n.jpg",
+          "alt": "Hawaiian Volcanic Organic® Top Soil"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_56bbc991d12f0eda",
@@ -7645,7 +7434,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -7677,14 +7465,13 @@
         "All internal filters are designed to snap into place securely and easily. Pre-filters will require pre-filter housing."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/1_d4714709-f4c8-4e62-b789-5d6b99fd949f.png",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/1_d4714709-f4c8-4e62-b789-5d6b99fd949f.png"
+          "src": "/images/1_d4714709-f4c8-4e62-b789-5d6b99fd949f.png",
+          "alt": "HOUSING TRIPLE PRE-FILTER"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_b06541390d17492c",
@@ -7710,7 +7497,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -7757,14 +7543,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/SprayBottle.jpg",
-          "alt": null,
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/SprayBottle.jpg"
+          "src": "/images/SprayBottle.jpg",
+          "alt": "Two (2) Ready to use 2 FL Oz. (4 FL Oz. total) each Sprayers PLUS Two (2) PowerWash Powder Packets that makes 2 Gallons"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_6726f8d96f46cb5e",
@@ -7791,7 +7576,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_image_alt",
         "missing_seo_description",
@@ -7826,14 +7610,13 @@
           ]
         }
       ],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/ultrafiltration-filter-611290.jpg",
-          "alt": "ultrafiltration filter",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/ultrafiltration-filter-611290.jpg"
+          "src": "/images/ultrafiltration-filter-611290.jpg",
+          "alt": "ultrafiltration filter"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_e672ae27ca7b97cd",
@@ -7860,7 +7643,6 @@
       "status": "active",
       "flags": [
         "content_quarantined",
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_title",
         "missing_source_category"
@@ -7884,14 +7666,13 @@
         "Connect to the main water line under your sink into your ionizer using the Under Counter Cold Water Connect Valve ."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/under-counter-cold-water-connect-valve-145259.webp",
-          "alt": "under counter cold water connect valve",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/under-counter-cold-water-connect-valve-145259.webp"
+          "src": "/images/under-counter-cold-water-connect-valve-145259.jpg",
+          "alt": "under counter cold water connect valve"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_fd22c6e7d4e59207",
@@ -7917,7 +7698,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_description",
         "missing_seo_title",
@@ -7943,14 +7723,13 @@
         "This conversion kit enables you to supply your countertop water ionizer with water from under the sink, doing away with the faucet diverter valve."
       ],
       "quarantinedContent": [],
-      "images": [],
-      "pendingImages": [
+      "images": [
         {
-          "path": "/images/products/under-counter-water-supply-adapter-kit-218152.jpg",
-          "alt": "under counter water supply adapter",
-          "sourceUrl": "https://raw.githubusercontent.com/devearthtrade/EarthTrade/refs/heads/claude/earthtrade-premium-redesign-ucf0x6/public/images/under-counter-water-supply-adapter-kit-218152.jpg"
+          "src": "/images/under-counter-water-supply-adapter-kit-218152.jpg",
+          "alt": "under counter water supply adapter"
         }
       ],
+      "pendingImages": [],
       "variants": [
         {
           "id": "etv_f4da645585a2baab",
@@ -7976,7 +7755,6 @@
       "titleMatches": [],
       "status": "active",
       "flags": [
-        "image_asset_pending",
         "inventory_unknown",
         "missing_seo_description",
         "missing_seo_title",

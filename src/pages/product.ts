@@ -38,7 +38,7 @@ function gallery(p: Product): ReturnType<typeof html> {
   const brand = brandIndex.get(p.brand);
   return html`
     <div class="gallery">
-      <div class="gallery__main">
+      <div class="gallery__main has-image">
         <div class="card__glyph" aria-hidden="true">
           <b>${cardName(p)}</b>
           <span>${brand?.name ?? "EarthTrade"}</span>

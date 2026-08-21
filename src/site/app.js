@@ -58,6 +58,8 @@
       const el = e.target;
       if (el instanceof HTMLImageElement && el.hasAttribute("data-img-fallback")) {
         el.hidden = true;
+        // Hand the space back to the typographic tile behind it.
+        el.closest(".card__media, .gallery__main")?.classList.remove("has-image");
       }
     },
     true,
@@ -813,7 +815,10 @@
   /** Images that failed before this script ran never fire the event again. */
   function sweepFailedImages() {
     $$("img[data-img-fallback]").forEach((img) => {
-      if (img.complete && img.naturalWidth === 0) img.hidden = true;
+      if (img.complete && img.naturalWidth === 0) {
+        img.hidden = true;
+        img.closest(".card__media, .gallery__main")?.classList.remove("has-image");
+      }
     });
   }
 

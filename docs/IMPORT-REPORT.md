@@ -74,7 +74,7 @@ confirm the product stays off the storefront.
 
 | Gap | Products | Effect today |
 |---|---|---|
-| Image asset not in repo | 109 | Card and gallery show the typographic tile |
+| Image weight over 300 KB | 23 | Slow first paint on product and collection pages |
 | Stock quantity absent from CSV | 110 | Availability unresolved; nothing can be oversold yet because checkout is not connected |
 | No SEO title | 70 | Page title falls back to the product title |
 | No image alt text | 52 | Alt falls back to the product title |
@@ -176,19 +176,42 @@ environmental claims.
 
 ## Product images
 
-All 109 referenced images point at
-`raw.githubusercontent.com/devearthtrade/EarthTrade/.../public/images/`, and none
-of those files exist in the repository. That host is not an EarthTrade-controlled
-asset origin and is not suitable for production traffic, so no image URL was
-carried into the catalog.
+All 109 referenced images were uploaded to `public/images/` and are now served
+from EarthTrade's own origin. 109 of the 106
+published products carry a photograph; the one product with no image in the CSV
+is withheld for a separate reason.
 
-Each product records its intended EarthTrade path under `pendingImages`, with the
-original URL kept so the file can be located. Drop the files into
-`public/images/products/` and re-run the importer; it detects the assets and
-promotes them from `pendingImages` to `images` automatically.
+The CSV names 15 files with a `.webp` extension where the uploaded asset is a
+`.jpg`. The importer matches on filename stem, so those resolve automatically.
+No image URL points at a third-party host.
 
-Until then the storefront shows the branded typographic tile, which is the
-existing behaviour for a product without photography.
+### Image weight needs attention
+
+| | |
+|---|---|
+| Product images | 109 files, 40 MB |
+| Average | 375 KB |
+| Over 300 KB | 23 files |
+| Largest | 5.7 MB |
+
+For comparison, the 13 art-directed background images total 112 KB. The heaviest
+product files are:
+
+```
+    5829 KB  hvofertilizer_443865da-bd15-4a83-ae8e-e0541cac6b30.png
+    5677 KB  SolutionsHOCLUnscented.png
+    4815 KB  Borosilicate_Glass_Pitcher_of_Life_Alkaline_Water_Purifier_with_Food-Grade_Stainless_Steel_Infuser.png
+    1860 KB  FlowerofLifeAlkalineWaterPITCHERwithCopperBottle-LotusFlowerDesign.png
+    1226 KB  green1_8dfe1ebd-666f-4cac-ba2c-fe6a94c971aa.png
+```
+
+A collection page renders up to 44 of these. Cards use `loading="lazy"` and
+carry explicit dimensions, so layout is stable and off-screen images defer, but
+the weight will still hurt Core Web Vitals on a slow connection.
+
+Recommended before launch: resize to the display size (cards render at roughly
+600x750) and serve AVIF or WebP with a JPEG fallback. That is a change to your
+uploaded assets, so I have not done it. The originals are in git either way.
 
 ## Editorial links
 

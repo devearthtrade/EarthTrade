@@ -91,6 +91,21 @@ No duplicate rows were found. Every source row produced a distinct product.
 Deduplication matches on handle first, then on SKU, so the same product
 arriving from another export under a different slug is still recognised.
 
+## Completeness by brand
+
+Share of each brand's products carrying the field.
+
+| Brand | Products | SKU | Weight | Description | Image | SEO title | Meta desc |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Pitcher of Life | 43 | 84% | 86% | 98% | 98% | 56% | 93% |
+| Life Ionizers | 41 | 83% | 85% | 85% | 100% | 10% | 46% |
+| SolutionsHOCL | 15 | 47% | 47% | 93% | 100% | 73% | 73% |
+| Hawaiian Volcanic Organic | 7 | 0% | 0% | 100% | 100% | 14% | 43% |
+| Life Sciences Water | 4 | 75% | 75% | 100% | 100% | 0% | 100% |
+
+**2 of 110 products carry every field** (setting aside stock, which no
+product has). The rest are listed under Missing fields below.
+
 ## Missing fields
 
 | Gap | Products | Share |

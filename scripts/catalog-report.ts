@@ -259,6 +259,30 @@ if (!cat.duplicates.length) {
 }
 w();
 
+/* --------------------------- completeness ------------------------------ */
+
+w("## Completeness by brand");
+w();
+w("Share of each brand's products carrying the field.");
+w();
+w("| Brand | Products | SKU | Weight | Description | Image | SEO title | Meta desc |");
+w("|---|---:|---:|---:|---:|---:|---:|---:|");
+for (const [b] of count(P, (p) => p.brandId)) {
+  const of = P.filter((x) => x.brandId === b);
+  const pct = (f: (x: Product) => boolean) => `${Math.round((of.filter(f).length / of.length) * 100)}%`;
+  w(
+    `| ${BRAND_NAME[b] ?? b} | ${of.length} | ${pct((x) => x.variants.some((v) => v.sku))} | ` +
+      `${pct((x) => x.variants.some((v) => v.weightGrams !== null))} | ${pct((x) => x.description.length > 0)} | ` +
+      `${pct((x) => x.images.length > 0)} | ${pct((x) => Boolean(x.seo.title))} | ${pct((x) => Boolean(x.seo.description))} |`,
+  );
+}
+w();
+
+const complete = P.filter((p) => p.flags.filter((f) => f !== "inventory_unknown").length === 0);
+w(`**${complete.length} of ${P.length} products carry every field** (setting aside stock, which no`);
+w("product has). The rest are listed under Missing fields below.");
+w();
+
 /* ---------------------------- missing fields --------------------------- */
 
 w("## Missing fields");

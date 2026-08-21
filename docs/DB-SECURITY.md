@@ -92,13 +92,52 @@ provider's event id.
 privileged roles, and every price, stock and publication change written to
 `audit_log` in the same transaction as the change so the log cannot drift.
 
-## Known limitation in the current tooling
+## Runtime queries
 
-The migration runner and seeder shell out to `psql` because this project has no
-`node_modules` and the package registry is unreachable from the build
-environment. That is sound for local schema work, and the executed SQL is
-generated from data we control rather than from user input.
+The application data layer does not shell out to anything. `src/server/db/`
+speaks the PostgreSQL wire protocol over a socket and uses the **extended query
+protocol**: `Parse` carries the statement text, `Bind` carries the values as
+separate protocol messages. Parameters are never concatenated into SQL, so the
+server cannot parse a product title, a search term or a handle as part of a
+statement.
 
-It is not the shape production application code should take. When a driver can
-be installed, the runtime data layer should use it with bound parameters and a
-connection pool. The migration runner may reasonably keep driving `psql`.
+This is a structural property rather than a convention. There is no escaping
+function a future contributor could forget to call, because there is no path by
+which a value reaches the parser.
+
+Two properties are asserted on every verification run:
+
+- A search for `' OR 1=1 --` returns zero rows and no error — it is matched as
+  the literal text it is.
+- A search for `%` matches only products whose text contains that character.
+  Binding a value keeps it out of the SQL; it does not keep it out of a `LIKE`
+  pattern, where `%` and `_` are still operators. Matching uses `strpos`, which
+  has no metacharacters at all.
+
+### Why it is hand-written
+
+The project has no `node_modules` and the package registry is unreachable from
+the build environment, so `pg` cannot be installed. `src/server/db/protocol.ts`
+implements the minimum needed: SCRAM-SHA-256 authentication, parameterised
+queries, and decoding for the types this schema uses.
+
+It should be replaced with `pg` when a driver can be installed. Nothing above
+`src/server/db/index.ts` would change — that is the point of the boundary. Until
+then it is worth knowing that it is a narrow implementation written for one
+schema, not a hardened general-purpose driver.
+
+The **migration runner and seeder** still drive `psql`. That is deliberate and
+appropriate: they execute SQL files we author, not user input, and a migration
+tool wants `psql`'s transaction and error handling.
+
+## Connecting to the wrong database
+
+`dbConfig()` refuses any host that is not loopback unless
+`EARTHTRADE_ALLOW_REMOTE_DB=yes` is set. A stray `PGHOST` in an environment
+cannot silently point local development at something real; the build fails with
+the host it was asked to connect to.
+
+`EARTHTRADE_CATALOG_SOURCE=json` renders from the generated export instead of
+the database. It exists so the two can be compared, and is not a fallback — if
+Postgres is unreachable, the build fails rather than quietly serving a stale
+catalog.

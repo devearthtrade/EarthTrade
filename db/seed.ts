@@ -54,6 +54,7 @@ interface Product {
   description: string[];
   quarantinedContent: { text: string; matches: { reason: string; term: string }[] }[];
   images: { src: string; alt: string }[];
+  pendingImages: { path: string; alt: string | null; sourceUrl: string }[];
   variants: Variant[];
   seo: { title: string | null; description: string | null };
   subscription: boolean;
@@ -246,40 +247,49 @@ for (const p of P) {
 
   // tags and search terms
   w(`DELETE FROM product_tags WHERE product_id = ${pid};`);
-  for (const t of p.sourceTags) {
-    w(`INSERT INTO product_tags (product_id, tag) VALUES (${pid}, ${lit(t)}) ON CONFLICT DO NOTHING;`);
+  for (const [i, t] of p.sourceTags.entries()) {
+    // Order is carried from the source and feeds the search index, so it is
+    // stored rather than left to whatever order rows come back in.
+    w(
+      `INSERT INTO product_tags (product_id, tag, position) VALUES (${pid}, ${lit(t)}, ${i})
+       ON CONFLICT (product_id, tag) DO UPDATE SET position = EXCLUDED.position;`,
+    );
   }
 
-  // variants, matched on SKU where present and on title otherwise
+  // Variants seeded before `ref` existed (migration 0009) have none, so there
+  // is nothing for ON CONFLICT (ref) to match and the insert below would
+  // collide on SKU instead. Stamp the reference onto the existing row first,
+  // using the identity the seeder used at the time: SKU where there is one,
+  // title otherwise.
+  for (const v of p.variants) {
+    w(
+      `UPDATE product_variants SET ref = ${lit(v.id)}
+        WHERE product_id = ${pid} AND ref IS NULL
+          AND ${v.sku ? `sku = ${lit(v.sku)}` : `sku IS NULL AND title = ${lit(v.title)}`};`,
+    );
+  }
+
+  // variants, keyed on the public reference
   for (const [i, v] of p.variants.entries()) {
     w(
       `INSERT INTO product_variants (
-         product_id, sku, title, position, price_cents, compare_at_cents,
+         product_id, ref, sku, title, position, price_cents, compare_at_cents,
          currency, weight_grams, barcode, requires_shipping, taxable
        ) VALUES (
-         ${pid}, ${lit(v.sku)}, ${lit(v.title)}, ${i}, ${v.priceCents},
+         ${pid}, ${lit(v.id)}, ${lit(v.sku)}, ${lit(v.title)}, ${i}, ${v.priceCents},
          ${lit(v.compareAtCents)}, ${lit(v.currency)}, ${lit(v.weightGrams)},
          ${lit(v.barcode)}, ${lit(v.requiresShipping)}, ${lit(v.taxable)}
        )
-       ON CONFLICT (sku) DO UPDATE SET
+       ON CONFLICT (ref) DO UPDATE SET
+         sku = EXCLUDED.sku,
          price_cents = EXCLUDED.price_cents,
          compare_at_cents = EXCLUDED.compare_at_cents,
          weight_grams = EXCLUDED.weight_grams,
          barcode = EXCLUDED.barcode;`,
     );
   }
-  // Variants without a SKU cannot use ON CONFLICT (sku); clear duplicates by
-  // product and title instead so a re-seed stays idempotent.
-  for (const v of p.variants) {
-    if (v.sku) continue;
-    w(
-      `DELETE FROM product_variants a
-        USING product_variants b
-        WHERE a.product_id = ${pid} AND b.product_id = a.product_id
-          AND a.title = b.title AND a.sku IS NULL AND b.sku IS NULL
-          AND a.ctid > b.ctid;`,
-    );
-  }
+  // `ref` is present on every variant and unique, so it is the idempotency
+  // key. SKU cannot be: 30 products have none.
 
   // media links
   w(`DELETE FROM product_media WHERE product_id = ${pid};`);
@@ -289,6 +299,17 @@ for (const p of P) {
       `INSERT INTO product_media (product_id, asset_id, alt, position)
        VALUES (${pid}, (SELECT id FROM media_assets WHERE storage_key = ${lit(key)}), ${lit(img.alt)}, ${i})
        ON CONFLICT (product_id, asset_id) DO UPDATE SET alt = EXCLUDED.alt, position = EXCLUDED.position;`,
+    );
+  }
+
+  // images referenced by the import that have no file yet
+  w(`DELETE FROM product_pending_media WHERE product_id = ${pid} AND resolved_at IS NULL;`);
+  for (const [i, img] of p.pendingImages.entries()) {
+    w(
+      `INSERT INTO product_pending_media (product_id, storage_key, alt, source_url, position)
+       VALUES (${pid}, ${lit(img.path.replace(/^\/+/, ""))}, ${lit(img.alt)}, ${lit(img.sourceUrl)}, ${i})
+       ON CONFLICT (product_id, storage_key) DO UPDATE SET
+         alt = EXCLUDED.alt, position = EXCLUDED.position;`,
     );
   }
 

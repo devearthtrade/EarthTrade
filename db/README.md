@@ -98,3 +98,19 @@ inserted as `NULL`.
 **No `inventory_levels` rows are created.** The source carries no stock figures,
 and absence means *unknown*, which is a different fact from *zero in stock*.
 Only one of those should block a sale, and neither should be guessed.
+
+
+## Reading the catalog from the application
+
+The storefront reads through `src/server/repositories/`, never with raw SQL and
+never through `psql`. See `docs/DATA-LAYER.md`.
+
+```sh
+node db/verify-data-layer.ts                      # 55 checks, JSON vs PostgreSQL
+node src/build.ts                                 # build from PostgreSQL
+EARTHTRADE_CATALOG_SOURCE=json node src/build.ts  # build from the JSON export
+```
+
+Building both ways and diffing `dist/` is the check that the migration did not
+change what shoppers see. The current expected difference is five product pages,
+explained in `docs/DATA-LAYER-VERIFICATION.md`.

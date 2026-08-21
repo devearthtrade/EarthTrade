@@ -1,6 +1,9 @@
-/** Domain model for the EarthTrade storefront. Shapes mirror Shopify objects
- *  (handles, GIDs, variants) so the data layer can later be swapped for live
- *  Storefront API queries without touching templates. */
+/** Domain model for the EarthTrade storefront.
+ *
+ *  These shapes are EarthTrade's own. Products, variants, prices and inventory
+ *  are owned by the EarthTrade database and served through the repository layer
+ *  in `src/server`; no external commerce platform defines them, and none is a
+ *  dependency of this model. */
 
 export type BrandId =
   | "earthtrade"
@@ -69,12 +72,10 @@ export interface Product {
   disclaimer?: string;
   related?: string[];
   boughtWith?: string[];
-  /** Shopify product GID when the product exists in a connected store. */
-  shopifyId?: string;
   /**
-   * True when the price shown is a representative placeholder pending
-   * catalog sync (brands whose live store was not reachable at build time).
-   * SolutionsHOCL and HVO prices come from the live Shopify store.
+   * True when the catalog has no usable price for this product — the source
+   * listed zero, or none at all. The page says so rather than showing a number
+   * nobody stands behind.
    */
   pricePlaceholder?: boolean;
   /** Extra terms folded into the search index (model numbers, problems). */

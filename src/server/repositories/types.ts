@@ -17,6 +17,9 @@ export interface BrandRecord {
   /** The collection this brand's page links to, if it has one. */
   collectionHandle: string | null;
   image: MediaRecord | null;
+  logo: MediaRecord | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
   position: number;
 }
 
@@ -114,6 +117,16 @@ export interface ProductRecord {
   quarantinedContent: QuarantinedBlockRecord[];
   titleMatches: ComplianceMatchRecord[];
   flags: string[];
+}
+
+/** One product's membership of one collection, and how it came to be. */
+export interface CollectionMemberRecord {
+  handle: string;
+  title: string;
+  isCurated: boolean;
+  isDerived: boolean;
+  position: number;
+  publishable: boolean;
 }
 
 export interface CollectionFaqRecord {

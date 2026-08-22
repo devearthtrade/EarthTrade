@@ -13,6 +13,7 @@ import * as repo from "../src/server/repositories/index.ts";
 import { close, rows } from "../src/server/db/index.ts";
 import { createApi, type Router } from "../src/server/api/http.ts";
 import { buildRouter } from "../src/server/api/routes.ts";
+import { asActor } from "../src/server/audit.ts";
 
 /* ------------------------------ test fixtures ---------------------------- */
 
@@ -47,9 +48,14 @@ async function call(
   path: string,
   body?: unknown,
 ): Promise<{ status: number; json: any }> {
+  // Identifies this suite in the audit trail. Without it these writes would be
+  // indistinguishable from real API traffic in the log.
+  const payload =
+    body === undefined ? undefined : { ...(body as Record<string, unknown>), __actor: "zz-catalog-tests" };
+
   const res = await fetch(`${baseUrl}${path}`, {
     method,
-    ...(body === undefined ? {} : { headers: { "content-type": "application/json" }, body: JSON.stringify(body) }),
+    ...(payload === undefined ? {} : { headers: { "content-type": "application/json" }, body: JSON.stringify(payload) }),
   });
   const text = await res.text();
   return { status: res.status, json: text ? JSON.parse(text) : null };
@@ -832,7 +838,12 @@ baseUrl = `http://127.0.0.1:${port}`;
 
 const UNTOUCHED = "imported catalog untouched";
 
-await run("EarthTrade catalog and management API", (s) => s !== UNTOUCHED);
+// Tests that call the write layer directly do not pass through the server,
+// which is where attribution normally happens. Declaring an actor here keeps
+// their audit rows identifiable rather than recorded as "system".
+await asActor({ name: "zz-catalog-tests", via: "test" }, () =>
+  run("EarthTrade catalog and management API", (s) => s !== UNTOUCHED),
+);
 
 // Everything this run created is removed before the last suite, which asserts
 // that the imported catalog came through unchanged. That claim is only

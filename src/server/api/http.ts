@@ -17,6 +17,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { WriteError } from "../repositories/writes.ts";
 import { PgError } from "../db/index.ts";
+import { asActor } from "../audit.ts";
 
 export type Handler = (ctx: RequestContext) => Promise<unknown>;
 
@@ -46,6 +47,44 @@ export class Created {
 
 /** Marks a response as "nothing to return". */
 export const NoContent = Symbol("no content");
+
+/** An HTML response, for the admin pages. */
+export class Html {
+  readonly body: string;
+  readonly status: number;
+
+  constructor(body: string, status = 200) {
+    this.body = body;
+    this.status = status;
+  }
+}
+
+/**
+ * A redirect, which is how every admin form submission ends.
+ *
+ * Post-redirect-get: the browser lands on a GET it can safely reload, and
+ * refreshing the page cannot repeat the write.
+ */
+export class Redirect {
+  readonly location: string;
+  readonly status: number;
+
+  constructor(location: string, status = 303) {
+    this.location = location;
+    this.status = status;
+  }
+}
+
+/** A file response with an explicit content type. */
+export class Asset {
+  readonly body: string | Buffer;
+  readonly contentType: string;
+
+  constructor(body: string | Buffer, contentType: string) {
+    this.body = body;
+    this.contentType = contentType;
+  }
+}
 
 export class Router {
   private readonly routes: Route[] = [];
@@ -92,7 +131,7 @@ export class Router {
 
 const MAX_BODY_BYTES = 1024 * 1024;
 
-async function readBody(req: IncomingMessage): Promise<Record<string, unknown>> {
+async function rawBody(req: IncomingMessage): Promise<Buffer> {
   const chunks: Buffer[] = [];
   let size = 0;
 
@@ -101,9 +140,37 @@ async function readBody(req: IncomingMessage): Promise<Record<string, unknown>> 
     if (size > MAX_BODY_BYTES) throw new WriteError("Request body is too large", 413);
     chunks.push(chunk as Buffer);
   }
-  if (!chunks.length) return {};
+  return Buffer.concat(chunks);
+}
 
-  const text = Buffer.concat(chunks).toString("utf8");
+/**
+ * Reads the request body as JSON, or as an HTML form.
+ *
+ * Forms arrive from the admin pages and carry everything as strings, so a
+ * field named `priceCents` comes through as `"1999"`. Coercion happens in the
+ * admin route that knows what the field means, never here: guessing that a
+ * numeric-looking string is a number is how a SKU of "007" becomes 7.
+ *
+ * A repeated field name collects into an array, which is how multi-select and
+ * ordered lists post.
+ */
+async function readBody(req: IncomingMessage): Promise<Record<string, unknown>> {
+  const type = (req.headers["content-type"] ?? "").split(";")[0]!.trim().toLowerCase();
+  const buffer = await rawBody(req);
+  if (!buffer.length) return {};
+
+  const text = buffer.toString("utf8");
+
+  if (type === "application/x-www-form-urlencoded") {
+    const params = new URLSearchParams(text);
+    const out: Record<string, unknown> = {};
+    for (const key of new Set(params.keys())) {
+      const values = params.getAll(key);
+      out[key] = values.length > 1 ? values : values[0];
+    }
+    return out;
+  }
+
   try {
     const parsed: unknown = JSON.parse(text);
     if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
@@ -130,12 +197,22 @@ function send(res: ServerResponse, status: number, payload: unknown): void {
 
 const LOOPBACK = new Set(["127.0.0.1", "::1", "localhost"]);
 
+function defaultActorName(path: string): string {
+  return path.startsWith("/admin") ? "local-admin" : "api-client";
+}
+
+function escapeText(s: string): string {
+  return s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+}
+
 export interface ServeOptions {
   router: Router;
   port?: number;
   host?: string;
   /** Called for each completed request. Defaults to a one-line log. */
   onRequest?: (line: string) => void;
+  /** Renders a refusal as a page, for browsers rather than API clients. */
+  errorPage?: (message: string, status: number, url: URL) => string;
 }
 
 export function createApi(options: ServeOptions) {
@@ -164,17 +241,63 @@ export function createApi(options: ServeOptions) {
         }
 
         const body = req.method === "GET" || req.method === "DELETE" ? {} : await readBody(req);
-        const result = await match.handler({
+        const context = {
           params: match.params,
           query: url.searchParams,
           body,
           method: req.method ?? "GET",
           path: url.pathname,
-        });
+        };
+
+        // Attribution happens here, once, rather than in each handler. A
+        // mutation with no recorded actor is worse than useless — it looks
+        // like an answer while telling you nothing — and the surest way to
+        // avoid one is to leave no handler in a position to forget.
+        //
+        // There is no authentication, so the name is a declaration rather than
+        // a proof. Recording that a change arrived through the Dashboard rather
+        // than a script is most of the value at this stage, and the field is
+        // ready for a real identity when there is one.
+        const declared = body["__actor"];
+        const result = await asActor(
+          {
+            name: typeof declared === "string" && declared.trim() ? declared.trim() : defaultActorName(url.pathname),
+            via: url.pathname.startsWith("/admin") ? "dashboard" : "api",
+          },
+          () => match.handler(context),
+        );
 
         if (result === NoContent) {
           status = 204;
           res.writeHead(204).end();
+        } else if (result instanceof Redirect) {
+          status = result.status;
+          res.writeHead(result.status, { location: result.location, "cache-control": "no-store" }).end();
+        } else if (result instanceof Html) {
+          status = result.status;
+          const body = Buffer.from(result.body, "utf8");
+          res.writeHead(result.status, {
+            "content-type": "text/html; charset=utf-8",
+            "content-length": body.length,
+            "cache-control": "no-store",
+            // The admin renders catalog copy that people paste in. Even on
+            // loopback, a page that cannot be framed and cannot sniff types is
+            // one fewer way for pasted markup to do something surprising.
+            "x-content-type-options": "nosniff",
+            "x-frame-options": "DENY",
+            "referrer-policy": "no-referrer",
+          });
+          res.end(body);
+        } else if (result instanceof Asset) {
+          status = 200;
+          const body = Buffer.isBuffer(result.body) ? result.body : Buffer.from(result.body, "utf8");
+          res.writeHead(200, {
+            "content-type": result.contentType,
+            "content-length": body.length,
+            "cache-control": "no-store",
+            "x-content-type-options": "nosniff",
+          });
+          res.end(body);
         } else if (result instanceof Created) {
           status = 201;
           send(res, 201, result.value);
@@ -182,7 +305,23 @@ export function createApi(options: ServeOptions) {
           send(res, 200, result);
         }
       } catch (err) {
-        if (err instanceof WriteError) {
+        // A person using the admin gets a page they can read and act on; an API
+        // client gets the JSON it can handle. Same error, two audiences.
+        const wantsHtml =
+          url.pathname.startsWith("/admin") &&
+          (req.headers.accept ?? "").includes("text/html");
+
+        if (err instanceof WriteError && wantsHtml) {
+          status = err.status;
+          const page = options.errorPage?.(err.message, err.status, url) ?? escapeText(err.message);
+          const body = Buffer.from(page, "utf8");
+          res.writeHead(err.status, {
+            "content-type": "text/html; charset=utf-8",
+            "content-length": body.length,
+            "cache-control": "no-store",
+          });
+          res.end(body);
+        } else if (err instanceof WriteError) {
           status = err.status;
           send(res, err.status, {
             error: err.message,

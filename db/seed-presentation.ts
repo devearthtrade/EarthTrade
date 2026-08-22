@@ -220,17 +220,34 @@ for (const [label, sql] of [
   console.log(`  ${String(scalar(sql + ";")).padStart(5)}  ${label}`);
 }
 
-// Curation that no longer resolves. Reported rather than invented or dropped
-// in silence: these are the handles somebody has to re-curate.
-const stale = data.collections.flatMap((c) =>
-  c.curatedProducts.map((h) => ({ collection: c.handle, handle: h })),
-);
+// Curation that no longer resolves. Recorded rather than invented or dropped
+// in silence: each one is a decision that has come unstuck, and only a person
+// can say whether the product was renamed, replaced, or never imported.
+//
+// Written to curation_gaps so the Dashboard can list them. Gaps somebody has
+// already settled stay settled; re-seeding refreshes when each was last seen
+// rather than reopening it.
 const known = new Set(
   scalar("SELECT string_agg(handle, E'\\n') FROM products;").split("\n"),
 );
-const missing = stale.filter((s) => !known.has(s.handle));
+const missing = data.collections.flatMap((c) =>
+  c.curatedProducts
+    .map((handle, position) => ({ collection: c.handle, handle, position }))
+    .filter((x) => !known.has(x.handle)),
+);
+
+const gapStatements = missing.map(
+  (m) =>
+    `INSERT INTO curation_gaps (source_type, source_handle, missing_handle, position)
+     VALUES ('collection', ${lit(m.collection)}, ${lit(m.handle)}, ${m.position})
+     ON CONFLICT (source_type, source_handle, missing_handle)
+       DO UPDATE SET last_seen_at = now(), position = EXCLUDED.position;`,
+);
+if (gapStatements.length) psql(`BEGIN;\n${gapStatements.join("\n")}\nCOMMIT;`, { quiet: true });
+
 if (missing.length) {
-  console.log(`\n${missing.length} curated handle(s) do not resolve:\n`);
-  for (const m of missing) console.log(`  ${m.collection.padEnd(22)} ${m.handle}`);
-  console.log("\nThese collections stay populated by their derived membership.");
+  const open = scalar("SELECT count(*) FROM curation_gaps WHERE resolved_at IS NULL;");
+  console.log(`\n${missing.length} curated handle(s) do not resolve; ${open} open in curation_gaps.`);
+  console.log("Review them at /admin/curation. These collections stay populated by");
+  console.log("their derived membership in the meantime.");
 }

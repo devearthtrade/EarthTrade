@@ -50,12 +50,15 @@ node db/verify-data-layer.ts | tail -3 | sed 's/^/  /'
 step "6. catalog and management API tests"
 node tests/catalog.test.ts | tail -8 | sed 's/^/  /'
 
-step "7. storefront build from PostgreSQL"
+step "7. admin dashboard tests"
+node tests/admin.test.ts | tail -10 | sed 's/^/  /'
+
+step "8. storefront build from PostgreSQL"
 rm -rf dist
 node src/build.ts | sed 's/^/  /'
 
 if [[ "${1:-}" != "--quick" ]]; then
-  step "8. storefront build from the JSON export, and the difference"
+  step "9. storefront build from the JSON export, and the difference"
   SNAP="$(mktemp -d)"
   trap 'rm -rf "$SNAP"' EXIT
   cp -r dist "$SNAP/pg"

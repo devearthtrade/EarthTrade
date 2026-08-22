@@ -15,10 +15,16 @@
  * a banned claim can be created and edited, but cannot be published — the
  * decision is recorded on the row rather than enforced by whoever remembers to
  * check.
+ *
+ * **Every mutation is audited.** The audit row is written on the same
+ * connection, inside the same transaction, as the change it describes — so a
+ * change that rolls back takes its audit row with it, and the trail never
+ * records something that did not happen.
  */
 
 import { transaction } from "../db/index.ts";
 import { screen, screenCopy, screenTitle } from "../../lib/compliance.ts";
+import { actorLabel, diff, record, type Query as AuditQuery } from "../audit.ts";
 
 /** A write was refused. The message is meant to be shown to whoever tried. */
 export class WriteError extends Error {
@@ -34,6 +40,42 @@ export class WriteError extends Error {
 }
 
 type Query = <R = Record<string, unknown>>(sql: string, params?: unknown[]) => Promise<R[]>;
+
+/**
+ * The auditable state of a product: the fields a person can change, and the
+ * conclusions the system draws from them. Read before and after a write so the
+ * audit row shows what actually moved.
+ */
+async function snapshot(q: Query, id: string): Promise<Record<string, unknown>> {
+  const [row] = await q<Record<string, unknown>>(
+    `SELECT p.handle, p.title, p.card_title, p.short_benefit, p.product_type,
+            p.seo_title, p.seo_description, p.status, p.publishable, p.withheld_reason,
+            p.price_provisional, p.subscription_eligible,
+            b.slug AS brand, c.slug AS category,
+            (p.archived_at IS NOT NULL) AS archived,
+            pc.description,
+            (SELECT array_agg(t.tag::text ORDER BY t.position) FROM product_tags t
+              WHERE t.product_id = p.id) AS tags
+       FROM products p
+       JOIN brands b ON b.id = p.brand_id
+       LEFT JOIN categories c ON c.id = p.category_id
+       LEFT JOIN product_content pc ON pc.product_id = p.id
+      WHERE p.id = $1`,
+    [id],
+  );
+  return row ?? {};
+}
+
+/** The auditable state of a variant. */
+async function variantSnapshot(q: Query, id: string): Promise<Record<string, unknown>> {
+  const [row] = await q<Record<string, unknown>>(
+    `SELECT ref, sku, title, price_cents, compare_at_cents, currency,
+            weight_grams, barcode, requires_shipping, taxable, is_active
+       FROM product_variants WHERE id = $1`,
+    [id],
+  );
+  return row ?? {};
+}
 
 /* ------------------------------- helpers -------------------------------- */
 
@@ -299,6 +341,12 @@ export async function createProduct(input: ProductInput): Promise<WriteResult> {
     );
 
     await reflag(q, id);
+    await record(q as AuditQuery, {
+      action: "product.created",
+      entityType: "product",
+      entityId: id,
+      after: await snapshot(q, id),
+    });
     return summarise(q, id);
   });
 }
@@ -309,6 +357,7 @@ export async function updateProduct(
 ): Promise<WriteResult> {
   return transaction(async (q) => {
     const id = await productId(q, handle);
+    const before = await snapshot(q, id);
 
     const sets: string[] = [];
     const params: unknown[] = [];
@@ -389,6 +438,19 @@ export async function updateProduct(
     }
 
     await reflag(q, id);
+
+    // An update that changed nothing is not an event, and logging it would bury
+    // the changes that matter.
+    const changes = diff(before, await snapshot(q, id));
+    if (changes) {
+      await record(q as AuditQuery, {
+        action: "product.updated",
+        entityType: "product",
+        entityId: id,
+        before: changes.before,
+        after: changes.after,
+      });
+    }
     return summarise(q, id);
   });
 }
@@ -431,6 +493,7 @@ export async function publishProduct(handle: string): Promise<WriteResult> {
       throw new WriteError(`Cannot publish ${handle}: ${blockers.join("; ")}.`, 409, { blockers });
     }
 
+    const before = await snapshot(q, id);
     await q(
       `UPDATE products SET publishable = true, withheld_reason = NULL, status = 'active',
                            price_provisional = false,
@@ -439,6 +502,13 @@ export async function publishProduct(handle: string): Promise<WriteResult> {
       [id],
     );
     await reflag(q, id);
+    await record(q as AuditQuery, {
+      action: "product.published",
+      entityType: "product",
+      entityId: id,
+      before,
+      after: await snapshot(q, id),
+    });
     return summarise(q, id);
   });
 }
@@ -452,8 +522,16 @@ export async function unpublishProduct(handle: string, reason: string): Promise<
   }
   return transaction(async (q) => {
     const id = await productId(q, handle);
+    const before = await snapshot(q, id);
     await q(`UPDATE products SET publishable = false, withheld_reason = $2 WHERE id = $1`, [id, reason]);
     await reflag(q, id);
+    await record(q as AuditQuery, {
+      action: "product.unpublished",
+      entityType: "product",
+      entityId: id,
+      before,
+      after: await snapshot(q, id),
+    });
     return summarise(q, id);
   });
 }
@@ -467,6 +545,7 @@ export async function unpublishProduct(handle: string, reason: string): Promise<
 export async function archiveProduct(handle: string): Promise<WriteResult> {
   return transaction(async (q) => {
     const id = await productId(q, handle);
+    const before = await snapshot(q, id);
     await q(
       `UPDATE products SET status = 'archived', publishable = false,
                            withheld_reason = coalesce(withheld_reason, 'Archived'),
@@ -475,6 +554,13 @@ export async function archiveProduct(handle: string): Promise<WriteResult> {
       [id],
     );
     await reflag(q, id);
+    await record(q as AuditQuery, {
+      action: "product.archived",
+      entityType: "product",
+      entityId: id,
+      before,
+      after: await snapshot(q, id),
+    });
     return summarise(q, id);
   });
 }
@@ -483,6 +569,7 @@ export async function archiveProduct(handle: string): Promise<WriteResult> {
 export async function unarchiveProduct(handle: string): Promise<WriteResult> {
   return transaction(async (q) => {
     const id = await productId(q, handle);
+    const before = await snapshot(q, id);
     await q(
       `UPDATE products SET status = 'draft', archived_at = NULL,
                            withheld_reason = coalesce(withheld_reason, 'Not published yet')
@@ -490,6 +577,13 @@ export async function unarchiveProduct(handle: string): Promise<WriteResult> {
       [id],
     );
     await reflag(q, id);
+    await record(q as AuditQuery, {
+      action: "product.unarchived",
+      entityType: "product",
+      entityId: id,
+      before,
+      after: await snapshot(q, id),
+    });
     return summarise(q, id);
   });
 }
@@ -554,7 +648,14 @@ export async function addVariant(handle: string, input: VariantInput): Promise<{
         input.requiresShipping ?? true, input.taxable ?? true,
       ],
     );
+    const [created] = await q<{ id: string }>(`SELECT id FROM product_variants WHERE ref = $1`, [ref]);
     await reflag(q, id);
+    await record(q as AuditQuery, {
+      action: "variant.created",
+      entityType: "variant",
+      entityId: created!.id,
+      after: { product: handle, ...(await variantSnapshot(q, created!.id)) },
+    });
     return { ref };
   });
 }
@@ -566,6 +667,7 @@ export async function updateVariant(ref: string, patch: Partial<VariantInput>): 
       [ref],
     );
     if (!existing) throw new WriteError(`No variant with reference ${JSON.stringify(ref)}`, 404);
+    const before = await variantSnapshot(q, existing.id);
 
     const sets: string[] = [];
     const params: unknown[] = [];
@@ -609,6 +711,17 @@ export async function updateVariant(ref: string, patch: Partial<VariantInput>): 
       await q(`UPDATE product_variants SET ${sets.join(", ")} WHERE id = ${bind(existing.id)}`, params);
     }
     await reflag(q, existing.product_id);
+
+    const changes = diff(before, await variantSnapshot(q, existing.id));
+    if (changes) {
+      await record(q as AuditQuery, {
+        action: changes.after["price_cents"] !== undefined ? "variant.price_changed" : "variant.updated",
+        entityType: "variant",
+        entityId: existing.id,
+        before: changes.before,
+        after: changes.after,
+      });
+    }
     return { ref };
   });
 }
@@ -641,8 +754,16 @@ export async function deactivateVariant(ref: string): Promise<{ ref: string }> {
       );
     }
 
+    const before = await variantSnapshot(q, v.id);
     await q(`UPDATE product_variants SET is_active = false WHERE id = $1`, [v.id]);
     await reflag(q, v.product_id);
+    await record(q as AuditQuery, {
+      action: "variant.deactivated",
+      entityType: "variant",
+      entityId: v.id,
+      before,
+      after: await variantSnapshot(q, v.id),
+    });
     return { ref };
   });
 }
@@ -703,6 +824,12 @@ export async function addMedia(handle: string, input: MediaInput): Promise<{ src
       [id, key, input.alt, n],
     );
     await reflag(q, id);
+    await record(q as AuditQuery, {
+      action: "media.attached",
+      entityType: "product",
+      entityId: id,
+      after: { src: `/${key}`, alt: input.alt, position: n },
+    });
     return { src: `/${key}` };
   });
 }
@@ -711,11 +838,11 @@ export async function removeMedia(handle: string, src: string): Promise<{ remove
   const key = src.replace(/^\/+/, "");
   return transaction(async (q) => {
     const id = await productId(q, handle);
-    const removed = await q(
+    const removed = await q<{ id: string; alt: string | null; position: number }>(
       `DELETE FROM product_media
         WHERE product_id = $1
           AND asset_id = (SELECT id FROM media_assets WHERE storage_key = $2)
-        RETURNING id`,
+        RETURNING id, alt, position`,
       [id, key],
     );
     if (!removed.length) throw new WriteError(`${handle} has no image at ${src}`, 404);
@@ -729,6 +856,12 @@ export async function removeMedia(handle: string, src: string): Promise<{ remove
       [id],
     );
     await reflag(q, id);
+    await record(q as AuditQuery, {
+      action: "media.removed",
+      entityType: "product",
+      entityId: id,
+      before: { src: `/${key}`, alt: removed[0]!.alt, position: removed[0]!.position },
+    });
     return { removed: true };
   });
 }
@@ -750,6 +883,12 @@ export async function reorderMedia(handle: string, order: string[]): Promise<{ o
       );
     }
 
+    const previous = await q<{ storage_key: string }>(
+      `SELECT a.storage_key FROM product_media m JOIN media_assets a ON a.id = m.asset_id
+        WHERE m.product_id = $1 ORDER BY m.position`,
+      [id],
+    );
+
     for (const [i, key] of wanted.entries()) {
       await q(
         `UPDATE product_media SET position = $3
@@ -757,7 +896,22 @@ export async function reorderMedia(handle: string, order: string[]): Promise<{ o
         [id, key, i],
       );
     }
-    return { order: wanted.map((k) => `/${k}`) };
+
+    const applied = wanted.map((k) => `/${k}`);
+    const changes = diff(
+      { order: previous.map((p) => `/${p.storage_key}`) },
+      { order: applied },
+    );
+    if (changes) {
+      await record(q as AuditQuery, {
+        action: "media.reordered",
+        entityType: "product",
+        entityId: id,
+        before: changes.before,
+        after: changes.after,
+      });
+    }
+    return { order: applied };
   });
 }
 
@@ -782,6 +936,12 @@ export async function setProductCollections(
       if (!found.length) throw new WriteError(`No collection with handle ${JSON.stringify(h)}`, 422);
     }
 
+    const previous = await q<{ handle: string }>(
+      `SELECT c.handle FROM collection_products cp JOIN collections c ON c.id = cp.collection_id
+        WHERE cp.product_id = $1 AND cp.is_curated ORDER BY cp.collection_position, c.handle`,
+      [id],
+    );
+
     await q(`DELETE FROM collection_products WHERE product_id = $1 AND is_curated AND NOT is_derived`, [id]);
     await q(`UPDATE collection_products SET is_curated = false WHERE product_id = $1 AND is_curated`, [id]);
 
@@ -794,6 +954,17 @@ export async function setProductCollections(
            DO UPDATE SET is_curated = true, collection_position = EXCLUDED.collection_position`,
         [h, id, i],
       );
+    }
+
+    const changes = diff({ curated: previous.map((p) => p.handle) }, { curated: handles });
+    if (changes) {
+      await record(q as AuditQuery, {
+        action: "product.collections_changed",
+        entityType: "product",
+        entityId: id,
+        before: changes.before,
+        after: changes.after,
+      });
     }
     return { curated: handles };
   });
@@ -839,4 +1010,664 @@ function pgArray(values: readonly string[]): string {
 /** Screens text without writing anything, for previewing an edit. */
 export function screenText(text: string, brandSlug: string) {
   return screen(text, brandSlug);
+}
+
+/* -------------------------------- brands -------------------------------- */
+
+export interface BrandInput {
+  slug: string;
+  name: string;
+  tagline?: string | null;
+  summary?: string | null;
+  story?: string[];
+  theme?: string | null;
+  collectionHandle?: string | null;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+}
+
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+async function brandSnapshot(q: Query, id: string): Promise<Record<string, unknown>> {
+  const [row] = await q<Record<string, unknown>>(
+    `SELECT b.slug, b.name, b.tagline, b.summary, b.story, b.theme, b.position,
+            b.seo_title, b.seo_description, c.handle AS collection
+       FROM brands b LEFT JOIN collections c ON c.id = b.collection_id
+      WHERE b.id = $1`,
+    [id],
+  );
+  return row ?? {};
+}
+
+export async function createBrand(input: BrandInput): Promise<{ slug: string }> {
+  if (!SLUG_RE.test(input.slug ?? "")) {
+    throw new WriteError(`slug ${JSON.stringify(input.slug)} must be lowercase letters, digits and hyphens`);
+  }
+  if (!input.name?.trim()) throw new WriteError("name is required");
+
+  return transaction(async (q) => {
+    const clash = await q(`SELECT 1 FROM brands WHERE slug = $1`, [input.slug]);
+    if (clash.length) throw new WriteError(`A brand with slug ${JSON.stringify(input.slug)} already exists`, 409);
+
+    const [{ next }] = await q<{ next: number }>(
+      `SELECT coalesce(max(position), -1) + 1 AS next FROM brands`,
+    );
+
+    const [row] = await q<{ id: string }>(
+      `INSERT INTO brands (slug, name, tagline, summary, story, theme, position, seo_title, seo_description)
+       VALUES ($1, $2, $3, $4, $5::text[], $6, $7, $8, $9) RETURNING id`,
+      [
+        input.slug, input.name, input.tagline ?? null, input.summary ?? null,
+        pgArray(input.story ?? []), input.theme ?? null, next,
+        input.seoTitle ?? null, input.seoDescription ?? null,
+      ],
+    );
+
+    if (input.collectionHandle) await linkBrandCollection(q, row!.id, input.collectionHandle);
+
+    await record(q as AuditQuery, {
+      action: "brand.created",
+      entityType: "brand",
+      entityId: row!.id,
+      after: await brandSnapshot(q, row!.id),
+    });
+    return { slug: input.slug };
+  });
+}
+
+async function linkBrandCollection(q: Query, brandRowId: string, handle: string | null): Promise<void> {
+  if (handle === null) {
+    await q(`UPDATE brands SET collection_id = NULL WHERE id = $1`, [brandRowId]);
+    return;
+  }
+  const found = await q(`SELECT 1 FROM collections WHERE handle = $1`, [handle]);
+  if (!found.length) throw new WriteError(`No collection with handle ${JSON.stringify(handle)}`, 422);
+  await q(
+    `UPDATE brands SET collection_id = (SELECT id FROM collections WHERE handle = $2) WHERE id = $1`,
+    [brandRowId, handle],
+  );
+}
+
+export async function updateBrand(slug: string, patch: Partial<BrandInput>): Promise<{ slug: string }> {
+  return transaction(async (q) => {
+    const [brand] = await q<{ id: string }>(`SELECT id FROM brands WHERE slug = $1`, [slug]);
+    if (!brand) throw new WriteError(`No brand with slug ${JSON.stringify(slug)}`, 404);
+
+    const before = await brandSnapshot(q, brand.id);
+    const sets: string[] = [];
+    const params: unknown[] = [];
+    const bind = (v: unknown): string => `$${params.push(v)}`;
+
+    if ("name" in patch) {
+      if (!patch.name?.trim()) throw new WriteError("name cannot be empty");
+      sets.push(`name = ${bind(patch.name)}`);
+    }
+    if ("tagline" in patch) sets.push(`tagline = ${bind(patch.tagline ?? null)}`);
+    if ("summary" in patch) sets.push(`summary = ${bind(patch.summary ?? null)}`);
+    if ("theme" in patch) sets.push(`theme = ${bind(patch.theme ?? null)}`);
+    if ("seoTitle" in patch) sets.push(`seo_title = ${bind(patch.seoTitle ?? null)}`);
+    if ("seoDescription" in patch) sets.push(`seo_description = ${bind(patch.seoDescription ?? null)}`);
+    if ("story" in patch) sets.push(`story = ${bind(pgArray(patch.story ?? []))}::text[]`);
+
+    if (sets.length) await q(`UPDATE brands SET ${sets.join(", ")} WHERE id = ${bind(brand.id)}`, params);
+    if ("collectionHandle" in patch) await linkBrandCollection(q, brand.id, patch.collectionHandle ?? null);
+
+    const changes = diff(before, await brandSnapshot(q, brand.id));
+    if (changes) {
+      await record(q as AuditQuery, {
+        action: "brand.updated",
+        entityType: "brand",
+        entityId: brand.id,
+        before: changes.before,
+        after: changes.after,
+      });
+    }
+    return { slug };
+  });
+}
+
+/** Attaches a logo or hero image to a brand. Local paths only, as with products. */
+export async function setBrandImage(
+  slug: string,
+  kind: "logo" | "hero",
+  image: { src: string; alt: string } | null,
+): Promise<{ slug: string }> {
+  if (image && /^[a-z]+:\/\//i.test(image.src)) {
+    throw new WriteError(`src must be a path served by EarthTrade, not an absolute URL (${image.src})`);
+  }
+  if (image && !image.alt?.trim()) throw new WriteError("alt text is required for every image");
+
+  const idColumn = kind === "logo" ? "logo_id" : "image_id";
+  const altColumn = kind === "logo" ? "logo_alt" : "image_alt";
+
+  return transaction(async (q) => {
+    const [brand] = await q<{ id: string }>(`SELECT id FROM brands WHERE slug = $1`, [slug]);
+    if (!brand) throw new WriteError(`No brand with slug ${JSON.stringify(slug)}`, 404);
+
+    if (!image) {
+      await q(`UPDATE brands SET ${idColumn} = NULL, ${altColumn} = NULL WHERE id = $1`, [brand.id]);
+      await record(q as AuditQuery, {
+        action: `brand.${kind}_removed`,
+        entityType: "brand",
+        entityId: brand.id,
+      });
+      return { slug };
+    }
+
+    const key = image.src.replace(/^\/+/, "");
+    await q(
+      `INSERT INTO media_assets (storage_key, kind) VALUES ($1, 'image')
+       ON CONFLICT (storage_key) DO NOTHING`,
+      [key],
+    );
+    await q(
+      `UPDATE brands SET ${idColumn} = (SELECT id FROM media_assets WHERE storage_key = $2),
+                         ${altColumn} = $3
+        WHERE id = $1`,
+      [brand.id, key, image.alt],
+    );
+    await record(q as AuditQuery, {
+      action: `brand.${kind}_set`,
+      entityType: "brand",
+      entityId: brand.id,
+      after: { src: `/${key}`, alt: image.alt },
+    });
+    return { slug };
+  });
+}
+
+/* ------------------------------ collections ------------------------------ */
+
+export interface CollectionInput {
+  handle: string;
+  title: string;
+  heroTitle?: string | null;
+  eyebrow?: string | null;
+  description?: string | null;
+  editorial?: string[];
+  theme?: string | null;
+  role?: string;
+  isHidden?: boolean;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+}
+
+async function collectionSnapshot(q: Query, id: string): Promise<Record<string, unknown>> {
+  const [row] = await q<Record<string, unknown>>(
+    `SELECT handle, title, hero_title, eyebrow, description, editorial, theme,
+            role, is_hidden, seo_title, seo_description, position
+       FROM collections WHERE id = $1`,
+    [id],
+  );
+  return row ?? {};
+}
+
+const COLLECTION_ROLES = new Set(["category", "brand", "editorial"]);
+
+export async function createCollection(input: CollectionInput): Promise<{ handle: string }> {
+  if (!SLUG_RE.test(input.handle ?? "")) {
+    throw new WriteError(`handle ${JSON.stringify(input.handle)} must be lowercase letters, digits and hyphens`);
+  }
+  if (!input.title?.trim()) throw new WriteError("title is required");
+  if (input.role && !COLLECTION_ROLES.has(input.role)) {
+    throw new WriteError(`role must be one of ${[...COLLECTION_ROLES].join(", ")}`);
+  }
+
+  return transaction(async (q) => {
+    const clash = await q(`SELECT 1 FROM collections WHERE handle = $1`, [input.handle]);
+    if (clash.length) {
+      throw new WriteError(`A collection with handle ${JSON.stringify(input.handle)} already exists`, 409);
+    }
+
+    const [{ next }] = await q<{ next: number }>(
+      `SELECT coalesce(max(position), -1) + 1 AS next FROM collections`,
+    );
+
+    const [row] = await q<{ id: string }>(
+      `INSERT INTO collections (handle, title, hero_title, eyebrow, description, editorial,
+                                theme, role, is_hidden, seo_title, seo_description, position)
+       VALUES ($1, $2, $3, $4, $5, $6::text[], $7, $8, $9, $10, $11, $12) RETURNING id`,
+      [
+        input.handle, input.title, input.heroTitle ?? null, input.eyebrow ?? null,
+        input.description ?? null, pgArray(input.editorial ?? []), input.theme ?? null,
+        input.role ?? "editorial",
+        // A collection with no description is not a page anyone decided to
+        // publish, and the storefront hides it. Say so at creation rather than
+        // letting an empty page appear.
+        input.isHidden ?? !input.description,
+        input.seoTitle ?? null, input.seoDescription ?? null, next,
+      ],
+    );
+
+    await record(q as AuditQuery, {
+      action: "collection.created",
+      entityType: "collection",
+      entityId: row!.id,
+      after: await collectionSnapshot(q, row!.id),
+    });
+    return { handle: input.handle };
+  });
+}
+
+export async function updateCollection(
+  handle: string,
+  patch: Partial<CollectionInput>,
+): Promise<{ handle: string }> {
+  if (patch.role && !COLLECTION_ROLES.has(patch.role)) {
+    throw new WriteError(`role must be one of ${[...COLLECTION_ROLES].join(", ")}`);
+  }
+
+  return transaction(async (q) => {
+    const [collection] = await q<{ id: string }>(`SELECT id FROM collections WHERE handle = $1`, [handle]);
+    if (!collection) throw new WriteError(`No collection with handle ${JSON.stringify(handle)}`, 404);
+
+    const before = await collectionSnapshot(q, collection.id);
+    const sets: string[] = [];
+    const params: unknown[] = [];
+    const bind = (v: unknown): string => `$${params.push(v)}`;
+
+    if ("title" in patch) {
+      if (!patch.title?.trim()) throw new WriteError("title cannot be empty");
+      sets.push(`title = ${bind(patch.title)}`);
+    }
+    if ("heroTitle" in patch) sets.push(`hero_title = ${bind(patch.heroTitle ?? null)}`);
+    if ("eyebrow" in patch) sets.push(`eyebrow = ${bind(patch.eyebrow ?? null)}`);
+    if ("description" in patch) sets.push(`description = ${bind(patch.description ?? null)}`);
+    if ("theme" in patch) sets.push(`theme = ${bind(patch.theme ?? null)}`);
+    if ("role" in patch) sets.push(`role = ${bind(patch.role ?? "editorial")}`);
+    if ("isHidden" in patch) sets.push(`is_hidden = ${bind(patch.isHidden ?? false)}`);
+    if ("seoTitle" in patch) sets.push(`seo_title = ${bind(patch.seoTitle ?? null)}`);
+    if ("seoDescription" in patch) sets.push(`seo_description = ${bind(patch.seoDescription ?? null)}`);
+    if ("editorial" in patch) sets.push(`editorial = ${bind(pgArray(patch.editorial ?? []))}::text[]`);
+
+    if (sets.length) {
+      await q(`UPDATE collections SET ${sets.join(", ")} WHERE id = ${bind(collection.id)}`, params);
+    }
+
+    const changes = diff(before, await collectionSnapshot(q, collection.id));
+    if (changes) {
+      await record(q as AuditQuery, {
+        action: "collection.updated",
+        entityType: "collection",
+        entityId: collection.id,
+        before: changes.before,
+        after: changes.after,
+      });
+    }
+    return { handle };
+  });
+}
+
+/**
+ * Sets the curated products of a collection, in order.
+ *
+ * The mirror image of `setProductCollections`. Derived membership is untouched:
+ * removing a product from a curated list says nothing about the tags that also
+ * put it there.
+ */
+export async function setCollectionProducts(
+  handle: string,
+  productHandles: string[],
+): Promise<{ curated: string[] }> {
+  return transaction(async (q) => {
+    const [collection] = await q<{ id: string }>(`SELECT id FROM collections WHERE handle = $1`, [handle]);
+    if (!collection) throw new WriteError(`No collection with handle ${JSON.stringify(handle)}`, 404);
+
+    for (const h of productHandles) {
+      const found = await q(`SELECT 1 FROM products WHERE handle = $1`, [h]);
+      if (!found.length) throw new WriteError(`No product with handle ${JSON.stringify(h)}`, 422);
+    }
+
+    const previous = await q<{ handle: string }>(
+      `SELECT p.handle FROM collection_products cp JOIN products p ON p.id = cp.product_id
+        WHERE cp.collection_id = $1 AND cp.is_curated ORDER BY cp.collection_position, p.handle`,
+      [collection.id],
+    );
+
+    await q(
+      `DELETE FROM collection_products WHERE collection_id = $1 AND is_curated AND NOT is_derived`,
+      [collection.id],
+    );
+    await q(
+      `UPDATE collection_products SET is_curated = false WHERE collection_id = $1 AND is_curated`,
+      [collection.id],
+    );
+
+    for (const [i, h] of productHandles.entries()) {
+      await q(
+        `INSERT INTO collection_products
+           (collection_id, product_id, collection_position, product_position, is_curated)
+         SELECT $1, p.id, $3, 0, true FROM products p WHERE p.handle = $2
+         ON CONFLICT (collection_id, product_id)
+           DO UPDATE SET is_curated = true, collection_position = EXCLUDED.collection_position`,
+        [collection.id, h, i],
+      );
+    }
+
+    const changes = diff({ curated: previous.map((p) => p.handle) }, { curated: productHandles });
+    if (changes) {
+      await record(q as AuditQuery, {
+        action: "collection.products_changed",
+        entityType: "collection",
+        entityId: collection.id,
+        before: changes.before,
+        after: changes.after,
+      });
+    }
+    return { curated: productHandles };
+  });
+}
+
+/* ------------------------------- inventory ------------------------------- */
+
+/**
+ * Inventory has three states, and only two of them are numbers.
+ *
+ *   unknown   no `inventory_levels` row. Nobody has counted this variant.
+ *   zero      a row saying 0. Somebody counted, and there are none.
+ *   positive  a row saying n > 0.
+ *
+ * The difference between the first two is the whole point. "Nobody has checked"
+ * and "we checked and there are none" lead to different decisions, and the one
+ * mistake that matters is quietly turning the first into the second: it makes
+ * the catalog look counted when it is not.
+ *
+ * So setting a count creates a row, and clearing a count deletes it. There is
+ * no value that means "unknown" inside a row, because a nullable integer would
+ * invite exactly the confusion this is avoiding.
+ */
+
+export interface StockInput {
+  /** Units on hand. Zero is a real answer; null means "uncount this". */
+  onHand: number | null;
+  locationCode?: string;
+  reason?: string;
+  note?: string | null;
+}
+
+const STOCK_REASONS = new Set(["receipt", "sale", "return", "correction", "shrink", "transfer"]);
+
+export async function setStock(ref: string, input: StockInput): Promise<{
+  ref: string;
+  state: "unknown" | "zero" | "positive";
+  onHand: number | null;
+}> {
+  if (input.onHand !== null) {
+    if (!Number.isInteger(input.onHand) || input.onHand < 0) {
+      throw new WriteError(`onHand must be a whole number of units or null, got ${JSON.stringify(input.onHand)}`);
+    }
+  }
+  const reason = input.reason ?? "correction";
+  if (!STOCK_REASONS.has(reason)) {
+    throw new WriteError(`reason must be one of ${[...STOCK_REASONS].join(", ")}`);
+  }
+
+  return transaction(async (q) => {
+    const [variant] = await q<{ id: string; product_id: string }>(
+      `SELECT id, product_id FROM product_variants WHERE ref = $1`,
+      [ref],
+    );
+    if (!variant) throw new WriteError(`No variant with reference ${JSON.stringify(ref)}`, 404);
+
+    const code = input.locationCode ?? "default";
+    const [location] = await q<{ id: string }>(`SELECT id FROM inventory_locations WHERE code = $1`, [code]);
+    if (!location) throw new WriteError(`No inventory location with code ${JSON.stringify(code)}`, 422);
+
+    const [existing] = await q<{ on_hand: number; reserved: number }>(
+      `SELECT on_hand, reserved FROM inventory_levels WHERE variant_id = $1 AND location_id = $2`,
+      [variant.id, location.id],
+    );
+    const before = existing ? { onHand: existing.on_hand } : { onHand: null };
+
+    if (input.onHand === null) {
+      // Returning a variant to uncounted. Refused when stock is reserved,
+      // because there is no honest way to describe reserved units of an
+      // unknown quantity.
+      if (existing && existing.reserved > 0) {
+        throw new WriteError(
+          `Cannot uncount ${ref}: ${existing.reserved} unit(s) are reserved. Release the reservation first.`,
+          409,
+        );
+      }
+      await q(`DELETE FROM inventory_levels WHERE variant_id = $1 AND location_id = $2`, [
+        variant.id, location.id,
+      ]);
+      await record(q as AuditQuery, {
+        action: "inventory.uncounted",
+        entityType: "variant",
+        entityId: variant.id,
+        before,
+        after: { onHand: null },
+      });
+      await reflag(q, variant.product_id);
+      return { ref, state: "unknown", onHand: null };
+    }
+
+    if (existing && existing.reserved > input.onHand) {
+      throw new WriteError(
+        `Cannot set ${ref} to ${input.onHand}: ${existing.reserved} unit(s) are already reserved.`,
+        409,
+      );
+    }
+
+    await q(
+      `INSERT INTO inventory_levels (variant_id, location_id, on_hand)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (variant_id, location_id) DO UPDATE SET on_hand = EXCLUDED.on_hand`,
+      [variant.id, location.id, input.onHand],
+    );
+
+    // The ledger explains how the count got where it is. A correction from
+    // unknown has no delta to record, because there was no previous number.
+    const delta = input.onHand - (existing?.on_hand ?? 0);
+    if (delta !== 0) {
+      await q(
+        `INSERT INTO inventory_movements (variant_id, location_id, delta, reason, note)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [variant.id, location.id, delta, reason, input.note ?? null],
+      );
+    }
+
+    await record(q as AuditQuery, {
+      action: existing ? "inventory.adjusted" : "inventory.counted",
+      entityType: "variant",
+      entityId: variant.id,
+      before,
+      after: { onHand: input.onHand, reason, ...(input.note ? { note: input.note } : {}) },
+    });
+
+    await reflag(q, variant.product_id);
+    return { ref, state: input.onHand > 0 ? "positive" : "zero", onHand: input.onHand };
+  });
+}
+
+/* ---------------------------- curation gaps ------------------------------ */
+
+/**
+ * Records a curated reference that no longer resolves.
+ *
+ * Called by the seeder when it drops one. Existing open gaps have their
+ * last-seen time refreshed rather than being duplicated; a gap someone already
+ * settled stays settled.
+ */
+export async function noteCurationGap(gap: {
+  sourceType: "collection" | "bundle" | "quiz";
+  sourceHandle: string;
+  missingHandle: string;
+  position?: number;
+}): Promise<void> {
+  await transaction(async (q) => {
+    await q(
+      `INSERT INTO curation_gaps (source_type, source_handle, missing_handle, position)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (source_type, source_handle, missing_handle)
+         DO UPDATE SET last_seen_at = now(), position = EXCLUDED.position`,
+      [gap.sourceType, gap.sourceHandle, gap.missingHandle, gap.position ?? 0],
+    );
+  });
+}
+
+/**
+ * Settles one curation gap.
+ *
+ * Three outcomes, all of them a person's decision:
+ *
+ *   mapped    a named product stands in for the missing one, and is curated
+ *             into the collection at the position the missing one held;
+ *   removed   the reference is dropped;
+ *   reviewed  looked at, left alone, and no longer listed as outstanding.
+ *
+ * There is no fourth option that picks a replacement by similarity. A wrong
+ * guess here puts the wrong product in front of a customer under a heading
+ * somebody chose deliberately, and nothing about a handle is strong enough
+ * evidence to risk that.
+ */
+export async function resolveCurationGap(
+  id: string,
+  resolution: { kind: "mapped"; productHandle: string; note?: string }
+    | { kind: "removed"; note?: string }
+    | { kind: "reviewed"; note?: string },
+): Promise<{ id: string; resolution: string }> {
+  return transaction(async (q) => {
+    const [gap] = await q<{
+      id: string; source_type: string; source_handle: string;
+      missing_handle: string; position: number; resolved_at: Date | null;
+    }>(
+      `SELECT id, source_type, source_handle, missing_handle, position, resolved_at
+         FROM curation_gaps WHERE id = $1`,
+      [id],
+    );
+    if (!gap) throw new WriteError(`No curation gap with id ${JSON.stringify(id)}`, 404);
+    if (gap.resolved_at) throw new WriteError("That gap has already been settled", 409);
+
+    let mappedTo: string | null = null;
+
+    if (resolution.kind === "mapped") {
+      const [product] = await q<{ id: string }>(`SELECT id FROM products WHERE handle = $1`, [
+        resolution.productHandle,
+      ]);
+      if (!product) {
+        throw new WriteError(`No product with handle ${JSON.stringify(resolution.productHandle)}`, 422);
+      }
+      mappedTo = product.id;
+
+      if (gap.source_type === "collection") {
+        // The replacement takes the position the missing product held, so the
+        // collection reads the way it was curated to.
+        await q(
+          `INSERT INTO collection_products
+             (collection_id, product_id, collection_position, product_position, is_curated)
+           SELECT c.id, $2, $3, 0, true FROM collections c WHERE c.handle = $1
+           ON CONFLICT (collection_id, product_id)
+             DO UPDATE SET is_curated = true, collection_position = EXCLUDED.collection_position`,
+          [gap.source_handle, mappedTo, gap.position],
+        );
+      }
+    }
+
+    await q(
+      `UPDATE curation_gaps
+          SET resolution = $2, mapped_to = $3, note = $4, resolved_at = now(), resolved_by = $5
+        WHERE id = $1`,
+      [id, resolution.kind, mappedTo, resolution.note ?? null, actorLabel()],
+    );
+
+    await record(q as AuditQuery, {
+      action: `curation.${resolution.kind}`,
+      entityType: "curation_gap",
+      entityId: id,
+      before: {
+        source: `${gap.source_type}:${gap.source_handle}`,
+        missing: gap.missing_handle,
+      },
+      after: {
+        resolution: resolution.kind,
+        ...(resolution.kind === "mapped" ? { mappedTo: resolution.productHandle } : {}),
+        ...(resolution.note ? { note: resolution.note } : {}),
+      },
+    });
+
+    return { id, resolution: resolution.kind };
+  });
+}
+
+/** Reopens a settled gap, for when the decision turns out to be wrong. */
+export async function reopenCurationGap(id: string): Promise<{ id: string }> {
+  return transaction(async (q) => {
+    const [gap] = await q<{ resolved_at: Date | null }>(
+      `SELECT resolved_at FROM curation_gaps WHERE id = $1`, [id],
+    );
+    if (!gap) throw new WriteError(`No curation gap with id ${JSON.stringify(id)}`, 404);
+    if (!gap.resolved_at) throw new WriteError("That gap is already open", 409);
+
+    await q(
+      `UPDATE curation_gaps
+          SET resolution = NULL, mapped_to = NULL, resolved_at = NULL, resolved_by = NULL
+        WHERE id = $1`,
+      [id],
+    );
+    await record(q as AuditQuery, { action: "curation.reopened", entityType: "curation_gap", entityId: id });
+    return { id };
+  });
+}
+
+/* ------------------------------- deletion -------------------------------- */
+
+/**
+ * Deletes a product outright.
+ *
+ * Refused for anything that has ever been published. Once a product has been
+ * live, links to it exist that this cannot see — a search result, somebody's
+ * bookmark, later an order line — and archiving keeps all of them resolvable
+ * while removing it from the storefront just as completely.
+ *
+ * What deletion is for is the product created by mistake five minutes ago.
+ */
+export async function deleteProduct(handle: string): Promise<{ deleted: string }> {
+  return transaction(async (q) => {
+    const id = await productId(q, handle);
+    const [state] = await q<{ published_at: Date | null; publishable: boolean }>(
+      `SELECT published_at, publishable FROM products WHERE id = $1`,
+      [id],
+    );
+
+    if (state!.published_at || state!.publishable) {
+      throw new WriteError(
+        `Cannot delete ${handle}: it has been published. Archive it instead — that removes it ` +
+          `from the storefront while keeping every link to it resolvable.`,
+        409,
+      );
+    }
+
+    // The movements ledger is append-only and its foreign key says so. If stock
+    // has physically moved, that happened, and deleting the product would erase
+    // the only record of it. Archiving keeps both.
+    const [{ movements }] = await q<{ movements: number }>(
+      `SELECT count(*)::int AS movements FROM inventory_movements m
+         JOIN product_variants v ON v.id = m.variant_id
+        WHERE v.product_id = $1`,
+      [id],
+    );
+    if (movements > 0) {
+      throw new WriteError(
+        `Cannot delete ${handle}: ${movements} stock movement(s) are recorded against it. ` +
+          `Those describe units that actually moved, so they are not thrown away. Archive it instead.`,
+        409,
+      );
+    }
+
+    const before = await snapshot(q, id);
+    // Recorded before the row goes, so the trail can still say what was deleted.
+    await record(q as AuditQuery, {
+      action: "product.deleted",
+      entityType: "product",
+      entityId: id,
+      before,
+    });
+
+    // Children cascade. audit_log does not reference products, so its history
+    // of this product survives the deletion, which is the point of a trail.
+    await q(`DELETE FROM products WHERE id = $1`, [id]);
+    return { deleted: handle };
+  });
 }

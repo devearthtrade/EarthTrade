@@ -234,10 +234,15 @@ for (const d of ["db", "scripts", "tests"]) {
 // Files that mention the string in order to check for it, or to prove it is
 // rejected. Excluded from the scan and then checked positively below, so the
 // exclusion cannot hide a real dependency creeping into the same file.
-const SCANNERS = ["db/verify.ts", "db/verify-data-layer.ts", "tests/catalog.test.ts"];
+const SCANNERS = [
+  "db/verify.ts",
+  "db/verify-data-layer.ts",
+  "tests/catalog.test.ts",
+  "tests/admin.test.ts",
+];
 // The test suite calls the API over HTTP on loopback, which is what the
 // outbound-client scan is looking for. Its Shopify scan still applies.
-const LOOPBACK_CLIENTS = ["tests/catalog.test.ts"];
+const LOOPBACK_CLIENTS = ["tests/catalog.test.ts", "tests/admin.test.ts"];
 // Generated data is checked separately below: a recorded provenance URL is not
 // a dependency, and conflating the two would let a real one hide behind it.
 const GENERATED = ["src/data/generated/catalog.json"];
@@ -255,14 +260,19 @@ for (const rel of scannable) {
 }
 check("no Shopify reference anywhere in the source", [], shopifyHits);
 
-// The excluded test file must actually be testing the refusal, not merely
+// The excluded test files must actually be testing the refusal, not merely
 // containing the string.
-const testSource = readFileSync(join(root, "tests", "catalog.test.ts"), "utf8");
-const shopifyLines = [...testSource.matchAll(/^.*\bshopify\b.*$/gim)].map((m) => m[0]);
+const testSources = ["tests/catalog.test.ts", "tests/admin.test.ts"].map((f) =>
+  readFileSync(join(root, f), "utf8"),
+);
+const shopifyLines = testSources.flatMap((src) =>
+  [...src.matchAll(/^.*\bshopify\b.*$/gim)].map((m) => m[0]),
+);
 check("every Shopify mention in the tests is a rejection case", true,
   shopifyLines.length > 0 && shopifyLines.every((l) => /cdn\.shopify\.com/.test(l)));
-check("the tests assert absolute media URLs are refused", true,
-  /rejects\([\s\S]{0,400}cdn\.shopify\.com/.test(testSource));
+check("both suites assert absolute media URLs are refused", true,
+  /rejects\([\s\S]{0,400}cdn\.shopify\.com/.test(testSources[0]!) &&
+    /cdn\.shopify\.com[\s\S]{0,300}422/.test(testSources[1]!));
 
 check("no Shopify identifier in catalog data", 0,
   (await rows<{ n: number }>(`SELECT count(*)::int AS n FROM (

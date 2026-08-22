@@ -15,6 +15,10 @@ interface BrandRow {
   image_alt: string | null;
   image_width: number | null;
   image_height: number | null;
+  logo_key: string | null;
+  logo_alt: string | null;
+  seo_title: string | null;
+  seo_description: string | null;
   position: number;
 }
 
@@ -34,6 +38,11 @@ const toBrand = (r: BrandRow): BrandRecord => ({
         height: r.image_height,
       }
     : null,
+  logo: r.logo_key
+    ? { src: `/${r.logo_key.replace(/^\/+/, "")}`, alt: r.logo_alt ?? r.name, width: null, height: null }
+    : null,
+  seoTitle: r.seo_title,
+  seoDescription: r.seo_description,
   position: r.position,
 });
 
@@ -43,12 +52,17 @@ const BRAND_COLUMNS = `
   a.storage_key  AS image_key,
   b.image_alt    AS image_alt,
   a.width        AS image_width,
-  a.height       AS image_height`;
+  a.height       AS image_height,
+  lg.storage_key AS logo_key,
+  b.logo_alt     AS logo_alt,
+  b.seo_title    AS seo_title,
+  b.seo_description AS seo_description`;
 
 const BRAND_FROM = `
   FROM brands b
   LEFT JOIN collections c   ON c.id = b.collection_id
-  LEFT JOIN media_assets a  ON a.id = b.image_id`;
+  LEFT JOIN media_assets a  ON a.id = b.image_id
+  LEFT JOIN media_assets lg ON lg.id = b.logo_id`;
 
 export async function listBrands(): Promise<BrandRecord[]> {
   const r = await rows<BrandRow>(

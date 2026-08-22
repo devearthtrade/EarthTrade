@@ -12,6 +12,7 @@ import { WriteError } from "../repositories/writes.ts";
 import * as writes from "../repositories/writes.ts";
 import * as repo from "../repositories/index.ts";
 import { rows } from "../db/index.ts";
+import { addAdminRoutes } from "../admin/routes.ts";
 
 /* ------------------------------ input reading ---------------------------- */
 
@@ -278,6 +279,46 @@ export function buildRouter(): Router {
   r.get("/api/compliance/summary", async () => repo.compliance.complianceSummary());
 
   r.get("/api/withheld", async () => ({ products: await repo.publication.withheldProducts() }));
+
+  r.get("/api/audit", async (ctx) => ({
+    total: await repo.audit.countAudit({}),
+    entries: await repo.audit.listAudit({
+      ...(ctx.query.get("entity") ? { entityType: ctx.query.get("entity")! } : {}),
+      ...(ctx.query.get("actor") ? { actor: ctx.query.get("actor")! } : {}),
+      limit: Number(ctx.query.get("limit") ?? 50) || 50,
+      offset: Number(ctx.query.get("offset") ?? 0) || 0,
+    }),
+  }));
+
+  r.get("/api/inventory", async (ctx) => ({
+    summary: await repo.inventory.stockSummary(),
+    levels: await repo.inventory.listStock({
+      ...(ctx.query.get("state") ? { state: ctx.query.get("state") as repo.inventory.StockState } : {}),
+      limit: Number(ctx.query.get("limit") ?? 100) || 100,
+    }),
+  }));
+
+  r.put("/api/variants/:ref/stock", async (ctx) => {
+    const onHand = ctx.body["onHand"];
+    if (onHand !== null && typeof onHand !== "number") {
+      throw new WriteError("onHand must be a number of units, or null to record it as uncounted");
+    }
+    return writes.setStock(ctx.params["ref"]!, {
+      onHand: onHand as number | null,
+      ...(typeof ctx.body["reason"] === "string" ? { reason: ctx.body["reason"] } : {}),
+      ...(typeof ctx.body["note"] === "string" ? { note: ctx.body["note"] } : {}),
+    });
+  });
+
+  r.get("/api/curation", async (ctx) => ({
+    summary: await repo.curation.gapSummary(),
+    gaps: await repo.curation.listGaps({ open: ctx.query.get("show") !== "resolved" }),
+  }));
+
+  // The admin screens share this router, so the API and the Dashboard cannot
+  // diverge: both go through the same repository layer, and adding an endpoint
+  // to one does not silently leave the other behind.
+  addAdminRoutes(r);
 
   return r;
 }

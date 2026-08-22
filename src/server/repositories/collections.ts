@@ -9,7 +9,7 @@
 
 import { rows, one } from "../db/index.ts";
 import { pgTextArray } from "./products.ts";
-import type { CollectionFaqRecord, CollectionRecord } from "./types.ts";
+import type { CollectionFaqRecord, CollectionMemberRecord, CollectionRecord } from "./types.ts";
 
 interface CollectionRow {
   handle: string;
@@ -178,6 +178,34 @@ export async function collectionMembers(handle: string): Promise<string[]> {
     [handle],
   );
   return r.map((x) => x.handle);
+}
+
+/**
+ * Everything in a collection, published or not, with how each product came to
+ * be there. This is the admin's view — the storefront only ever sees the
+ * published members, in order.
+ */
+export async function collectionMembership(handle: string): Promise<CollectionMemberRecord[]> {
+  const r = await rows<{
+    handle: string; title: string; is_curated: boolean; is_derived: boolean;
+    collection_position: number; publishable: boolean;
+  }>(
+    `SELECT p.handle, p.title, cp.is_curated, cp.is_derived, cp.collection_position, p.publishable
+       FROM collection_products cp
+       JOIN collections c ON c.id = cp.collection_id
+       JOIN products p    ON p.id = cp.product_id
+      WHERE c.handle = $1
+      ORDER BY NOT cp.is_curated, cp.collection_position, p.handle`,
+    [handle],
+  );
+  return r.map((x) => ({
+    handle: x.handle,
+    title: x.title,
+    isCurated: x.is_curated,
+    isDerived: x.is_derived,
+    position: x.collection_position,
+    publishable: x.publishable,
+  }));
 }
 
 /** Membership for every collection at once, for the build. */

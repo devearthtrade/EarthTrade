@@ -11,3 +11,7 @@ export * as relations from "./relations.ts";
 export * as publication from "./publication.ts";
 export * as compliance from "./compliance.ts";
 export * as catalog from "./catalog.ts";
+export * as inventory from "./inventory.ts";
+export * as curation from "./curation.ts";
+export * as audit from "./audit.ts";
+export * as writes from "./writes.ts";

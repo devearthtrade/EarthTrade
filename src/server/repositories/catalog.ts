@@ -14,7 +14,7 @@ import { tagsByProduct, searchTermsByProduct } from "./search.ts";
 import { relationsByProduct } from "./relations.ts";
 import { quarantinedCopyByProduct, titleMatchesByProduct, flagsByProduct } from "./compliance.ts";
 import { listBrands } from "./brands.ts";
-import type { CollectionRecord, ProductRecord } from "./types.ts";
+import type { BrandRecord, CollectionRecord, ProductRecord } from "./types.ts";
 
 function assemble(
   row: ProductRow,
@@ -105,7 +105,9 @@ export async function loadProduct(handle: string): Promise<ProductRecord | null>
 
 export interface CatalogSnapshot {
   products: ProductRecord[];
+  /** Brand slugs, in order. */
   brands: string[];
+  brandRecords: BrandRecord[];
   collections: CollectionRecord[];
   counts: { total: number; published: number; withheld: number };
 }
@@ -122,6 +124,7 @@ export async function loadCatalog(): Promise<CatalogSnapshot> {
   return {
     products,
     brands: brandRecords.map((b) => b.slug),
+    brandRecords,
     collections,
     counts,
   };

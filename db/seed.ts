@@ -313,13 +313,32 @@ for (const p of P) {
     );
   }
 
-  // collection membership
-  w(`DELETE FROM collection_products WHERE product_id = ${pid};`);
+  // Collection membership derived from the product's tags. Only derived rows
+  // are cleared: a curated row is somebody's decision about what a collection
+  // leads with, and re-importing the catalog must not silently discard it.
+  // Clear this product's derived memberships, then re-derive. A row that is
+  // also curated keeps its curation: only the derived origin is withdrawn, and
+  // the row survives if someone chose to put the product there.
+  w(
+    `DELETE FROM collection_products
+      WHERE product_id = ${pid} AND is_derived AND NOT is_curated;`,
+  );
+  w(
+    `UPDATE collection_products SET is_derived = false
+      WHERE product_id = ${pid} AND is_derived AND is_curated;`,
+  );
   for (const [i, ch] of p.collections.entries()) {
+    // Two orderings, and this loop only knows one of them. `product_position`
+    // is where the collection sits in this product's list, which is what the
+    // breadcrumb reads. `collection_position` — where the product sits within
+    // the collection — is a merchandising decision made per collection, so a
+    // derived row leaves it at zero and sorts by handle.
     w(
-      `INSERT INTO collection_products (collection_id, product_id, position)
-       VALUES ((SELECT id FROM collections WHERE handle = ${lit(ch)}), ${pid}, ${i})
-       ON CONFLICT DO NOTHING;`,
+      `INSERT INTO collection_products
+         (collection_id, product_id, collection_position, product_position, is_derived)
+       VALUES ((SELECT id FROM collections WHERE handle = ${lit(ch)}), ${pid}, 0, ${i}, true)
+       ON CONFLICT (collection_id, product_id)
+         DO UPDATE SET product_position = EXCLUDED.product_position, is_derived = true;`,
     );
   }
 

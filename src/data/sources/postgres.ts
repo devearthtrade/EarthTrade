@@ -8,6 +8,7 @@
  */
 
 import { loadCatalog } from "../../server/repositories/catalog.ts";
+import { allCollectionMembers } from "../../server/repositories/collections.ts";
 import { close } from "../../server/db/index.ts";
 import { dbConfig } from "../../server/db/config.ts";
 import type { CatalogInput } from "../catalog-record.ts";
@@ -15,10 +16,36 @@ import type { CatalogInput } from "../catalog-record.ts";
 export async function loadFromPostgres(): Promise<CatalogInput> {
   const cfg = dbConfig();
   try {
-    const snapshot = await loadCatalog();
+    const [snapshot, members] = await Promise.all([loadCatalog(), allCollectionMembers()]);
 
     return {
       source: `postgres://${cfg.host}:${cfg.port}/${cfg.database}`,
+      brands: snapshot.brandRecords.map((b) => ({
+        slug: b.slug,
+        name: b.name,
+        tagline: b.tagline,
+        summary: b.summary,
+        story: b.story,
+        theme: b.theme,
+        collectionHandle: b.collectionHandle,
+        image: b.image ? { src: b.image.src, alt: b.image.alt } : null,
+      })),
+      collections: snapshot.collections.map((c) => ({
+        handle: c.handle,
+        title: c.title,
+        heroTitle: c.heroTitle,
+        eyebrow: c.eyebrow,
+        description: c.description,
+        editorial: c.editorial,
+        theme: c.theme,
+        isHidden: c.isHidden,
+        // Membership is resolved by the database: curated order first, then
+        // the members derived from product tags.
+        productHandles: members.get(c.handle) ?? [],
+        faqs: c.faqs,
+        related: c.related,
+        image: c.image ? { src: c.image.src, alt: c.image.alt } : null,
+      })),
       products: snapshot.products.map((p) => ({
         handle: p.handle,
         title: p.title,

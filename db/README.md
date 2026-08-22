@@ -100,13 +100,34 @@ and absence means *unknown*, which is a different fact from *zero in stock*.
 Only one of those should block a sale, and neither should be guessed.
 
 
+## The complete verification suite
+
+```sh
+./verify.sh          # migrations, seed, parity, tests, both builds, the diff
+./verify.sh --quick  # skip the JSON comparison build
+```
+
+It starts PostgreSQL if it is not running. Everything it does is local.
+
+## Editing the catalog
+
+Products, variants, media and collection membership are edited through the
+management API, not by changing source code:
+
+```sh
+node src/server/api/serve.ts    # http://127.0.0.1:4000
+```
+
+See `docs/MANAGEMENT-API.md`. Loopback only, no authentication — local
+development only.
+
 ## Reading the catalog from the application
 
 The storefront reads through `src/server/repositories/`, never with raw SQL and
 never through `psql`. See `docs/DATA-LAYER.md`.
 
 ```sh
-node db/verify-data-layer.ts                      # 55 checks, JSON vs PostgreSQL
+node db/verify-data-layer.ts                      # 79 checks, JSON vs PostgreSQL
 node src/build.ts                                 # build from PostgreSQL
 EARTHTRADE_CATALOG_SOURCE=json node src/build.ts  # build from the JSON export
 ```
@@ -114,3 +135,19 @@ EARTHTRADE_CATALOG_SOURCE=json node src/build.ts  # build from the JSON export
 Building both ways and diffing `dist/` is the check that the migration did not
 change what shoppers see. The current expected difference is five product pages,
 explained in `docs/DATA-LAYER-VERIFICATION.md`.
+
+
+## Seeding brand and collection content
+
+`db/seed-presentation.ts` loads `db/seed-data/presentation.json` — brand
+stories, collection editorial copy, FAQs, curated product order and
+cross-references. These used to be literals in `src/data/catalog.ts`, which
+meant editing a collection was a code change.
+
+The JSON file is a seed so a database can be built from nothing. Once seeded,
+the database is authoritative and the file is not read again.
+
+Curated handles naming a product the catalog no longer has are reported and
+skipped, never invented. 61 of the 98 curated references do not resolve against
+the current 110-product catalog; those collections stay populated by the
+membership derived from product tags.

@@ -14,6 +14,9 @@ export interface BrandRecord {
   summary: string | null;
   story: string[];
   theme: string | null;
+  /** The collection this brand's page links to, if it has one. */
+  collectionHandle: string | null;
+  image: MediaRecord | null;
   position: number;
 }
 
@@ -113,6 +116,11 @@ export interface ProductRecord {
   flags: string[];
 }
 
+export interface CollectionFaqRecord {
+  question: string;
+  answer: string;
+}
+
 export interface CollectionRecord {
   handle: string;
   title: string;
@@ -121,8 +129,15 @@ export interface CollectionRecord {
   description: string | null;
   editorial: string[];
   theme: string | null;
+  /** How membership is decided: manual rows, or a rule. */
   kind: string;
+  /** What the collection is: a category, a brand, or merchandising. */
+  role: string;
   isHidden: boolean;
   seo: { title: string | null; description: string | null };
+  image: MediaRecord | null;
+  faqs: CollectionFaqRecord[];
+  /** Handles of collections this one points at. Directed, not mutual. */
+  related: string[];
   position: number;
 }

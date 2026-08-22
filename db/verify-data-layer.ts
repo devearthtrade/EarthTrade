@@ -24,6 +24,10 @@ import { close, rows } from "../src/server/db/index.ts";
 
 const root = join(fileURLToPath(import.meta.url), "..", "..");
 
+/** Matches how the templates escape text, so comparisons are like for like. */
+const escapeHtml = (s: string): string =>
+  s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+
 const failures: string[] = [];
 let checks = 0;
 
@@ -58,18 +62,26 @@ check(
 check("published", 106, pg.meta.published);
 check("withheld", 4, pg.meta.withheld);
 check("published + withheld = total", 110, pg.meta.published + pg.meta.withheld);
+check("brands loaded with their copy", 5, pgInput.brands.filter((b) => b.story.length).length);
+check("brands linked to a collection", 5, pgInput.brands.filter((b) => b.collectionHandle).length);
 
 /* ------------------------------ 5  collections --------------------------- */
 
 section("5  collections");
 
 const collections = await repo.collections.listCollections();
-check("collections", 8, collections.length);
+check("collections", 15, collections.length);
 check(
-  "collection handles",
-  [...new Set(jsonInput.products.flatMap((p) => p.collections))].sort(),
+  "collection handles match the JSON source",
+  jsonInput.collections.map((c) => c.handle).sort(),
   collections.map((c) => c.handle).sort(),
 );
+check("category collections", 4, collections.filter((c) => c.role === "category").length);
+check("brand collections", 4, collections.filter((c) => c.role === "brand").length);
+check("collections with editorial copy", 11, collections.filter((c) => c.editorial.length).length);
+check("collection FAQs", 17, collections.reduce((n, c) => n + c.faqs.length, 0));
+check("collection cross-references", 32, collections.reduce((n, c) => n + c.related.length, 0));
+check("hidden (undescribed) collections", 1, collections.filter((c) => c.isHidden).length);
 
 for (const c of collections.map((x) => x.handle)) {
   const fromJson = (json.collectionMembers.get(c) ?? []).slice().sort();
@@ -123,6 +135,42 @@ check(
   pg.withheldProducts.map((p) => p.handle).filter((h) => rendered.includes(h)),
 );
 
+/*
+ * Every page type must render content that only PostgreSQL holds. Building
+ * successfully is not the same as reading the database: a page could render
+ * from a leftover literal and look fine. These check that copy which lives
+ * *only* in the database reaches the rendered HTML.
+ */
+const readPage = (p: string): string => {
+  const file = join(root, "dist", p, "index.html");
+  return statSync(file, { throwIfNoEntry: false }) ? readFileSync(file, "utf8") : "";
+};
+
+const brandRecords = await repo.brands.listBrands();
+const collectionRecords = await repo.collections.listCollections();
+
+const hoclBrand = brandRecords.find((b) => b.slug === "solutionshocl")!;
+const brandPage = readPage("brands/solutionshocl");
+check("brand page renders its tagline from the database", true, brandPage.includes(escapeHtml(hoclBrand.tagline!)));
+check("brand page renders its story from the database", true,
+  hoclBrand.story.every((paragraph) => brandPage.includes(escapeHtml(paragraph))));
+
+const water = collectionRecords.find((c) => c.handle === "water")!;
+const collectionPage = readPage("collections/water");
+check("collection page renders its editorial from the database", true,
+  water.editorial.every((paragraph) => collectionPage.includes(escapeHtml(paragraph))));
+check("collection page renders its FAQs from the database", true,
+  water.faqs.every((f) => collectionPage.includes(escapeHtml(f.question))));
+check("collection page renders its hero title from the database", true,
+  collectionPage.includes(escapeHtml(water.heroTitle!)));
+
+const membersOfWater = await repo.collections.collectionMembers("water");
+check("collection page lists the members the database returns", true,
+  membersOfWater.every((h) => collectionPage.includes(`/products/${h}`)));
+
+check("undescribed collections are not published as pages", false,
+  statSync(join(root, "dist", "collections", "bundles"), { throwIfNoEntry: false }) !== undefined);
+
 const single = await repo.catalog.loadProduct("toilet-bomb-organic-lemon");
 check("single product read by handle", "toilet-bomb-organic-lemon", single?.handle);
 check("  its variant carries a price", true, (single?.variants[0]?.priceCents ?? 0) > 0);
@@ -173,7 +221,7 @@ const sourceFiles: string[] = [];
     else if (/\.(ts|js|sql|json)$/.test(entry.name)) sourceFiles.push(p);
   }
 })(join(root, "src"));
-for (const d of ["db", "scripts"]) {
+for (const d of ["db", "scripts", "tests"]) {
   (function walk(dir: string): void {
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
       const p = join(dir, entry.name);
@@ -183,8 +231,13 @@ for (const d of ["db", "scripts"]) {
   })(join(root, d));
 }
 
-// These files scan *for* the string and would otherwise match themselves.
-const SCANNERS = ["db/verify.ts", "db/verify-data-layer.ts"];
+// Files that mention the string in order to check for it, or to prove it is
+// rejected. Excluded from the scan and then checked positively below, so the
+// exclusion cannot hide a real dependency creeping into the same file.
+const SCANNERS = ["db/verify.ts", "db/verify-data-layer.ts", "tests/catalog.test.ts"];
+// The test suite calls the API over HTTP on loopback, which is what the
+// outbound-client scan is looking for. Its Shopify scan still applies.
+const LOOPBACK_CLIENTS = ["tests/catalog.test.ts"];
 // Generated data is checked separately below: a recorded provenance URL is not
 // a dependency, and conflating the two would let a real one hide behind it.
 const GENERATED = ["src/data/generated/catalog.json"];
@@ -201,6 +254,15 @@ for (const rel of scannable) {
   }
 }
 check("no Shopify reference anywhere in the source", [], shopifyHits);
+
+// The excluded test file must actually be testing the refusal, not merely
+// containing the string.
+const testSource = readFileSync(join(root, "tests", "catalog.test.ts"), "utf8");
+const shopifyLines = [...testSource.matchAll(/^.*\bshopify\b.*$/gim)].map((m) => m[0]);
+check("every Shopify mention in the tests is a rejection case", true,
+  shopifyLines.length > 0 && shopifyLines.every((l) => /cdn\.shopify\.com/.test(l)));
+check("the tests assert absolute media URLs are refused", true,
+  /rejects\([\s\S]{0,400}cdn\.shopify\.com/.test(testSource));
 
 check("no Shopify identifier in catalog data", 0,
   (await rows<{ n: number }>(`SELECT count(*)::int AS n FROM (
@@ -230,7 +292,7 @@ check("database host is loopback", true, ["127.0.0.1", "localhost", "::1"].inclu
 check("catalog source is postgres", "postgres", pgInput.source.split(":")[0]);
 
 const outbound: string[] = [];
-for (const rel of scannable) {
+for (const rel of scannable.filter((f) => !LOOPBACK_CLIENTS.includes(f))) {
   const text = readFileSync(join(root, rel), "utf8");
   for (const m of text.matchAll(/^.*\b(fetch\(|https?\.request|https?\.get\(|XMLHttpRequest)\b.*$/gm)) {
     const line = m[0].trim();

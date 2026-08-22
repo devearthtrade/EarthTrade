@@ -12,7 +12,7 @@
  * they would drift.
  */
 
-import type { BrandId, CategoryId, Product } from "../lib/types.ts";
+import type { BrandId, BrandInfo, CategoryId, Collection, CollectionTheme, Product } from "../lib/types.ts";
 
 export interface InputVariant {
   ref: string;
@@ -47,9 +47,40 @@ export interface InputProduct {
   flags: string[];
 }
 
+/** A brand as the catalog holds it, before it becomes a `BrandInfo`. */
+export interface InputBrand {
+  slug: string;
+  name: string;
+  tagline: string | null;
+  summary: string | null;
+  story: string[];
+  theme: string | null;
+  collectionHandle: string | null;
+  image: { src: string; alt: string } | null;
+}
+
+/** A collection as the catalog holds it, membership already resolved. */
+export interface InputCollection {
+  handle: string;
+  title: string;
+  heroTitle: string | null;
+  eyebrow: string | null;
+  description: string | null;
+  editorial: string[];
+  theme: string | null;
+  isHidden: boolean;
+  /** Published members, curated order first. */
+  productHandles: string[];
+  faqs: { question: string; answer: string }[];
+  related: string[];
+  image: { src: string; alt: string } | null;
+}
+
 export interface CatalogInput {
   source: string;
   products: InputProduct[];
+  brands: InputBrand[];
+  collections: InputCollection[];
 }
 
 const BRANDS = new Set<BrandId>([
@@ -100,10 +131,44 @@ function toProduct(p: InputProduct): Product {
   };
 }
 
+function toBrandInfo(b: InputBrand): BrandInfo {
+  return {
+    id: b.slug as BrandId,
+    name: b.name,
+    // These read as prose on the brand page. An absent one renders as nothing
+    // rather than as a sentence nobody wrote.
+    tagline: b.tagline ?? "",
+    summary: b.summary ?? "",
+    story: b.story,
+    ...(b.image ? { image: b.image } : {}),
+    ...(b.collectionHandle ? { collectionHandle: b.collectionHandle } : {}),
+    ...(b.theme ? { theme: b.theme as CollectionTheme } : {}),
+  };
+}
+
+function toCollection(c: InputCollection): Collection {
+  return {
+    handle: c.handle,
+    title: c.title,
+    ...(c.heroTitle ? { heroTitle: c.heroTitle } : {}),
+    ...(c.eyebrow ? { eyebrow: c.eyebrow } : {}),
+    description: c.description ?? "",
+    ...(c.editorial.length ? { editorial: c.editorial } : {}),
+    ...(c.image ? { image: c.image } : {}),
+    ...(c.theme ? { theme: c.theme as CollectionTheme } : {}),
+    productHandles: c.productHandles,
+    ...(c.faqs.length ? { faqs: c.faqs.map((f) => ({ q: f.question, a: f.answer })) } : {}),
+    ...(c.related.length ? { related: c.related } : {}),
+    ...(c.isHidden ? { hidden: true } : {}),
+  };
+}
+
 export interface Catalog {
   /** Records held back from publication, kept visible and reversible. */
   withheldProducts: InputProduct[];
   products: Product[];
+  brands: BrandInfo[];
+  collections: Collection[];
   collectionMembers: Map<string, string[]>;
   meta: {
     source: string;
@@ -135,6 +200,8 @@ export function buildCatalog(input: CatalogInput): Catalog {
   return {
     withheldProducts: all.filter((p) => !p.publishable),
     products: publishable.map(toProduct),
+    brands: input.brands.map(toBrandInfo),
+    collections: input.collections.map(toCollection),
     collectionMembers,
     meta: {
       source: input.source,

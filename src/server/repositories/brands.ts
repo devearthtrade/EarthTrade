@@ -10,6 +10,11 @@ interface BrandRow {
   summary: string | null;
   story: (string | null)[] | null;
   theme: string | null;
+  collection_handle: string | null;
+  image_key: string | null;
+  image_alt: string | null;
+  image_width: number | null;
+  image_height: number | null;
   position: number;
 }
 
@@ -20,21 +25,41 @@ const toBrand = (r: BrandRow): BrandRecord => ({
   summary: r.summary,
   story: (r.story ?? []).filter((s): s is string => s !== null),
   theme: r.theme,
+  collectionHandle: r.collection_handle,
+  image: r.image_key
+    ? {
+        src: `/${r.image_key.replace(/^\/+/, "")}`,
+        alt: r.image_alt ?? r.name,
+        width: r.image_width,
+        height: r.image_height,
+      }
+    : null,
   position: r.position,
 });
 
-const BRAND_COLUMNS = `slug, name, tagline, summary, story, theme, position`;
+const BRAND_COLUMNS = `
+  b.slug, b.name, b.tagline, b.summary, b.story, b.theme, b.position,
+  c.handle       AS collection_handle,
+  a.storage_key  AS image_key,
+  b.image_alt    AS image_alt,
+  a.width        AS image_width,
+  a.height       AS image_height`;
+
+const BRAND_FROM = `
+  FROM brands b
+  LEFT JOIN collections c   ON c.id = b.collection_id
+  LEFT JOIN media_assets a  ON a.id = b.image_id`;
 
 export async function listBrands(): Promise<BrandRecord[]> {
   const r = await rows<BrandRow>(
-    `SELECT ${BRAND_COLUMNS} FROM brands ORDER BY position, slug`,
+    `SELECT ${BRAND_COLUMNS} ${BRAND_FROM} ORDER BY b.position, b.slug`,
   );
   return r.map(toBrand);
 }
 
 export async function getBrand(slug: string): Promise<BrandRecord | null> {
   const r = await one<BrandRow>(
-    `SELECT ${BRAND_COLUMNS} FROM brands WHERE slug = $1`,
+    `SELECT ${BRAND_COLUMNS} ${BRAND_FROM} WHERE b.slug = $1`,
     [slug],
   );
   return r ? toBrand(r) : null;

@@ -20,7 +20,7 @@
 import { buildCatalog, type Catalog } from "./catalog-record.ts";
 import { catalogSource } from "../server/db/config.ts";
 import { loadFromJson } from "./sources/json.ts";
-import type { Product } from "../lib/types.ts";
+import type { BrandInfo, Collection, Product } from "../lib/types.ts";
 
 async function load(): Promise<Catalog> {
   if (catalogSource() === "json") return buildCatalog(loadFromJson());
@@ -34,6 +34,10 @@ const catalog = await load();
 
 export const withheldProducts = catalog.withheldProducts;
 export const importedProducts: Product[] = catalog.products;
+
+/** Brand and collection presentation, also owned by the database. */
+export const importedBrands: BrandInfo[] = catalog.brands;
+export const importedCollections: Collection[] = catalog.collections;
 
 /** Collection membership as recorded against each product, keyed by handle. */
 export const importedCollectionMembers = catalog.collectionMembers;

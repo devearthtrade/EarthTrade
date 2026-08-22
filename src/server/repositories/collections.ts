@@ -9,7 +9,7 @@
 
 import { rows, one } from "../db/index.ts";
 import { pgTextArray } from "./products.ts";
-import type { CollectionRecord } from "./types.ts";
+import type { CollectionFaqRecord, CollectionRecord } from "./types.ts";
 
 interface CollectionRow {
   handle: string;
@@ -20,16 +20,32 @@ interface CollectionRow {
   editorial: (string | null)[] | null;
   theme: string | null;
   kind: string;
+  role: string;
   is_hidden: boolean;
   seo_title: string | null;
   seo_description: string | null;
+  image_key: string | null;
+  image_alt: string | null;
+  image_width: number | null;
+  image_height: number | null;
   position: number;
 }
 
-const COLUMNS = `handle, title, hero_title, eyebrow, description, editorial,
-                 theme, kind, is_hidden, seo_title, seo_description, position`;
+const COLUMNS = `
+  c.handle, c.title, c.hero_title, c.eyebrow, c.description, c.editorial,
+  c.theme, c.kind, c.role, c.is_hidden, c.seo_title, c.seo_description, c.position,
+  a.storage_key AS image_key,
+  c.image_alt   AS image_alt,
+  a.width       AS image_width,
+  a.height      AS image_height`;
 
-const toRecord = (r: CollectionRow): CollectionRecord => ({
+const FROM = `FROM collections c LEFT JOIN media_assets a ON a.id = c.image_id`;
+
+const toRecord = (
+  r: CollectionRow,
+  faqs: CollectionFaqRecord[],
+  related: string[],
+): CollectionRecord => ({
   handle: r.handle,
   title: r.title,
   heroTitle: r.hero_title,
@@ -38,24 +54,85 @@ const toRecord = (r: CollectionRow): CollectionRecord => ({
   editorial: (r.editorial ?? []).filter((s): s is string => s !== null),
   theme: r.theme,
   kind: r.kind,
+  role: r.role,
   isHidden: r.is_hidden,
   seo: { title: r.seo_title, description: r.seo_description },
+  image: r.image_key
+    ? {
+        src: `/${r.image_key.replace(/^\/+/, "")}`,
+        alt: r.image_alt ?? r.title,
+        width: r.image_width,
+        height: r.image_height,
+      }
+    : null,
+  faqs,
+  related,
   position: r.position,
 });
 
-export async function listCollections(): Promise<CollectionRecord[]> {
-  const r = await rows<CollectionRow>(
-    `SELECT ${COLUMNS} FROM collections ORDER BY position, handle`,
+/** FAQs for every collection, keyed by handle. */
+async function allFaqs(): Promise<Map<string, CollectionFaqRecord[]>> {
+  const r = await rows<{ handle: string; question: string; answer: string }>(
+    `SELECT c.handle, f.question, f.answer
+       FROM collection_faqs f JOIN collections c ON c.id = f.collection_id
+      ORDER BY c.handle, f.position`,
   );
-  return r.map(toRecord);
+  const out = new Map<string, CollectionFaqRecord[]>();
+  for (const x of r) {
+    const list = out.get(x.handle) ?? [];
+    list.push({ question: x.question, answer: x.answer });
+    out.set(x.handle, list);
+  }
+  return out;
+}
+
+/** Related-collection handles for every collection, keyed by handle. */
+async function allRelated(): Promise<Map<string, string[]>> {
+  const r = await rows<{ handle: string; related: string }>(
+    `SELECT c.handle, rel.handle AS related
+       FROM collection_relations cr
+       JOIN collections c   ON c.id = cr.collection_id
+       JOIN collections rel ON rel.id = cr.related_id
+      ORDER BY c.handle, cr.position`,
+  );
+  const out = new Map<string, string[]>();
+  for (const x of r) {
+    const list = out.get(x.handle) ?? [];
+    list.push(x.related);
+    out.set(x.handle, list);
+  }
+  return out;
+}
+
+export async function listCollections(): Promise<CollectionRecord[]> {
+  const [r, faqs, related] = await Promise.all([
+    rows<CollectionRow>(`SELECT ${COLUMNS} ${FROM} ORDER BY c.position, c.handle`),
+    allFaqs(),
+    allRelated(),
+  ]);
+  return r.map((x) => toRecord(x, faqs.get(x.handle) ?? [], related.get(x.handle) ?? []));
 }
 
 export async function getCollection(handle: string): Promise<CollectionRecord | null> {
-  const r = await one<CollectionRow>(
-    `SELECT ${COLUMNS} FROM collections WHERE handle = $1`,
-    [handle],
-  );
-  return r ? toRecord(r) : null;
+  const r = await one<CollectionRow>(`SELECT ${COLUMNS} ${FROM} WHERE c.handle = $1`, [handle]);
+  if (!r) return null;
+
+  const [faqs, related] = await Promise.all([
+    rows<CollectionFaqRecord>(
+      `SELECT f.question, f.answer FROM collection_faqs f
+         JOIN collections c ON c.id = f.collection_id
+        WHERE c.handle = $1 ORDER BY f.position`,
+      [handle],
+    ),
+    rows<{ handle: string }>(
+      `SELECT rel.handle FROM collection_relations cr
+         JOIN collections c   ON c.id = cr.collection_id
+         JOIN collections rel ON rel.id = cr.related_id
+        WHERE c.handle = $1 ORDER BY cr.position`,
+      [handle],
+    ),
+  ]);
+  return toRecord(r, faqs, related.map((x) => x.handle));
 }
 
 /** Collection handles per product, in the order the source listed them. */
@@ -68,7 +145,10 @@ export async function collectionsByProduct(productIds: string[]): Promise<Map<st
        FROM collection_products cp
        JOIN collections c ON c.id = cp.collection_id
       WHERE cp.product_id = ANY($1::uuid[])
-      ORDER BY cp.product_id, cp.position, c.handle`,
+      -- Collections the product's own tags put it in come first: they say what
+      -- the product is, which is what a breadcrumb should name. Curated-only
+      -- memberships follow.
+      ORDER BY cp.product_id, NOT cp.is_derived, cp.product_position, c.handle`,
     [pgTextArray(productIds)],
   );
 
@@ -80,7 +160,13 @@ export async function collectionsByProduct(productIds: string[]): Promise<Map<st
   return out;
 }
 
-/** Published product handles in a collection, curated order first. */
+/**
+ * Published product handles in a collection.
+ *
+ * Curated rows first, in the order someone chose; derived rows behind them, in
+ * the order the import produced. This is the whole of membership — the union
+ * the storefront used to assemble in code is now one ordered query.
+ */
 export async function collectionMembers(handle: string): Promise<string[]> {
   const r = await rows<{ handle: string }>(
     `SELECT p.handle
@@ -88,10 +174,29 @@ export async function collectionMembers(handle: string): Promise<string[]> {
        JOIN collections c ON c.id = cp.collection_id
        JOIN products p    ON p.id = cp.product_id
       WHERE c.handle = $1 AND p.publishable
-      ORDER BY cp.position, p.handle`,
+      ORDER BY NOT cp.is_curated, cp.collection_position, p.handle`,
     [handle],
   );
   return r.map((x) => x.handle);
+}
+
+/** Membership for every collection at once, for the build. */
+export async function allCollectionMembers(): Promise<Map<string, string[]>> {
+  const r = await rows<{ collection: string; handle: string }>(
+    `SELECT c.handle AS collection, p.handle
+       FROM collection_products cp
+       JOIN collections c ON c.id = cp.collection_id
+       JOIN products p    ON p.id = cp.product_id
+      WHERE p.publishable
+      ORDER BY c.handle, NOT cp.is_curated, cp.collection_position, p.handle`,
+  );
+  const out = new Map<string, string[]>();
+  for (const x of r) {
+    const list = out.get(x.collection) ?? [];
+    list.push(x.handle);
+    out.set(x.collection, list);
+  }
+  return out;
 }
 
 /**

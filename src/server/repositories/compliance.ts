@@ -107,7 +107,7 @@ export function screenProduct(input: {
   const titleMatches = screenTitle(input.title, input.brandId);
 
   return {
-    description: copy.published,
+    description: copy.clean,
     quarantined: copy.quarantined,
     titleMatches,
     publishable: titleMatches.length === 0,

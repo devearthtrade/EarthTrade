@@ -70,6 +70,42 @@ export function withConnection<T>(fn: (conn: Connection) => Promise<T>): Promise
   return get().use(fn);
 }
 
+/**
+ * Runs `fn` inside a transaction on one connection.
+ *
+ * Commits if it returns, rolls back if it throws. Writes that must land
+ * together — a product and its variants, a variant and its price — belong in
+ * here, so a failure half way through leaves nothing behind.
+ *
+ * The callback is handed a `query` bound to the transaction's connection.
+ * Using the module-level `query` inside it would run on a different connection,
+ * outside the transaction, which is the kind of mistake that only shows up
+ * under load.
+ */
+export function transaction<T>(
+  fn: (q: <R = Record<string, unknown>>(sql: string, params?: unknown[]) => Promise<R[]>) => Promise<T>,
+): Promise<T> {
+  return get().use(async (conn) => {
+    const q = async <R = Record<string, unknown>>(sql: string, params: unknown[] = []): Promise<R[]> =>
+      (await conn.query<R>(sql, params)).rows;
+
+    await conn.query("BEGIN");
+    try {
+      const result = await fn(q);
+      await conn.query("COMMIT");
+      return result;
+    } catch (err) {
+      try {
+        await conn.query("ROLLBACK");
+      } catch {
+        // The connection is already unusable; the original error is the one
+        // worth reporting.
+      }
+      throw err;
+    }
+  });
+}
+
 /** Releases every connection. Call before a script exits. */
 export async function close(): Promise<void> {
   await pool?.close();

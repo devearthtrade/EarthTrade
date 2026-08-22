@@ -61,11 +61,24 @@ check("products", P.length, scalar("SELECT count(*) FROM products;"));
 check("variants", P.reduce((n, p) => n + p.variants.length, 0), scalar("SELECT count(*) FROM product_variants;"));
 check("brands", new Set(P.map((p) => p.brandId)).size, scalar("SELECT count(*) FROM brands;"));
 check("categories", new Set(P.map((p) => p.categoryId).filter(Boolean)).size, scalar("SELECT count(*) FROM categories;"));
-check("collections", new Set(P.flatMap((p) => p.collections)).size, scalar("SELECT count(*) FROM collections;"));
+// The database holds more collections than the import produced: the ones the
+// import derived from product tags, plus the collections the storefront
+// presents. What must hold is that every imported collection is still there.
 check(
-  "collection memberships",
+  "imported collections all present",
+  new Set(P.flatMap((p) => p.collections)).size,
+  scalar(
+    `SELECT count(*) FROM collections WHERE handle = ANY(ARRAY[${[
+      ...new Set(P.flatMap((p) => p.collections)),
+    ]
+      .map((h) => `'${h.replaceAll("'", "''")}'`)
+      .join(",")}]);`,
+  ),
+);
+check(
+  "derived memberships",
   P.reduce((n, p) => n + p.collections.length, 0),
-  scalar("SELECT count(*) FROM collection_products;"),
+  scalar("SELECT count(*) FROM collection_products WHERE is_derived;"),
 );
 check(
   "media assets (distinct files)",

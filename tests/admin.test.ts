@@ -161,6 +161,34 @@ suite("admin shell", () => {
     includes(await res.text(), "--deep-green");
   });
 
+  test("every text control is styled, including the ones written without a type", async () => {
+    // Listing input types individually skipped `<input name="alt">` and the
+    // variant row fields: they rendered with browser defaults, and carried an
+    // intrinsic ~185px width that pushed the page sideways on a phone.
+    const { html: css } = await get("/admin/admin.css");
+    ok(
+      css.includes("input:where(:not([type=checkbox]"),
+      "the control rule must match untyped inputs, not a list of specific types",
+    );
+    ok(css.includes("min-width: 0"), "and must let them shrink below their intrinsic width");
+
+    const { html: page } = await get("/admin/products/toilet-bomb-organic-lemon");
+    const untyped = [...page.matchAll(/<input(?![^>]*\btype=)[^>]*>/g)];
+    ok(untyped.length > 0, "the Dashboard does render untyped inputs, so the rule has to cover them");
+  });
+
+  test("the control rule keeps element-level specificity", async () => {
+    // The exclusions have to sit inside :where(). Written as a bare :not()
+    // chain the rule outranks input:disabled, and a read-only field — the
+    // handle, which must never be edited — stops looking read-only.
+    const { html: css } = await get("/admin/admin.css");
+    ok(
+      /input:where\(:not\(\[type=checkbox\]/.test(css),
+      "exclusions must be wrapped in :where() so the rule stays at specificity (0,0,1)",
+    );
+    ok(css.includes("input:disabled"), "and the disabled styling must still be defined");
+  });
+
   test("is marked never to be indexed", async () => {
     const { html } = await get("/admin");
     includes(html, 'name="robots" content="noindex, nofollow"');
@@ -306,6 +334,39 @@ suite("product: create → database → storefront", () => {
     const res = await form(`/admin/products/${h}/delete`, {});
     equal(res.status, 303);
     equal(await repo.catalog.loadProduct(h), null);
+  });
+
+  test("a draft with a stock count entered can still be deleted", async () => {
+    // Trying the Dashboard out means creating a product and typing things into
+    // it. Refusing to delete it afterwards left every experiment permanently in
+    // the catalog, with archiving the only way out.
+    const h = handle("delete-with-stock");
+    await form("/admin/products", { handle: h, title: "Delete With Stock", brandSlug: "solutionshocl" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "500" });
+    const ref = (await repo.catalog.loadProduct(h))!.variants[0]!.ref;
+    await form(`/admin/variants/${ref}/stock`, { intent: "set", onHand: "7" });
+
+    const res = await form(`/admin/products/${h}/delete`, {});
+    equal(res.status, 303, "a never-published draft deletes even with a count on it");
+    equal(await repo.catalog.loadProduct(h), null);
+
+    // The count is not simply gone: what it was is in the trail.
+    const [deleted] = await repo.audit.listAudit({ action: "product.deleted", limit: 1 });
+    equal((deleted!.before as Record<string, unknown>)["stockMovements"], 1);
+    ok((deleted!.before as Record<string, unknown>)["stockOnHand"], "the quantity is recorded before the row goes");
+  });
+
+  test("a product that has been published is still archived, never deleted", async () => {
+    const h = handle("delete-after-publish");
+    await form("/admin/products", { handle: h, title: "Was Live", brandSlug: "solutionshocl" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "500" });
+    await form(`/admin/products/${h}/publish`, {});
+    await form(`/admin/products/${h}/unpublish`, { reason: "Testing" });
+
+    const res = await form(`/admin/products/${h}/delete`, {});
+    equal(res.status, 409);
+    includes(res.text, "Archive it instead");
+    ok(await repo.catalog.loadProduct(h), "it survives");
   });
 
   test("the product list filters and paginates", async () => {

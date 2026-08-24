@@ -1716,24 +1716,42 @@ export async function deleteProduct(handle: string): Promise<{ deleted: string }
       );
     }
 
-    // The movements ledger is append-only and its foreign key says so. If stock
-    // has physically moved, that happened, and deleting the product would erase
-    // the only record of it. Archiving keeps both.
+    /*
+     * Stock movements are counted, not refused.
+     *
+     * The ledger is append-only in operation: nothing edits a row and nothing
+     * reverses one. Removing a draft that was never published is a different
+     * act — no order can reference it and no customer ever saw it, so the
+     * movements are somebody counting stock on a product that did not exist
+     * publicly.
+     *
+     * Refusing here made an ordinary mistake permanent: a draft created to try
+     * something out, with a quantity typed into it, could never be removed
+     * through the Dashboard. That left real stores accumulating clutter they
+     * had no way to clear, which is worse than losing the count of a draft.
+     *
+     * What the movements said is written into the audit record below, and
+     * audit_log does not reference products, so that survives the deletion.
+     */
     const [{ movements }] = await q<{ movements: number }>(
       `SELECT count(*)::int AS movements FROM inventory_movements m
          JOIN product_variants v ON v.id = m.variant_id
         WHERE v.product_id = $1`,
       [id],
     );
-    if (movements > 0) {
-      throw new WriteError(
-        `Cannot delete ${handle}: ${movements} stock movement(s) are recorded against it. ` +
-          `Those describe units that actually moved, so they are not thrown away. Archive it instead.`,
-        409,
-      );
-    }
 
-    const before = await snapshot(q, id);
+    const stock = await q<{ ref: string; on_hand: number }>(
+      `SELECT v.ref, l.on_hand FROM inventory_levels l
+         JOIN product_variants v ON v.id = l.variant_id
+        WHERE v.product_id = $1`,
+      [id],
+    );
+
+    const before = {
+      ...(await snapshot(q, id)),
+      ...(movements ? { stockMovements: movements } : {}),
+      ...(stock.length ? { stockOnHand: Object.fromEntries(stock.map((r) => [r.ref, r.on_hand])) } : {}),
+    };
     // Recorded before the row goes, so the trail can still say what was deleted.
     await record(q as AuditQuery, {
       action: "product.deleted",
@@ -1742,8 +1760,15 @@ export async function deleteProduct(handle: string): Promise<{ deleted: string }
       before,
     });
 
-    // Children cascade. audit_log does not reference products, so its history
-    // of this product survives the deletion, which is the point of a trail.
+    // Movements restrict deletion by design, so they go explicitly. Everything
+    // else cascades. audit_log does not reference products, so this product's
+    // history survives the deletion, which is the point of a trail.
+    await q(
+      `DELETE FROM inventory_movements m
+        USING product_variants v
+        WHERE m.variant_id = v.id AND v.product_id = $1`,
+      [id],
+    );
     await q(`DELETE FROM products WHERE id = $1`, [id]);
     return { deleted: handle };
   });

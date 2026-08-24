@@ -206,13 +206,27 @@ td .sub { display: block; color: var(--warm-earth); font-size: .76rem; }
 code, .mono { font-family: var(--mono); font-size: .78em; }
 .handle { color: var(--warm-earth); }
 
+/* Handles, file paths and variant references have no spaces to break at, so on
+   a narrow screen they push the page sideways rather than wrapping. Breaking
+   them anywhere is right for identifiers: they are read a character at a time,
+   not as words. */
+.mono, .handle, code, .sub { overflow-wrap: anywhere; }
+
 /* --------------------------------- forms --------------------------------- */
 
 form .field { margin-bottom: .9rem; }
 label { display: block; font-size: .76rem; font-weight: 600; margin-bottom: .25rem; }
 label .hint { display: block; font-weight: 400; color: var(--warm-earth); font-size: .74rem; margin-top: .1rem; }
 
-input[type=text], input[type=number], input[type=search], input[type=url], select, textarea {
+/* Every text-like control, including the ones written without a type
+   attribute. Listing types individually silently skipped those, leaving them
+   with browser-default styling and, worse, the intrinsic width below.
+   The exclusions sit inside :where() so this rule keeps the specificity of a
+   bare element selector — otherwise it outranks input:disabled and a disabled
+   field stops looking disabled. */
+input:where(:not([type=checkbox], [type=radio], [type=file], [type=submit], [type=button])),
+select,
+textarea {
   width: 100%;
   font: inherit;
   font-size: .85rem;
@@ -221,6 +235,11 @@ input[type=text], input[type=number], input[type=search], input[type=url], selec
   border-radius: 4px;
   background: #fff;
   color: inherit;
+  /* A text input carries an intrinsic width from its size attribute, about
+     185px, which outranks width:100% and refuses to shrink below it. In a
+     narrow grid cell that pushed the whole page sideways on a phone. Nothing
+     here wants that floor: every control is sized by its container. */
+  min-width: 0;
 }
 textarea { min-height: 7rem; resize: vertical; line-height: 1.55; }
 input:disabled, textarea:disabled, select:disabled { background: var(--cream); color: var(--warm-earth); }

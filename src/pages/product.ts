@@ -98,9 +98,19 @@ export function productPage(p: Product): string {
     image: p.images[0]?.src ?? "",
   });
 
-  // Use the collection's own title so the crumb reads "SolutionsHOCL", not the
-  // handle it is addressed by.
-  const parent = p.collections[0] ? collectionIndex.get(p.collections[0]) : undefined;
+  // The first collection this product belongs to that actually has a page.
+  //
+  // A hidden collection is not built, so linking a breadcrumb at one produces a
+  // 404 — which is what happened to the only product whose sole collection is
+  // hidden. Falling through to the next visible one keeps the crumb useful, and
+  // a product with no visible collection simply gets no crumb rather than a
+  // broken one.
+  //
+  // The collection's own title is used so the crumb reads "SolutionsHOCL"
+  // rather than the handle it is addressed by.
+  const parent = p.collections
+    .map((handle) => collectionIndex.get(handle))
+    .find((c) => c && !c.hidden);
   const trail = [
     { label: "Home", href: "/" },
     ...(parent ? [{ label: parent.title, href: `/collections/${parent.handle}` }] : []),

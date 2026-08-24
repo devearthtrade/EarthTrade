@@ -8,3 +8,4 @@ node_modules/
 # Local database environment. Never commit real credentials.
 .env.db
 *.pgpass
+earthtrade-preview.html

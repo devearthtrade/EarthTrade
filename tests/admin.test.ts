@@ -76,7 +76,9 @@ async function form(path: string, fields: Record<string, string | string[]>) {
   return {
     status: res.status,
     location: res.headers.get("location") ?? "",
-    text: res.status >= 400 ? await res.text() : "",
+    // Bodies matter on a refusal, and on the one action that answers with a
+    // page instead of a redirect.
+    text: res.status === 303 ? "" : await res.text(),
   };
 }
 
@@ -93,6 +95,50 @@ async function auditFor(action?: string) {
 /** Renders the storefront catalog from PostgreSQL, as the build does. */
 async function storefront() {
   return buildCatalog(await loadFromPostgres());
+}
+
+/**
+ * Reads back exactly what the browser would post from an unmodified editor.
+ *
+ * Round-trip fidelity is only testable this way. Constructing the fields by
+ * hand tests what the test author believed the form contains, which is how a
+ * field silently missing from it goes unnoticed.
+ */
+async function editorForm(handle: string): Promise<Record<string, string>> {
+  const { html: doc } = await get(`/admin/products/${encodeURIComponent(handle)}`);
+
+  const unescape = (v: string): string =>
+    v.replaceAll("&quot;", '"').replaceAll("&#39;", "'")
+      .replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("&amp;", "&");
+
+  const input = (name: string): string => {
+    const m = new RegExp(`<input[^>]*name="${name}"[^>]*value="([^"]*)"`).exec(doc);
+    return m ? unescape(m[1]!) : "";
+  };
+  const area = (name: string): string => {
+    const m = new RegExp(`<textarea[^>]*name="${name}"[^>]*>([\\s\\S]*?)</textarea>`).exec(doc);
+    return m ? unescape(m[1]!) : "";
+  };
+  const chosen = (name: string): string => {
+    const block = new RegExp(`<select[^>]*name="${name}"[\\s\\S]*?</select>`).exec(doc);
+    if (!block) return "";
+    const m = /<option value="([^"]*)"[^>]*selected/.exec(block[0]);
+    return m ? m[1]! : "";
+  };
+
+  return {
+    title: input("title"),
+    cardTitle: input("cardTitle"),
+    brandSlug: chosen("brandSlug"),
+    categorySlug: chosen("categorySlug"),
+    productType: input("productType"),
+    shortBenefit: input("shortBenefit"),
+    description: area("description"),
+    heldBack: area("heldBack"),
+    seoTitle: input("seoTitle"),
+    seoDescription: area("seoDescription"),
+    tags: input("tags"),
+  };
 }
 
 /* ============================== the shell ================================ */
@@ -199,6 +245,20 @@ suite("product: create → database → storefront", () => {
     equal(p!.variants[0]!.price, 9.99, "cents become dollars only at the display boundary");
   });
 
+  test("unpublishing demands a real reason", async () => {
+    const h = handle("unpublish-reason");
+    await form("/admin/products", { handle: h, title: "Reasoned", brandSlug: "solutionshocl" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "500" });
+    await form(`/admin/products/${h}/publish`, {});
+
+    const refused = await form(`/admin/products/${h}/unpublish`, { reason: "" });
+    equal(refused.status, 422, "an empty reason is refused rather than filled in with boilerplate");
+    equal((await repo.catalog.loadProduct(h))!.publishable, true, "and it stays published");
+
+    await form(`/admin/products/${h}/unpublish`, { reason: "Supplier discontinued it" });
+    equal((await repo.catalog.loadProduct(h))!.withheldReason, "Supplier discontinued it");
+  });
+
   test("unpublish → storefront", async () => {
     const h = handle("unpublish-flow");
     await form("/admin/products", { handle: h, title: "Unpublish Flow", brandSlug: "solutionshocl" });
@@ -261,6 +321,116 @@ suite("product: create → database → storefront", () => {
 
     const paged = await get("/admin/products?offset=25");
     includes(paged.html, "26–");
+  });
+});
+
+/* ========================= editor round-trip fidelity ==================== */
+
+suite("editor round-trip", () => {
+  test("saving an unmodified editor changes nothing", async () => {
+    // A published product that carries copy the screen held back — the case
+    // where the form not carrying a field costs real data.
+    const withHeld = (await repo.catalog.loadProducts({ publishable: true }))
+      .find((p) => p.quarantinedContent.length > 0);
+    ok(withHeld, "the seeded catalog has a product with held-back copy");
+
+    const before = await repo.catalog.loadProduct(withHeld!.handle);
+    const res = await form(`/admin/products/${withHeld!.handle}`, await editorForm(withHeld!.handle));
+    equal(res.status, 303);
+
+    const after = await repo.catalog.loadProduct(withHeld!.handle);
+    equal(after!.quarantinedContent.length, before!.quarantinedContent.length,
+      "held-back copy must survive a save that did not touch it");
+    deepEqual(after!.description, before!.description);
+    deepEqual(after!.sourceTags, before!.sourceTags);
+    equal(after!.publishable, before!.publishable);
+    equal(after!.seo.title, before!.seo.title);
+  });
+
+  test("held-back copy can be fixed through the editor", async () => {
+    const h = handle("release-held-copy");
+    await form("/admin/products", {
+      handle: h, title: "Release Test", brandSlug: "solutionshocl",
+      description: "A clean opening line.\n\nRegistered with the EPA and certified by NSF.",
+    });
+
+    let p = await repo.catalog.loadProduct(h);
+    equal(p!.quarantinedContent.length, 1, "the offending block starts held back");
+    equal(p!.description.length, 1);
+
+    // Rewrite the wording in the held-back box, exactly as a person would.
+    const fields = await editorForm(h);
+    await form(`/admin/products/${h}`, {
+      ...fields,
+      heldBack: fields["heldBack"]!.replace("EPA", "the regulator").replace("NSF", "the standards body"),
+    });
+
+    p = await repo.catalog.loadProduct(h);
+    equal(p!.quarantinedContent.length, 0, "fixing the wording releases the block");
+    equal(p!.description.length, 2, "and it joins the published copy");
+  });
+
+  test("a field the request omits is left alone, not cleared", async () => {
+    const h = handle("partial-post");
+    await form("/admin/products", {
+      handle: h, title: "Partial", brandSlug: "solutionshocl",
+      shortBenefit: "Keep me.", description: "Keep this too.", tags: "alpha, beta",
+    });
+    const before = await repo.catalog.loadProduct(h);
+
+    // A post carrying only the title. Everything else must survive.
+    await form(`/admin/products/${h}`, { title: "Partial Renamed", brandSlug: "solutionshocl" });
+
+    const after = await repo.catalog.loadProduct(h);
+    equal(after!.title, "Partial Renamed");
+    equal(after!.shortBenefit, before!.shortBenefit, "short benefit was not sent, so it must not change");
+    deepEqual(after!.description, before!.description, "description was not sent");
+    deepEqual(after!.sourceTags, before!.sourceTags, "tags were not sent");
+  });
+
+  test("a brand field the request omits is left alone", async () => {
+    const slug = "zz-test-partial-brand";
+    CREATED_BRANDS.push(slug);
+    await form("/admin/brands", { slug, name: "Partial Brand", tagline: "Keep me." });
+    await form(`/admin/brands/${slug}`, { name: "Partial Brand", story: "One.\n\nTwo." });
+    const before = await repo.brands.getBrand(slug);
+
+    await form(`/admin/brands/${slug}`, { name: "Partial Brand Renamed" });
+
+    const after = await repo.brands.getBrand(slug);
+    equal(after!.name, "Partial Brand Renamed");
+    equal(after!.tagline, before!.tagline, "tagline was not sent");
+    deepEqual(after!.story, before!.story, "story was not sent");
+  });
+
+  test("sending only the description keeps the held-back copy", async () => {
+    const h = handle("partial-copy");
+    await form("/admin/products", {
+      handle: h, title: "Partial Copy", brandSlug: "solutionshocl",
+      description: "A clean line.\n\nRegistered with the EPA.",
+    });
+    equal((await repo.catalog.loadProduct(h))!.quarantinedContent.length, 1);
+
+    // Only the published half. The held-back half must not be read as empty.
+    await form(`/admin/products/${h}`, {
+      title: "Partial Copy", brandSlug: "solutionshocl", description: "A different clean line.",
+    });
+
+    const p = await repo.catalog.loadProduct(h);
+    deepEqual(p!.description, ["A different clean line."]);
+    equal(p!.quarantinedContent.length, 1, "held-back copy was not submitted, so it must survive");
+  });
+
+  test("an empty field that WAS sent does clear", async () => {
+    const h = handle("explicit-clear");
+    await form("/admin/products", {
+      handle: h, title: "Clear Me", brandSlug: "solutionshocl", shortBenefit: "Temporary.",
+    });
+    await form(`/admin/products/${h}`, {
+      title: "Clear Me", brandSlug: "solutionshocl", shortBenefit: "",
+    });
+    equal((await repo.catalog.loadProduct(h))!.shortBenefit, null,
+      "sending an empty box means clear it; not sending it means leave it");
   });
 });
 
@@ -630,13 +800,23 @@ suite("compliance: the Dashboard cannot route around it", () => {
     ok(!(await storefront()).products.some((p) => p.handle === h), "it leaves the storefront at once");
   });
 
+  test("the screen preview renders in place, not through the URL", async () => {
+    // A realistic body used to be echoed back in a query string, producing an
+    // 11 KB URL. It is rendered directly now.
+    const body = "This is a perfectly ordinary sentence about cleaning. ".repeat(200);
+    const res = await form("/admin/compliance/screen", {
+      brandSlug: "solutionshocl", title: "Ordinary", text: body,
+    });
+    equal(res.status, 200, "the result is a page, not a redirect");
+    equal(res.location, "", "and nothing travels in a URL");
+  });
+
   test("the screen preview writes nothing", async () => {
     const [before] = await rows<{ n: number }>(`SELECT count(*)::int AS n FROM products`);
     const res = await form("/admin/compliance/screen", {
       brandSlug: "solutionshocl", title: "Fogger", text: "Kills germs.",
     });
-    equal(res.status, 303);
-    includes(decodeURIComponent(res.location), "Fogger");
+    equal(res.status, 200);
 
     const [after] = await rows<{ n: number }>(`SELECT count(*)::int AS n FROM products`);
     equal(after!.n, before!.n);
@@ -935,6 +1115,68 @@ suite("broken curation", () => {
     deepEqual(await repo.collections.collectionMembers("wellness"), before, "membership is unchanged");
 
     await form(`/admin/curation/${gap.id}/reopen`, {});
+  });
+
+  test("reopening a mapped gap withdraws the curation it added", async () => {
+    const gaps = await repo.curation.listGaps({ open: true, sourceHandle: "best-sellers" });
+    ok(gaps.length > 0);
+    const gap = gaps[0]!;
+
+    const replacement = handle("reopen-replacement");
+    await form("/admin/products", { handle: replacement, title: "Reopen", brandSlug: "solutionshocl" });
+    await form(`/admin/products/${replacement}/variants`, { title: "Default", priceCents: "500" });
+    await form(`/admin/products/${replacement}/publish`, {});
+
+    await form(`/admin/curation/${gap.id}/resolve`, { kind: "mapped", productHandle: replacement });
+    ok((await repo.collections.collectionMembers("best-sellers")).includes(replacement));
+
+    await form(`/admin/curation/${gap.id}/reopen`, {});
+    ok(
+      !(await repo.collections.collectionMembers("best-sellers")).includes(replacement),
+      "an outstanding gap must not leave its former replacement on the storefront",
+    );
+  });
+
+  test("mapping onto a product already curated there is refused", async () => {
+    const gaps = await repo.curation.listGaps({ open: true, sourceHandle: "solutionshocl" });
+    ok(gaps.length > 0);
+    const gap = gaps[0]!;
+
+    // Already curated into this collection, at a position somebody chose.
+    const already = "toilet-bomb-organic-lemon";
+    const before = await repo.collections.collectionMembers("solutionshocl");
+
+    const res = await form(`/admin/curation/${gap.id}/resolve`, {
+      kind: "mapped", productHandle: already,
+    });
+    equal(res.status, 409);
+    includes(res.text, "already curated into");
+    includes(res.text, "Remove this reference instead");
+
+    deepEqual(await repo.collections.collectionMembers("solutionshocl"), before,
+      "the refusal changed nothing");
+    equal((await repo.curation.getGap(gap.id))!.resolvedAt, null, "and the gap is still open");
+  });
+
+  test("reopening restores a tag-derived member to where it was", async () => {
+    const gaps = await repo.curation.listGaps({ open: true, sourceHandle: "water-filtration" });
+    ok(gaps.length > 0, "water-filtration has an unresolved reference");
+    const gap = gaps[0]!;
+
+    // A product in this collection through its tags but not curated into it.
+    const membership = await repo.collections.collectionMembership("water-filtration");
+    const derivedOnly = membership.find((m) => m.isDerived && !m.isCurated);
+    ok(derivedOnly, "and a member that is there through its own tags alone");
+
+    const before = await repo.collections.collectionMembers("water-filtration");
+    await form(`/admin/curation/${gap.id}/resolve`, {
+      kind: "mapped", productHandle: derivedOnly!.handle,
+    });
+    await form(`/admin/curation/${gap.id}/reopen`, {});
+
+    const after = await repo.collections.collectionMembers("water-filtration");
+    ok(after.includes(derivedOnly!.handle), "tag-derived membership is not this gap's to take away");
+    deepEqual(after, before, "and the order it had is restored");
   });
 
   test("refuses a replacement that does not exist", async () => {

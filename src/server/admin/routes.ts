@@ -23,16 +23,46 @@ import { newProductPage, productEditorPage, productsPage } from "./pages/product
 import {
   auditPage, brandEditorPage, brandsPage, collectionEditorPage, collectionsPage, inventoryPage,
 } from "./pages/catalog.ts";
-import { compliancePage, curationPage } from "./pages/review.ts";
+import { compliancePage, curationPage, screenResultPage } from "./pages/review.ts";
 
 /* ------------------------------ input reading ---------------------------- */
 
-/** A form value as a trimmed string, or null when it was left empty. */
+/**
+ * A form value as a trimmed string, or null when the field was submitted empty.
+ *
+ * "Submitted empty" and "not submitted" are different things, and only the
+ * first means clear it. See `patch` below.
+ */
 function text(ctx: RequestContext, key: string): string | null {
   const v = ctx.body[key];
   if (typeof v !== "string") return null;
   const trimmed = v.trim();
   return trimmed === "" ? null : trimmed;
+}
+
+/**
+ * Builds a patch containing only the fields the request actually sent.
+ *
+ * The write layer reads a patch as "change what is here, leave alone what is
+ * not". Passing every possible key on every request destroys that: a form that
+ * submits only a name would clear the tagline, the story and the description,
+ * because each arrives as an absent value that looks like an empty one.
+ *
+ * The Dashboard's own forms do submit every field they own, so this changes
+ * nothing for them. It matters for everything else that will ever post here —
+ * a script, a partial save, a future inline edit — where silently erasing a
+ * field the caller never mentioned is the worst kind of bug: quiet, permanent,
+ * and indistinguishable from an intentional change in the audit trail.
+ */
+function patch<T extends object>(
+  ctx: RequestContext,
+  fields: { [K in keyof T]?: () => T[K] },
+): Partial<T> {
+  const out: Record<string, unknown> = {};
+  for (const [key, read] of Object.entries(fields) as [string, () => unknown][]) {
+    if (key in ctx.body) out[key] = read();
+  }
+  return out as Partial<T>;
 }
 
 function required(ctx: RequestContext, key: string): string {
@@ -176,17 +206,50 @@ export function addAdminRoutes(r: Router): Router {
 
   r.post("/admin/products/:handle", action(async (ctx) => {
     const handle = ctx.params["handle"]!;
+
+    /*
+     * Copy is one document to the screen, even though the editor shows it in
+     * two boxes: what publishes, and what the screen held back. Both are
+     * submitted together and screened as one, because which is which is the
+     * screen's conclusion rather than the editor's input.
+     *
+     * Either box being absent means that half was not submitted, so it is read
+     * from the database instead of treated as empty. Sending only a new
+     * description must not discard copy the screen is holding — that is the
+     * same silent deletion the patch helper exists to prevent, and held-back
+     * text is the one thing here that cannot be retyped from the page.
+     *
+     * Held-back blocks go last. Where they originally sat among the published
+     * ones was not recorded at import, so a block that is fixed and released
+     * joins the end rather than a position nobody knows.
+     */
+    const sentPublished = "description" in ctx.body;
+    const sentHeld = "heldBack" in ctx.body;
+
+    let copy: string[] | undefined;
+    if (sentPublished || sentHeld) {
+      const current = await repo.catalog.loadProduct(handle);
+      if (!current) throw new WriteError(`No product with handle ${JSON.stringify(handle)}`, 404);
+
+      copy = [
+        ...(sentPublished ? paragraphs(ctx, "description") : current.description),
+        ...(sentHeld ? paragraphs(ctx, "heldBack") : current.quarantinedContent.map((b) => b.text)),
+      ];
+    }
+
     const result = await writes.updateProduct(handle, {
-      title: required(ctx, "title"),
-      cardTitle: text(ctx, "cardTitle"),
-      brandSlug: required(ctx, "brandSlug"),
-      categorySlug: text(ctx, "categorySlug"),
-      productType: text(ctx, "productType"),
-      shortBenefit: text(ctx, "shortBenefit"),
-      seoTitle: text(ctx, "seoTitle"),
-      seoDescription: text(ctx, "seoDescription"),
-      description: paragraphs(ctx, "description"),
-      tags: commaList(ctx, "tags"),
+      ...patch<writes.ProductInput>(ctx, {
+        title: () => required(ctx, "title"),
+        cardTitle: () => text(ctx, "cardTitle"),
+        brandSlug: () => required(ctx, "brandSlug"),
+        categorySlug: () => text(ctx, "categorySlug"),
+        productType: () => text(ctx, "productType"),
+        shortBenefit: () => text(ctx, "shortBenefit"),
+        seoTitle: () => text(ctx, "seoTitle"),
+        seoDescription: () => text(ctx, "seoDescription"),
+        tags: () => commaList(ctx, "tags"),
+      }),
+      ...(copy ? { description: copy } : {}),
     });
 
     const held = result.quarantinedBlocks;
@@ -207,7 +270,14 @@ export function addAdminRoutes(r: Router): Router {
 
   r.post("/admin/products/:handle/unpublish", action(async (ctx) => {
     const handle = ctx.params["handle"]!;
-    await writes.unpublishProduct(handle, text(ctx, "reason") ?? "Unpublished from the Dashboard");
+    // No default. "Unpublished from the Dashboard" says nothing a person could
+    // act on, and a product that vanished from the storefront with no
+    // explanation is a support ticket nobody can answer.
+    const reason = text(ctx, "reason");
+    if (!reason) {
+      throw new WriteError("Say why this product is coming down. The reason is shown wherever it is listed as withheld.");
+    }
+    await writes.unpublishProduct(handle, reason);
     return back(`/admin/products/${handle}`, "Unpublished.", "warn");
   }));
 
@@ -255,14 +325,17 @@ export function addAdminRoutes(r: Router): Router {
     const variant = await repo.variants.getVariantByRef(ref);
     if (!variant) throw new WriteError(`No variant with reference ${JSON.stringify(ref)}`, 404);
 
-    const price = integer(ctx, "priceCents");
-    await writes.updateVariant(ref, {
-      title: required(ctx, "title"),
-      sku: text(ctx, "sku"),
-      ...(price === null ? {} : { priceCents: price }),
-      compareAtCents: integer(ctx, "compareAtCents"),
-      weightGrams: integer(ctx, "weightGrams"),
-    });
+    await writes.updateVariant(ref, patch<writes.VariantInput>(ctx, {
+      title: () => required(ctx, "title"),
+      sku: () => text(ctx, "sku"),
+      priceCents: () => {
+        const price = integer(ctx, "priceCents");
+        if (price === null) throw new WriteError("A price in cents is required");
+        return price;
+      },
+      compareAtCents: () => integer(ctx, "compareAtCents"),
+      weightGrams: () => integer(ctx, "weightGrams"),
+    }));
     return back(`/admin/products/${variant.productHandle}`, "Variant saved.");
   }));
 
@@ -375,16 +448,16 @@ export function addAdminRoutes(r: Router): Router {
 
   r.post("/admin/brands/:slug", action(async (ctx) => {
     const slug = ctx.params["slug"]!;
-    await writes.updateBrand(slug, {
-      name: required(ctx, "name"),
-      tagline: text(ctx, "tagline"),
-      summary: text(ctx, "summary"),
-      story: paragraphs(ctx, "story"),
-      theme: text(ctx, "theme"),
-      collectionHandle: text(ctx, "collectionHandle"),
-      seoTitle: text(ctx, "seoTitle"),
-      seoDescription: text(ctx, "seoDescription"),
-    });
+    await writes.updateBrand(slug, patch<writes.BrandInput>(ctx, {
+      name: () => required(ctx, "name"),
+      tagline: () => text(ctx, "tagline"),
+      summary: () => text(ctx, "summary"),
+      story: () => paragraphs(ctx, "story"),
+      theme: () => text(ctx, "theme"),
+      collectionHandle: () => text(ctx, "collectionHandle"),
+      seoTitle: () => text(ctx, "seoTitle"),
+      seoDescription: () => text(ctx, "seoDescription"),
+    }));
     return back(`/admin/brands/${slug}`, "Brand saved.");
   }));
 
@@ -425,18 +498,18 @@ export function addAdminRoutes(r: Router): Router {
 
   r.post("/admin/collections/:handle", action(async (ctx) => {
     const handle = ctx.params["handle"]!;
-    await writes.updateCollection(handle, {
-      title: required(ctx, "title"),
-      heroTitle: text(ctx, "heroTitle"),
-      eyebrow: text(ctx, "eyebrow"),
-      description: text(ctx, "description"),
-      editorial: paragraphs(ctx, "editorial"),
-      theme: text(ctx, "theme"),
-      role: text(ctx, "role") ?? "editorial",
-      isHidden: ctx.body["isHidden"] === "true",
-      seoTitle: text(ctx, "seoTitle"),
-      seoDescription: text(ctx, "seoDescription"),
-    });
+    await writes.updateCollection(handle, patch<writes.CollectionInput>(ctx, {
+      title: () => required(ctx, "title"),
+      heroTitle: () => text(ctx, "heroTitle"),
+      eyebrow: () => text(ctx, "eyebrow"),
+      description: () => text(ctx, "description"),
+      editorial: () => paragraphs(ctx, "editorial"),
+      theme: () => text(ctx, "theme"),
+      role: () => text(ctx, "role") ?? "editorial",
+      isHidden: () => ctx.body["isHidden"] === "true",
+      seoTitle: () => text(ctx, "seoTitle"),
+      seoDescription: () => text(ctx, "seoDescription"),
+    }));
     return back(`/admin/collections/${handle}`, "Collection saved.");
   }));
 
@@ -495,26 +568,19 @@ export function addAdminRoutes(r: Router): Router {
       brandId: brandSlug,
     });
 
-    const problems: string[] = [];
-    if (screened.titleMatches.length) {
-      problems.push(
-        `The name states: ${screened.titleMatches.map((m) => `${m.term} (${m.reason})`).join(", ")}`,
-      );
-    }
-    for (const q of screened.quarantined) {
-      problems.push(`The copy states: ${q.matches.map((m) => `${m.term} (${m.reason})`).join(", ")}`);
-    }
-
-    const params = new URLSearchParams({
-      view: "screen",
-      title,
-      text: body,
-      result: problems.length
-        ? `${problems.join(". ")}. As written, this would ${screened.publishable ? "publish with that copy held back" : "not be publishable"}.`
-        : "Nothing in this would be held back.",
-      blocked: problems.length ? "1" : "0",
-    });
-    return new Redirect(`/admin/compliance?${params}`);
+    // Rendered directly rather than redirected. Post-redirect-get exists so a
+    // refresh cannot repeat a write, and this writes nothing — while sending
+    // the submitted copy back through a query string put the whole pasted body
+    // in a URL, which passed at a few hundred characters and produced an
+    // 11 KB URL at a realistic length. Plenty of things in front of a server
+    // refuse a URL that size.
+    return new Html(
+      await screenResultPage(
+        { brandSlug, title, body, screened },
+        flashFrom(ctx.query),
+        await navCounts(),
+      ),
+    );
   }));
 
   return r;

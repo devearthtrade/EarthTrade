@@ -44,23 +44,30 @@ node db/seed-presentation.ts | sed -n '/seeded/,/^$/p;/curated handle/p' | sed '
 step "4. database matches the catalog record"
 node db/verify.ts | tail -3 | sed 's/^/  /'
 
-step "5. data layer, JSON vs PostgreSQL"
-node db/verify-data-layer.ts | tail -3 | sed 's/^/  /'
-
-step "6. catalog and management API tests"
-node tests/catalog.test.ts | tail -8 | sed 's/^/  /'
-
-step "7. admin dashboard tests"
-node tests/admin.test.ts | tail -10 | sed 's/^/  /'
-
-step "8. storefront build from PostgreSQL"
+# The data-layer check inspects the rendered site as well as the database, so
+# the site has to be current when it runs. Reading a dist/ left over from an
+# earlier build makes that half of the check meaningless.
+step "5. storefront build from PostgreSQL"
 rm -rf dist
 node src/build.ts | sed 's/^/  /'
+
+step "6. data layer, JSON vs PostgreSQL"
+node db/verify-data-layer.ts | tail -3 | sed 's/^/  /'
+
+step "7. catalog and management API tests"
+node tests/catalog.test.ts | tail -8 | sed 's/^/  /'
+
+step "8. admin dashboard tests"
+node tests/admin.test.ts | tail -10 | sed 's/^/  /'
 
 if [[ "${1:-}" != "--quick" ]]; then
   step "9. storefront build from the JSON export, and the difference"
   SNAP="$(mktemp -d)"
   trap 'rm -rf "$SNAP"' EXIT
+  # The tests above create and remove products, so the build from step 5 is no
+  # longer what the database says. Rebuild both sides for the comparison.
+  rm -rf dist
+  node src/build.ts >/dev/null
   cp -r dist "$SNAP/pg"
   rm -rf dist
   EARTHTRADE_CATALOG_SOURCE=json node src/build.ts >/dev/null

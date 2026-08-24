@@ -234,9 +234,34 @@ export async function productEditorPage(
             hint: "One line, shown on cards. Left empty it renders as nothing, never as filler.",
           })}
           ${textarea("description", "Description", product.description.join("\n\n"), {
-            hint: "One paragraph per blank line. Screened on save; anything that fails is held back, not published.",
+            hint: "One paragraph per blank line. Screened on save; anything that fails moves to the box below.",
             rows: 10,
           })}
+          ${textarea(
+            "heldBack",
+            `Held back by the screen${product.quarantinedContent.length ? ` (${product.quarantinedContent.length})` : ""}`,
+            product.quarantinedContent.map((b) => b.text).join("\n\n"),
+            {
+              hint:
+                "Copy that did not pass compliance. It is stored but never rendered. Edit the wording " +
+                "here and save: anything that now passes moves up into the description. Released blocks " +
+                "join the end of it — where they originally sat was not recorded at import.",
+              rows: product.quarantinedContent.length ? 8 : 3,
+            },
+          )}
+          ${product.quarantinedContent.length
+            ? html`<div class="notice notice--warn">
+                <p>What the screen objected to, block by block:</p>
+                ${join(
+                  product.quarantinedContent.map(
+                    (b) => html`<p>
+                      <span class="u-muted">${b.text.slice(0, 90)}${b.text.length > 90 ? "…" : ""}</span><br>
+                      ${join(b.matches.map((m) => html`<code>${m.term}</code> — ${m.reason}. `))}
+                    </p>`,
+                  ),
+                )}
+              </div>`
+            : ""}
           ${field("seoTitle", "SEO title", product.seo.title)}
           ${textarea("seoDescription", "Meta description", product.seo.description, { rows: 3 })}
           ${field("tags", "Tags", product.sourceTags.join(", "), {
@@ -265,9 +290,16 @@ export async function productEditorPage(
           <div class="actions">
             ${product.publishable
               ? html`
-                  <form method="post" action="/admin/products/${product.handle}/unpublish">
-                    <input type="hidden" name="reason" value="Unpublished from the Dashboard">
-                    <button class="ghost" type="submit">Unpublish</button>
+                  <form method="post" action="/admin/products/${product.handle}/unpublish" class="row">
+                    <input
+                      name="reason"
+                      placeholder="Why is it coming down?"
+                      aria-label="Reason for unpublishing"
+                      required
+                    >
+                    <span class="actions actions--inline">
+                      <button class="ghost" type="submit">Unpublish</button>
+                    </span>
                   </form>
                 `
               : html`
@@ -305,21 +337,10 @@ export async function productEditorPage(
                   ${String(product.quarantinedContent.length)} block(s) of copy are held back.
                   They are stored, not deleted, and do not render.
                 </p>
-                ${join(
-                  product.quarantinedContent.map(
-                    (b) => html`
-                      <div class="quarantined">
-                        <p>${b.text}</p>
-                        <p class="u-muted">
-                          ${join(b.matches.map((m) => html`<code>${m.term}</code> — ${m.reason}`))}
-                        </p>
-                      </div>
-                    `,
-                  ),
-                )}
-                <p class="u-mt u-muted">
-                  Editing the description re-screens it. Removing the offending phrasing
-                  releases the block; nothing here can override the screen.
+                <p class="u-muted">
+                  Edit them in <strong>Held back by the screen</strong>, to the left. Removing the
+                  offending phrasing releases a block on the next save. Nothing here can override
+                  the screen.
                 </p>
               `
             : html`<p class="u-muted">Nothing held back.</p>`}

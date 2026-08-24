@@ -1552,6 +1552,32 @@ export async function resolveCurationGap(
       mappedTo = product.id;
 
       if (gap.source_type === "collection") {
+        // Mapping onto a product already curated into this collection is
+        // refused. It would overwrite a position somebody chose, and reopening
+        // the gap could not tell that curation apart from the curation the
+        // mapping itself added — so undoing it would silently discard the
+        // earlier decision.
+        //
+        // There is also nothing to do: the collection already contains the
+        // product. The reference that named a product the catalog no longer has
+        // should be removed, not redirected at something already here.
+        const [existing] = await q<{ is_curated: boolean }>(
+          `SELECT cp.is_curated
+             FROM collection_products cp
+             JOIN collections c ON c.id = cp.collection_id
+            WHERE c.handle = $1 AND cp.product_id = $2`,
+          [gap.source_handle, mappedTo],
+        );
+
+        if (existing?.is_curated) {
+          throw new WriteError(
+            `${resolution.productHandle} is already curated into ${gap.source_handle}. ` +
+              `Remove this reference instead — the collection already contains that product, ` +
+              `and mapping onto it would overwrite the position it was given.`,
+            409,
+          );
+        }
+
         // The replacement takes the position the missing product held, so the
         // collection reads the way it was curated to.
         await q(
@@ -1591,14 +1617,60 @@ export async function resolveCurationGap(
   });
 }
 
-/** Reopens a settled gap, for when the decision turns out to be wrong. */
+/**
+ * Reopens a settled gap, for when the decision turns out to be wrong.
+ *
+ * A mapping is undone as well as forgotten. Reopening says the reference is
+ * unresolved again, so leaving the replacement curated into the collection
+ * would be a contradiction: the queue would show the gap as outstanding while
+ * the product it was settled with sat on the storefront under that heading.
+ *
+ * Only the curation this mapping added is withdrawn. If the product is also in
+ * the collection through its own tags, it stays there — that membership was
+ * never this gap's to give or take away.
+ */
 export async function reopenCurationGap(id: string): Promise<{ id: string }> {
   return transaction(async (q) => {
-    const [gap] = await q<{ resolved_at: Date | null }>(
-      `SELECT resolved_at FROM curation_gaps WHERE id = $1`, [id],
+    const [gap] = await q<{
+      resolved_at: Date | null;
+      resolution: string | null;
+      mapped_to: string | null;
+      source_type: string;
+      source_handle: string;
+    }>(
+      `SELECT resolved_at, resolution, mapped_to, source_type, source_handle
+         FROM curation_gaps WHERE id = $1`,
+      [id],
     );
     if (!gap) throw new WriteError(`No curation gap with id ${JSON.stringify(id)}`, 404);
     if (!gap.resolved_at) throw new WriteError("That gap is already open", 409);
+
+    let withdrew: string | null = null;
+
+    if (gap.resolution === "mapped" && gap.mapped_to && gap.source_type === "collection") {
+      const [product] = await q<{ handle: string }>(`SELECT handle FROM products WHERE id = $1`, [
+        gap.mapped_to,
+      ]);
+
+      await q(
+        `DELETE FROM collection_products
+          WHERE collection_id = (SELECT id FROM collections WHERE handle = $1)
+            AND product_id = $2 AND is_curated AND NOT is_derived`,
+        [gap.source_handle, gap.mapped_to],
+      );
+      // A row that was already there through the product's own tags keeps its
+      // place in the collection, and mapping overwrote that place with the
+      // missing product's. Derived rows carry position zero and sort by handle,
+      // so putting it back means restoring the convention, not a stored value —
+      // the original was overwritten and is not recoverable any other way.
+      await q(
+        `UPDATE collection_products SET is_curated = false, collection_position = 0
+          WHERE collection_id = (SELECT id FROM collections WHERE handle = $1)
+            AND product_id = $2 AND is_curated`,
+        [gap.source_handle, gap.mapped_to],
+      );
+      withdrew = product?.handle ?? null;
+    }
 
     await q(
       `UPDATE curation_gaps
@@ -1606,7 +1678,12 @@ export async function reopenCurationGap(id: string): Promise<{ id: string }> {
         WHERE id = $1`,
       [id],
     );
-    await record(q as AuditQuery, { action: "curation.reopened", entityType: "curation_gap", entityId: id });
+    await record(q as AuditQuery, {
+      action: "curation.reopened",
+      entityType: "curation_gap",
+      entityId: id,
+      ...(withdrew ? { before: { curatedInto: gap.source_handle, product: withdrew } } : {}),
+    });
     return { id };
   });
 }

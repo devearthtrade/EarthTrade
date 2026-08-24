@@ -59,7 +59,7 @@ export async function compliancePage(
     ${view === "names" ? namesView(bannedNames) : ""}
     ${view === "withheld" ? withheldView(withheld) : ""}
     ${view === "flags" ? flagsView(flagged) : ""}
-    ${view === "screen" ? screenView(query) : ""}
+    ${view === "screen" ? screenView() : ""}
   `;
 
   return page({ title: "Compliance", section: "compliance", flash, counts }, body);
@@ -197,7 +197,15 @@ function flagsView(products: repo.ProductRecord[]): SafeHtml {
   `;
 }
 
-function screenView(query: URLSearchParams): SafeHtml {
+const SCREEN_BRANDS = [
+  { value: "solutionshocl", label: "SolutionsHOCL (governed by the HOCL rules)" },
+  { value: "life-ionizers", label: "Life Ionizers" },
+  { value: "pitcher-of-life", label: "Pitcher of Life" },
+  { value: "hawaiian-volcanic-organic", label: "Hawaiian Volcanic Organic" },
+  { value: "life-sciences-water", label: "Life Sciences Water" },
+];
+
+function screenForm(values: { brandSlug?: string; title?: string; body?: string } = {}): SafeHtml {
   return html`
     <section class="card" style="max-width:800px">
       <h2>Test the screen</h2>
@@ -209,30 +217,103 @@ function screenView(query: URLSearchParams): SafeHtml {
         <div class="field">
           <label for="f-brandSlug">Brand</label>
           <select id="f-brandSlug" name="brandSlug">
-            <option value="solutionshocl">SolutionsHOCL (governed by the HOCL rules)</option>
-            <option value="life-ionizers">Life Ionizers</option>
-            <option value="pitcher-of-life">Pitcher of Life</option>
-            <option value="hawaiian-volcanic-organic">Hawaiian Volcanic Organic</option>
-            <option value="life-sciences-water">Life Sciences Water</option>
+            ${join(
+              SCREEN_BRANDS.map(
+                (b) => html`<option value="${b.value}" ${raw(b.value === values.brandSlug ? "selected" : "")}>${b.label}</option>`,
+              ),
+            )}
           </select>
         </div>
         <div class="field">
           <label for="f-title">Product name</label>
-          <input id="f-title" name="title" value="${query.get("title") ?? ""}">
+          <input id="f-title" name="title" value="${values.title ?? ""}">
         </div>
         <div class="field">
           <label for="f-text">Copy</label>
-          <textarea id="f-text" name="text" rows="6">${query.get("text") ?? ""}</textarea>
+          <textarea id="f-text" name="text" rows="6">${values.body ?? ""}</textarea>
         </div>
         <div class="actions"><button type="submit">Screen it</button></div>
       </form>
-      ${query.get("result")
-        ? html`<div class="notice ${raw(query.get("blocked") === "1" ? "notice--danger" : "notice--ok")} u-mt">
-            <p>${query.get("result")}</p>
-          </div>`
-        : ""}
     </section>
   `;
+}
+
+function screenView(): SafeHtml {
+  return screenForm();
+}
+
+export interface ScreenOutcome {
+  brandSlug: string;
+  title: string;
+  body: string;
+  screened: {
+    publishable: boolean;
+    withheldReason: string | null;
+    titleMatches: { term: string; reason: string }[];
+    quarantined: { text: string; matches: { term: string; reason: string }[] }[];
+    description: string[];
+  };
+}
+
+/** The result of a dry-run screen, rendered in place rather than redirected. */
+export async function screenResultPage(
+  outcome: ScreenOutcome,
+  flash: PageOptions["flash"],
+  counts: Counts,
+): Promise<string> {
+  const { screened } = outcome;
+  const clean = !screened.titleMatches.length && !screened.quarantined.length;
+
+  const body = html`
+    <div class="notice ${raw(clean ? "notice--ok" : "notice--danger")}">
+      <p>
+        <strong>
+          ${clean
+            ? "Nothing in this would be held back."
+            : screened.publishable
+              ? "This would publish, with some copy held back."
+              : "This would not be publishable."}
+        </strong>
+      </p>
+      ${screened.withheldReason ? html`<p>${screened.withheldReason}</p>` : ""}
+    </div>
+
+    ${screened.titleMatches.length
+      ? html`<section class="card">
+          <h2>The name</h2>
+          <p>
+            A product name cannot be quietly omitted from a page, so a match here
+            withholds the whole record.
+          </p>
+          ${join(screened.titleMatches.map((m) => html`<p><code>${m.term}</code> — ${m.reason}</p>`))}
+        </section>`
+      : ""}
+
+    ${screened.quarantined.length
+      ? html`<section class="card">
+          <h2>Copy that would be held back</h2>
+          ${join(
+            screened.quarantined.map(
+              (b) => html`<div class="quarantined">
+                <p>${b.text}</p>
+                <p class="u-muted">${join(b.matches.map((m) => html`<code>${m.term}</code> — ${m.reason}. `))}</p>
+              </div>`,
+            ),
+          )}
+        </section>`
+      : ""}
+
+    ${screened.description.length
+      ? html`<section class="card">
+          <h2>Copy that would publish</h2>
+          ${join(screened.description.map((t) => html`<p>${t}</p>`))}
+        </section>`
+      : ""}
+
+    ${screenForm({ brandSlug: outcome.brandSlug, title: outcome.title, body: outcome.body })}
+  `;
+
+  return page({ title: "Compliance", section: "compliance", flash, counts }, body);
 }
 
 /* --------------------------------- curation ------------------------------ */

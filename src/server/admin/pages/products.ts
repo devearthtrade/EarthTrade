@@ -115,7 +115,9 @@ export async function productsPage(
         <tbody>
           ${shown.length
             ? join(shown.map((p) => productRow(p, stateOf(p))))
-            : html`<tr><td colspan="7"><p class="empty">No products match these filters.</p></td></tr>`}
+            : html`<tr><td colspan="7"><p class="empty">
+                No products match these filters. <a href="/admin/products">Clear filters</a>
+              </p></td></tr>`}
         </tbody>
       </table>
     </div>
@@ -267,6 +269,10 @@ export async function productEditorPage(
           ${field("tags", "Tags", product.sourceTags.join(", "), {
             hint: "Comma separated. Tags feed search and derive collection membership.",
           })}
+          ${select("subscription", "Subscribe & Save", product.subscription ? "true" : "false", [
+            { value: "false", label: "Not eligible" },
+            { value: "true", label: "Eligible" },
+          ], { hint: "Whether Auto-Ship is offered for this product." })}
           <div class="actions">
             <button type="submit">Save changes</button>
             <a class="btn btn--ghost" href="/products/${product.handle}">View on storefront</a>
@@ -315,10 +321,7 @@ export async function productEditorPage(
                   <button class="ghost" type="submit">Archive</button>
                 </form>`}
             ${!product.publishable && product.status !== "archived"
-              ? html`<form method="post" action="/admin/products/${product.handle}/delete"
-                       onsubmit="return confirm('Delete ${product.handle}? This cannot be undone.')">
-                  <button class="danger" type="submit">Delete</button>
-                </form>`
+              ? html`<a class="btn btn--danger" href="/admin/products/${product.handle}/delete">Delete&hellip;</a>`
               : ""}
           </div>
           ${product.status === "archived" || product.publishable
@@ -352,20 +355,22 @@ export async function productEditorPage(
         <section class="card u-mt">
           <h2>Collections</h2>
           <form method="post" action="/admin/products/${product.handle}/collections">
-            <div class="field">
-              <label for="f-collections">Curated into</label>
-              <select id="f-collections" name="collections" multiple size="8">
-                ${join(
-                  collections.map(
-                    (c) => html`<option value="${c.handle}" ${raw(curated.has(c.handle) ? "selected" : "")}>${c.title}</option>`,
-                  ),
-                )}
-              </select>
-              <span class="hint">
-                Curated products lead a collection. Membership the product's own tags
-                give it is separate and is not changed here.
-              </span>
-            </div>
+            <fieldset class="checks">
+              <legend>Curated into</legend>
+              ${join(
+                collections.map(
+                  (c) => html`<label class="check">
+                    <input type="checkbox" name="collections" value="${c.handle}"
+                           ${raw(curated.has(c.handle) ? "checked" : "")}>
+                    <span>${c.title}</span>
+                  </label>`,
+                ),
+              )}
+            </fieldset>
+            <span class="hint">
+              Curated products lead a collection. Membership the product's own tags
+              give it is separate and is not changed here.
+            </span>
             <div class="actions"><button type="submit">Save collections</button></div>
           </form>
         </section>
@@ -415,6 +420,16 @@ export async function productEditorPage(
   );
 }
 
+/** Cents for storage, dollars for people. */
+function centsToDollars(cents: number): string {
+  return (cents / 100).toFixed(2);
+}
+
+/** A labelled control inside a per-variant form — no ids, so rows can repeat. */
+function vfield(label: string, control: SafeHtml): SafeHtml {
+  return html`<label class="vfield"><span>${label}</span>${control}</label>`;
+}
+
 function variantsSection(
   product: ProductRecord,
   stock: Map<string, repo.inventory.StockRecord>,
@@ -422,75 +437,58 @@ function variantsSection(
   return html`
     <section class="card">
       <h2>Variants</h2>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Title</th><th>SKU</th><th class="num">Price</th><th class="num">Compare at</th>
-              <th class="num">Weight</th><th>Stock</th><th>Reference</th><th></th>
-            </tr>
-          </thead>
-          <tbody>
-            ${product.variants.length
-              ? join(
-                  product.variants.map((v) => {
-                    const s = stock.get(v.ref);
-                    return html`
-                      <tr>
-                        <td colspan="8">
-                          <form method="post" action="/admin/variants/${v.ref}" class="row">
-                            <input name="title" value="${v.title}" aria-label="Variant title">
-                            <input name="sku" value="${v.sku ?? ""}" placeholder="SKU" aria-label="SKU">
-                            <input name="priceCents" type="number" min="0" step="1" value="${String(v.priceCents)}"
-                                   aria-label="Price in cents">
-                            <input name="compareAtCents" type="number" min="0" step="1"
-                                   value="${v.compareAtCents === null ? "" : String(v.compareAtCents)}"
-                                   placeholder="compare at" aria-label="Compare-at price in cents">
-                            <input name="weightGrams" type="number" min="1" step="1"
-                                   value="${v.weightGrams === null ? "" : String(v.weightGrams)}"
-                                   placeholder="grams" aria-label="Weight in grams">
-                            <span class="actions actions--inline">
-                              <button class="sm" type="submit">Save</button>
-                            </span>
-                          </form>
-                          <div class="row u-mt">
-                            <span>
-                              ${stockLabel(s?.state ?? "unknown", s?.onHand ?? null)}
-                              <span class="sub mono">${v.ref}</span>
-                              <span class="sub">${money(v.priceCents, v.currency)}</span>
-                            </span>
-                            <form method="post" action="/admin/variants/${v.ref}/stock" class="actions actions--inline">
-                              <input name="onHand" type="number" min="0" step="1"
-                                     value="${s?.onHand === null || s?.onHand === undefined ? "" : String(s.onHand)}"
-                                     placeholder="not counted" aria-label="Units on hand"
-                                     style="max-width:9rem">
-                              <button class="ghost sm" type="submit" name="intent" value="set">Set stock</button>
-                              <button class="ghost sm" type="submit" name="intent" value="clear">Uncount</button>
-                            </form>
-                            <form method="post" action="/admin/variants/${v.ref}/deactivate"
-                                  class="actions actions--inline"
-                                  onsubmit="return confirm('Deactivate ${v.title}? The row stays so carts keep working.')">
-                              <button class="danger sm" type="submit">Deactivate</button>
-                            </form>
-                          </div>
-                        </td>
-                      </tr>
-                    `;
-                  }),
-                )
-              : html`<tr><td colspan="8"><p class="empty">
-                  No variants. A product needs at least one priced variant before it can be published.
-                </p></td></tr>`}
-          </tbody>
-        </table>
-      </div>
+      ${product.variants.length
+        ? html`<div class="variants">
+            ${join(
+              product.variants.map((v) => {
+                const s = stock.get(v.ref);
+                return html`
+                  <div class="variant">
+                    <form method="post" action="/admin/variants/${v.ref}" class="variant__form">
+                      ${vfield("Title", html`<input name="title" value="${v.title}" required>`)}
+                      ${vfield("SKU", html`<input name="sku" value="${v.sku ?? ""}" placeholder="—">`)}
+                      ${vfield("Price (USD)", html`<input name="price" inputmode="decimal" value="${centsToDollars(v.priceCents)}" required>`)}
+                      ${vfield("Compare-at (USD)", html`<input name="compareAt" inputmode="decimal"
+                        value="${v.compareAtCents === null ? "" : centsToDollars(v.compareAtCents)}" placeholder="—">`)}
+                      ${vfield("Weight (g)", html`<input name="weightGrams" type="number" min="1" step="1"
+                        value="${v.weightGrams === null ? "" : String(v.weightGrams)}" placeholder="—">`)}
+                      <button class="sm" type="submit">Save</button>
+                    </form>
+                    <div class="variant__meta">
+                      <span>
+                        ${stockLabel(s?.state ?? "unknown", s?.onHand ?? null)}
+                        <span class="sub">${money(v.priceCents, v.currency)}</span>
+                        <span class="sub mono">${v.ref}</span>
+                      </span>
+                      <form method="post" action="/admin/variants/${v.ref}/stock" class="actions actions--inline">
+                        <input name="onHand" type="number" min="0" step="1"
+                               value="${s?.onHand === null || s?.onHand === undefined ? "" : String(s.onHand)}"
+                               placeholder="not counted" aria-label="Units on hand"
+                               class="stock-input">
+                        <button class="ghost sm" type="submit" name="intent" value="set">Set stock</button>
+                        <button class="ghost sm" type="submit" name="intent" value="clear">Uncount</button>
+                      </form>
+                      <form method="post" action="/admin/variants/${v.ref}/deactivate"
+                            class="actions actions--inline"
+                            onsubmit="return confirm('Deactivate ${v.title}? The row stays so carts keep working.')">
+                        <button class="danger sm" type="submit">Deactivate</button>
+                      </form>
+                    </div>
+                  </div>
+                `;
+              }),
+            )}
+          </div>`
+        : html`<p class="empty">
+            No variants. A product needs at least one priced variant before it can be published.
+          </p>`}
 
       <form method="post" action="/admin/products/${product.handle}/variants" class="u-mt">
         <h2>Add a variant</h2>
         <div class="row">
           ${field("title", "Title", "", { required: true, placeholder: "500 g" })}
           ${field("sku", "SKU", "")}
-          ${field("priceCents", "Price in cents", "", { type: "number", required: true, hint: "1999 means $19.99" })}
+          ${field("price", "Price (USD)", "", { required: true, hint: "Dollars — 19.99" })}
           ${field("weightGrams", "Weight in grams", "", { type: "number" })}
         </div>
         <div class="actions"><button type="submit">Add variant</button></div>
@@ -614,12 +612,21 @@ export async function newProductPage(flash: PageOptions["flash"], counts: Counts
         A new product starts as a draft, unpublished, with only what you supply.
         Nothing is filled in for you — no price, no SKU, no placeholder copy.
       </p>
+      <p class="u-muted">
+        Price, SKU, weight, images, stock and collections are added on the product
+        page you land on after creating — each of those attaches to the product,
+        so the product has to exist first. Publishing is a separate step once a
+        priced variant exists.
+      </p>
       <form method="post" action="/admin/products" class="u-mt">
         ${field("handle", "Handle", "", {
           required: true,
           hint: "Lowercase letters, digits and hyphens. This becomes the URL and cannot be changed later.",
         })}
         ${field("title", "Title", "", { required: true })}
+        ${field("cardTitle", "Card title", "", {
+          hint: "Shown on product cards where the full title is too long. Optional.",
+        })}
         <div class="row">
           ${select("brandSlug", "Brand", "", brands.map((b) => ({ value: b.slug, label: b.name })))}
           ${select("categorySlug", "Category", "", categories.map((c) => ({ value: c.slug, label: c.name })), { blank: "None" })}
@@ -627,8 +634,17 @@ export async function newProductPage(flash: PageOptions["flash"], counts: Counts
         ${field("productType", "Product type", "")}
         ${field("shortBenefit", "Short benefit", "")}
         ${textarea("description", "Description", "", {
-          hint: "One paragraph per blank line. Screened on save.",
+          hint: "One paragraph per blank line. Screened on save; anything that fails is held back, not published.",
         })}
+        ${field("seoTitle", "SEO title", "")}
+        ${textarea("seoDescription", "Meta description", "", { rows: 3 })}
+        ${field("tags", "Tags", "", {
+          hint: "Comma separated. Tags feed search and derive collection membership.",
+        })}
+        ${select("subscription", "Subscribe & Save", "false", [
+          { value: "false", label: "Not eligible" },
+          { value: "true", label: "Eligible" },
+        ], { hint: "Whether Auto-Ship is offered for this product." })}
         <div class="actions"><button type="submit">Create product</button></div>
       </form>
     </section>

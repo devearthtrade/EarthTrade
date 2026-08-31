@@ -3,7 +3,7 @@
 import { html, join, raw } from "../lib/html.ts";
 import type { Product } from "../lib/types.ts";
 import { money, priceRange } from "../lib/format.ts";
-import { brandIndex, cardName, collectionIndex, getProducts, productPrice } from "../data/catalog.ts";
+import { brandIndex, cardName, collectionIndex, displayBenefit, getProducts, productPrice } from "../data/catalog.ts";
 import { layout } from "../site/layout.ts";
 import {
   accordion,
@@ -16,6 +16,57 @@ import {
 } from "../site/components.ts";
 import { breadcrumbLd, faqLd, productLd } from "../lib/seo.ts";
 import { icon } from "../site/icons.ts";
+
+/**
+ * Imported copy arrives as many single-line paragraphs: label lines ending in
+ * a colon, runs of short feature fragments, and the occasional real paragraph.
+ * Printing each as an identical <p> renders a wall. This gives the same words
+ * their natural form — labels become subheadings, fragment runs become lists —
+ * without changing a byte of the stored text.
+ *
+ * The heuristics are deliberately conservative: nothing is converted unless
+ * the description has the fragment shape (several paragraphs), and a lone
+ * short sentence between real paragraphs stays a paragraph. Hand-written prose
+ * passes through untouched.
+ */
+function richProse(paras: string[]): ReturnType<typeof html> {
+  type Kind = "label" | "item" | "para";
+  const nodes: { kind: Kind; text: string }[] = paras.map((text) => ({
+    kind: /^.{2,64}:$/.test(text.trim()) ? "label" : "para",
+    text,
+  }));
+
+  if (paras.length >= 4) {
+    const short = (t: string) => t.length <= 150;
+    for (let i = 0; i < nodes.length; i++) {
+      if (nodes[i]!.kind !== "para" || !short(nodes[i]!.text)) continue;
+      let j = i;
+      while (j < nodes.length && nodes[j]!.kind === "para" && short(nodes[j]!.text)) j++;
+      // Two in a row is a list; one alone is only a list item when a label
+      // introduces it.
+      if (j - i >= 2 || (i > 0 && nodes[i - 1]!.kind === "label")) {
+        for (let k = i; k < j; k++) nodes[k]!.kind = "item";
+      }
+      i = j - 1;
+    }
+  }
+
+  const out: ReturnType<typeof html>[] = [];
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i]!;
+    if (node.kind === "label") {
+      out.push(html`<h3 class="prose__label">${node.text}</h3>`);
+    } else if (node.kind === "item") {
+      const run: string[] = [];
+      while (i < nodes.length && nodes[i]!.kind === "item") run.push(nodes[i++]!.text);
+      i--;
+      out.push(html`<ul class="prose__list">${join(run.map((t) => html`<li>${t}</li>`))}</ul>`);
+    } else {
+      out.push(html`<p>${node.text}</p>`);
+    }
+  }
+  return html`${join(out)}`;
+}
 
 function gallery(p: Product): ReturnType<typeof html> {
   if (!p.images.length) {
@@ -121,7 +172,7 @@ export function productPage(p: Product): string {
 
   sections.push({
     title: "Overview",
-    content: html`<div class="prose">${join(p.description.map((para) => html`<p>${para}</p>`))}</div>`,
+    content: html`<div class="prose">${richProse(p.description)}</div>`,
   });
 
   if (p.benefits?.length) {
@@ -174,7 +225,10 @@ export function productPage(p: Product): string {
                   ${join((p.badges ?? []).map((b) => html`<span class="badge badge--${b}">${b.replaceAll("-", " ")}</span>`))}
                 </div>`
               : raw("")}
-            <p class="pdp__benefit">${p.shortBenefit}</p>
+            ${(() => {
+              const benefit = displayBenefit(p);
+              return benefit ? html`<p class="pdp__benefit">${benefit}</p>` : raw("");
+            })()}
 
             <p class="pdp__price">
               <span data-price>${hasVariants ? priceRange(p.variants.map((v) => v.price)) : money(price)}</span>
@@ -266,14 +320,8 @@ export function productPage(p: Product): string {
         `
       : raw("")}
 
-    <section class="section">
+    <section class="section section--tight">
       <div class="wrap wrap--narrow">
-        ${accordion(
-          sections.map((s) => ({ q: s.title, a: "" })),
-          `pdp-${p.handle}`,
-        ).value
-          ? raw("")
-          : raw("")}
         <div class="acc">
           ${join(
             sections.map(

@@ -30,14 +30,18 @@ export async function navCounts(): Promise<Counts> {
   };
 }
 
-function stat(n: number | string, label: string, tone?: "warn" | "danger"): SafeHtml {
+/**
+ * A stat card is also the door to its screen, and a count that needs a human
+ * looks different from a count that is merely a fact.
+ */
+function stat(n: number | string, label: string, href: string, tone?: "warn" | "danger"): SafeHtml {
   return html`
-    <div class="card">
-      <span class="stat" ${tone ? html`data-tone="${tone}"` : ""}>
+    <a class="card card--stat" href="${href}" ${tone ? html`data-tone="${tone}"` : ""}>
+      <span class="stat">
         <span class="n">${String(n)}</span>
         <span class="label">${label}</span>
       </span>
-    </div>
+    </a>
   `;
 }
 
@@ -53,12 +57,12 @@ export async function overviewPage(flash: PageOptions["flash"], counts: Counts):
 
   const body = html`
     <div class="grid grid--stats">
-      ${stat(pubs.total, "products")}
-      ${stat(pubs.published, "published")}
-      ${stat(pubs.withheld, "withheld", pubs.withheld ? "warn" : undefined)}
-      ${stat(stock.unknown, "stock not counted", stock.unknown ? "warn" : undefined)}
-      ${stat(gaps.open, "broken curations", gaps.open ? "warn" : undefined)}
-      ${stat(compliance.quarantinedBlocks, "quarantined blocks", compliance.quarantinedBlocks ? "warn" : undefined)}
+      ${stat(pubs.total, "products", "/admin/products")}
+      ${stat(pubs.published, "published", "/admin/products")}
+      ${stat(pubs.withheld, "withheld", "/admin/compliance", pubs.withheld ? "danger" : undefined)}
+      ${stat(stock.unknown, "stock not counted", "/admin/inventory", stock.unknown ? "warn" : undefined)}
+      ${stat(gaps.open, "broken curations", "/admin/curation", gaps.open ? "warn" : undefined)}
+      ${stat(compliance.quarantinedBlocks, "quarantined blocks", "/admin/compliance", compliance.quarantinedBlocks ? "warn" : undefined)}
     </div>
 
     <div class="grid grid--2">

@@ -235,9 +235,10 @@ export function createApi(options: ServeOptions) {
       try {
         const match = options.router.match(req.method ?? "GET", url.pathname);
         if (!match) {
-          status = 404;
-          send(res, 404, { error: `No such endpoint: ${req.method} ${url.pathname}` });
-          return;
+          // Thrown rather than sent directly so the catch below picks the
+          // audience: a browser on /admin gets the styled error page, an API
+          // client gets the same JSON shape as before.
+          throw new WriteError(`No such endpoint: ${req.method} ${url.pathname}`, 404);
         }
 
         const body = req.method === "GET" || req.method === "DELETE" ? {} : await readBody(req);

@@ -77,6 +77,8 @@ a:hover { text-decoration: underline; }
   display: block;
 }
 .sidebar__brand:hover { text-decoration: none; }
+/* The original white-wordmark lockup, at home on this dark rail. */
+.sidebar__brand img { display: block; height: 2.1rem; width: auto; }
 .sidebar__brand small {
   display: block;
   font-family: var(--sans);
@@ -157,9 +159,29 @@ a:hover { text-decoration: underline; }
 .stat[data-tone="warn"] .n { color: var(--warn); }
 .stat[data-tone="danger"] .n { color: var(--danger); }
 
+/* A stat card is a door to its screen; an attention count wears its state. */
+a.card--stat { display: block; color: inherit; text-decoration: none; transition: border-color .2s, box-shadow .2s; }
+a.card--stat:hover { text-decoration: none; border-color: var(--warm-earth); box-shadow: 0 8px 18px -14px rgba(31,36,33,.5); }
+.card--stat[data-tone="warn"] { border-left: 3px solid var(--warn); }
+.card--stat[data-tone="warn"] .n { color: var(--warn); }
+.card--stat[data-tone="danger"] { border-left: 3px solid var(--danger); }
+.card--stat[data-tone="danger"] .n { color: var(--danger); }
+
+/* The confirm step in front of the one irreversible button. */
+.card--danger { border-left: 3px solid var(--danger); }
+
 /* -------------------------------- tables --------------------------------- */
 
 .table-wrap { overflow-x: auto; border: 1px solid var(--sand); border-radius: var(--radius); background: #fff; }
+/* On narrow screens wide tables scroll inside their frame; the identifying
+   first column stays put so a row never loses its name mid-scroll. */
+@media (max-width: 47.9rem) {
+  .table-wrap th:first-child, .table-wrap td:first-child {
+    position: sticky; left: 0; background: #fff; z-index: 1;
+    box-shadow: 4px 0 6px -5px rgba(31,36,33,.35);
+  }
+  .table-wrap thead th:first-child { background: var(--cream); }
+}
 table { width: 100%; border-collapse: collapse; font-size: .84rem; }
 thead th {
   text-align: left;
@@ -301,6 +323,35 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .empty { padding: 2rem 1rem; text-align: center; color: var(--warm-earth); }
 
 /* --------------------------------- misc ---------------------------------- */
+
+/* Each matched compliance term gets its own line — never a run-on. */
+.reasons { display: flex; flex-direction: column; gap: .15rem; margin-top: .35rem; }
+.reason { font-size: .8rem; color: var(--warm-earth); }
+
+/* Audit rows as readable change lines: field, from, to. */
+.changes { display: flex; flex-direction: column; gap: .18rem; max-width: 46rem; }
+.change { font-size: .78rem; overflow-wrap: anywhere; }
+.change code { background: var(--cream); padding: 0 .3em; border-radius: 3px; }
+
+/* Curation suggestions fill the input on tap; they read as actions. */
+a.suggestion { display: block; text-decoration: underline; text-decoration-color: var(--sand); }
+a.suggestion:hover { text-decoration-color: var(--warm-earth); }
+
+/* Per-variant editors: labelled fields aligned on one grid. */
+.variants { display: flex; flex-direction: column; gap: .85rem; }
+.variant { border: 1px solid var(--sand); border-radius: var(--radius); padding: .85rem 1rem; background: #fff; }
+.variant__form { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; gap: .6rem; align-items: end; }
+@media (max-width: 61.9rem) { .variant__form { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+.vfield { display: flex; flex-direction: column; gap: .25rem; }
+.vfield > span { font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; color: var(--warm-earth); }
+.variant__meta { display: flex; flex-wrap: wrap; gap: .6rem 1.2rem; align-items: center; margin-top: .7rem; padding-top: .7rem; border-top: 1px solid var(--cream); }
+.stock-input { width: 8.5rem; }
+
+/* Collection membership as a scannable checkbox list. */
+.checks { border: 1px solid var(--sand); border-radius: var(--radius); padding: .6rem .85rem; max-height: 16rem; overflow-y: auto; margin: 0; }
+.checks legend { font-size: .78rem; font-weight: 600; padding: 0 .25rem; }
+.check { display: flex; align-items: center; gap: .55rem; padding: .22rem 0; font-size: .88rem; }
+.check input { width: auto; min-width: 0; }
 
 .quarantined {
   border-left: 3px solid var(--danger);

@@ -11,6 +11,8 @@
  * audit impossible to route around: there is only one door.
  */
 
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { Asset, Html, Redirect, Router, type RequestContext } from "../api/http.ts";
 import { WriteError } from "../repositories/writes.ts";
 import * as writes from "../repositories/writes.ts";
@@ -87,6 +89,26 @@ function integer(ctx: RequestContext, key: string): number | null {
   return Number(v);
 }
 
+/**
+ * A money amount typed in dollars ("19.99", "$1,299", "349"), as integer cents.
+ *
+ * People think in dollars; the database stores cents. Parsing at the form edge
+ * keeps both honest: fractions beyond a cent, negative amounts and anything
+ * non-numeric are refused rather than rounded, and nothing downstream changes —
+ * the write layer still only ever sees integer cents.
+ */
+function dollars(ctx: RequestContext, key: string): number | null {
+  const v = text(ctx, key);
+  if (v === null) return null;
+  const raw = v.replace(/^\$/, "");
+  // Commas are accepted only as proper thousands separators — "1,299" is a
+  // price, "1,2,3" is a typo.
+  if (!/^(\d{1,3}(,\d{3})*|\d{1,7})(\.\d{1,2})?$/.test(raw)) {
+    throw new WriteError(`${key} must be a dollar amount like 19.99, got ${JSON.stringify(v)}`);
+  }
+  return Math.round(Number(raw.replace(/,/g, "")) * 100);
+}
+
 /** Paragraphs, edited one per blank line. */
 function paragraphs(ctx: RequestContext, key: string): string[] {
   const v = ctx.body[key];
@@ -133,6 +155,29 @@ const action = <T>(handler: (ctx: RequestContext) => Promise<T>) => handler;
 
 export function addAdminRoutes(r: Router): Router {
   r.get("/admin/admin.css", async () => new Asset(ADMIN_CSS, "text/css; charset=utf-8"));
+
+  // Product photos for the Dashboard's own pages. Read-only by construction:
+  // GET only, one flat directory, no listing, no uploads. The route pattern
+  // already refuses `/` in the segment; the character check below refuses the
+  // decoded forms of it and of `..`, so nothing outside public/images is
+  // reachable.
+  const IMAGE_TYPES: Record<string, string> = {
+    jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", avif: "image/avif",
+    webp: "image/webp", gif: "image/gif", svg: "image/svg+xml",
+  };
+  r.get("/images/:file", async (ctx) => {
+    const name = ctx.params["file"]!;
+    if (!/^[A-Za-z0-9 ._()&+-]+$/.test(name) || name.includes("..")) {
+      throw new WriteError("No such image.", 404);
+    }
+    const type = IMAGE_TYPES[name.slice(name.lastIndexOf(".") + 1).toLowerCase()];
+    if (!type) throw new WriteError("No such image.", 404);
+    try {
+      return new Asset(await readFile(join("public", "images", name)), type);
+    } catch {
+      throw new WriteError("No such image.", 404);
+    }
+  });
 
   /* ------------------------------- screens ------------------------------- */
 
@@ -187,9 +232,14 @@ export function addAdminRoutes(r: Router): Router {
       title: required(ctx, "title"),
       brandSlug: required(ctx, "brandSlug"),
       categorySlug: text(ctx, "categorySlug"),
+      cardTitle: text(ctx, "cardTitle"),
       productType: text(ctx, "productType"),
       shortBenefit: text(ctx, "shortBenefit"),
       description: paragraphs(ctx, "description"),
+      seoTitle: text(ctx, "seoTitle"),
+      seoDescription: text(ctx, "seoDescription"),
+      tags: commaList(ctx, "tags"),
+      subscription: ctx.body["subscription"] === "true",
     });
 
     // Every new product is unpublished; that is not news. What is worth saying
@@ -248,6 +298,7 @@ export function addAdminRoutes(r: Router): Router {
         seoTitle: () => text(ctx, "seoTitle"),
         seoDescription: () => text(ctx, "seoDescription"),
         tags: () => commaList(ctx, "tags"),
+        subscription: () => ctx.body["subscription"] === "true",
       }),
       ...(copy ? { description: copy } : {}),
     });
@@ -293,6 +344,45 @@ export function addAdminRoutes(r: Router): Router {
     return back(`/admin/products/${handle}`, "Returned to draft. Publish it separately when ready.");
   }));
 
+  // Deleting is the one irreversible button on the editor, so it gets its own
+  // page between the click and the act. The write layer's rules (only a
+  // never-published draft can go) remain the real guard — this is the
+  // affordance that stops a slip.
+  r.get("/admin/products/:handle/delete", async (ctx) => {
+    const handle = ctx.params["handle"]!;
+    const product = await repo.catalog.loadProduct(handle);
+    if (!product) throw new WriteError(`No product with handle ${JSON.stringify(handle)}`, 404);
+    return new Html(page(
+      {
+        title: `Delete ${product.title}`,
+        section: "products",
+        counts: await navCounts(),
+        flash: flashFrom(ctx.query),
+        breadcrumb: [
+          { label: "Products", href: "/admin/products" },
+          { label: product.title, href: `/admin/products/${handle}` },
+          { label: "Delete" },
+        ],
+      },
+      html`
+        <section class="card card--danger">
+          <h2>Delete this draft permanently?</h2>
+          <p><strong>${product.title}</strong> <span class="mono sub">${handle}</span></p>
+          <p class="sub">
+            This removes the draft, its variants and its stock records for good —
+            there is no undo. The audit trail keeps the record of everything that
+            happened to it. A product that has ever been published cannot be
+            deleted, only archived.
+          </p>
+          <form method="post" action="/admin/products/${handle}/delete" class="actions">
+            <button type="submit" class="btn--danger">Delete permanently</button>
+            <a class="btn btn--ghost" href="/admin/products/${handle}">Cancel</a>
+          </form>
+        </section>
+      `,
+    ));
+  });
+
   r.post("/admin/products/:handle/delete", action(async (ctx) => {
     await writes.deleteProduct(ctx.params["handle"]!);
     return back("/admin/products", `Deleted ${ctx.params["handle"]}.`, "warn");
@@ -308,8 +398,8 @@ export function addAdminRoutes(r: Router): Router {
 
   r.post("/admin/products/:handle/variants", action(async (ctx) => {
     const handle = ctx.params["handle"]!;
-    const price = integer(ctx, "priceCents");
-    if (price === null) throw new WriteError("A price in cents is required");
+    const price = dollars(ctx, "price");
+    if (price === null) throw new WriteError("A price is required — dollars, like 19.99");
 
     await writes.addVariant(handle, {
       title: required(ctx, "title"),
@@ -325,17 +415,21 @@ export function addAdminRoutes(r: Router): Router {
     const variant = await repo.variants.getVariantByRef(ref);
     if (!variant) throw new WriteError(`No variant with reference ${JSON.stringify(ref)}`, 404);
 
-    await writes.updateVariant(ref, patch<writes.VariantInput>(ctx, {
+    const changes = patch<writes.VariantInput>(ctx, {
       title: () => required(ctx, "title"),
       sku: () => text(ctx, "sku"),
-      priceCents: () => {
-        const price = integer(ctx, "priceCents");
-        if (price === null) throw new WriteError("A price in cents is required");
-        return price;
-      },
-      compareAtCents: () => integer(ctx, "compareAtCents"),
       weightGrams: () => integer(ctx, "weightGrams"),
-    }));
+    });
+    // Money posts under its user-facing names (dollars); patch() keys on the
+    // posted names, so the two cents fields are mapped by hand.
+    if ("price" in ctx.body) {
+      const price = dollars(ctx, "price");
+      if (price === null) throw new WriteError("A price is required — dollars, like 19.99");
+      changes.priceCents = price;
+    }
+    if ("compareAt" in ctx.body) changes.compareAtCents = dollars(ctx, "compareAt");
+
+    await writes.updateVariant(ref, changes);
     return back(`/admin/products/${variant.productHandle}`, "Variant saved.");
   }));
 

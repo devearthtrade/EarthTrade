@@ -24,9 +24,11 @@ export async function compliancePage(
   const bannedNames = all.filter((p) => p.titleMatches.length);
   const flagged = all.filter((p) => p.needsReview);
 
-  const tab = (key: string, label: string, n: number): SafeHtml => html`
+  // A queue shows its size; a tool (n = null) is just named — "(0)" on the
+  // screen tester read as an empty queue.
+  const tab = (key: string, label: string, n: number | null): SafeHtml => html`
     <a class="btn ${raw(view === key ? "" : "btn--ghost")} btn--sm" href="/admin/compliance?view=${key}"
-       ${raw(view === key ? 'aria-current="page"' : "")}>${label} (${String(n)})</a>
+       ${raw(view === key ? 'aria-current="page"' : "")}>${label}${n === null ? "" : ` (${String(n)})`}</a>
   `;
 
   const body = html`
@@ -52,7 +54,7 @@ export async function compliancePage(
       ${tab("names", "Banned names", bannedNames.length)}
       ${tab("withheld", "Withheld", withheld.length)}
       ${tab("flags", "Needs review", flagged.length)}
-      ${tab("screen", "Test the screen", 0)}
+      ${tab("screen", "Test the screen", null)}
     </div>
 
     ${view === "quarantined" ? quarantinedView(quarantined) : ""}
@@ -89,7 +91,9 @@ function quarantinedView(products: repo.ProductRecord[]): SafeHtml {
                   (b) => html`
                     <div class="quarantined">
                       <p>${b.text}</p>
-                      <p class="u-muted">${join(b.matches.map((m) => html`<code>${m.term}</code> — ${m.reason}`))}</p>
+                      <div class="reasons">${join(
+                        b.matches.map((m) => html`<span class="reason"><code>${m.term}</code> — ${m.reason}</span>`),
+                      )}</div>
                     </div>
                   `,
                 ),
@@ -296,7 +300,9 @@ export async function screenResultPage(
             screened.quarantined.map(
               (b) => html`<div class="quarantined">
                 <p>${b.text}</p>
-                <p class="u-muted">${join(b.matches.map((m) => html`<code>${m.term}</code> — ${m.reason}. `))}</p>
+                <div class="reasons">${join(
+                  b.matches.map((m) => html`<span class="reason"><code>${m.term}</code> — ${m.reason}</span>`),
+                )}</div>
               </div>`,
             ),
           )}
@@ -325,6 +331,19 @@ export async function curationPage(
 ): Promise<string> {
   const source = query.get("source") ?? "";
   const showResolved = query.get("show") === "resolved";
+  // One tap on a suggestion reloads the page with that row's input pre-filled
+  // (?fill=handle&gap=id). The human still presses Map — nothing is decided
+  // here, only the retyping of a long handle is saved.
+  const fillGap = query.get("gap") ?? "";
+  const fillValue = query.get("fill") ?? "";
+  const fillHref = (gapId: string, handle: string): string => {
+    const params = new URLSearchParams();
+    if (source) params.set("source", source);
+    if (showResolved) params.set("show", "resolved");
+    params.set("gap", gapId);
+    params.set("fill", handle);
+    return `/admin/curation?${params}#gap-${gapId}`;
+  };
 
   const [gaps, summary] = await Promise.all([
     repo.curation.listGaps({ open: !showResolved, ...(source ? { sourceHandle: source } : {}) }),
@@ -373,7 +392,13 @@ export async function curationPage(
                 <tr><th>Collection</th><th>Missing handle</th><th>Similar products</th><th>What to do</th></tr>
               </thead>
               <tbody>
-                ${join(gaps.map((g) => gapRow(g, suggestions.get(g.id) ?? [], showResolved)))}
+                ${join(gaps.map((g) => gapRow(
+                  g,
+                  suggestions.get(g.id) ?? [],
+                  showResolved,
+                  g.id === fillGap ? fillValue : "",
+                  fillHref,
+                )))}
               </tbody>
             </table>
           </div>
@@ -389,7 +414,13 @@ export async function curationPage(
   return page({ title: "Broken curation", section: "curation", flash, counts }, body);
 }
 
-function gapRow(g: repo.curation.CurationGap, suggestions: string[], resolved: boolean): SafeHtml {
+function gapRow(
+  g: repo.curation.CurationGap,
+  suggestions: string[],
+  resolved: boolean,
+  fillValue = "",
+  fillHref?: (gapId: string, handle: string) => string,
+): SafeHtml {
   if (resolved) {
     return html`
       <tr>
@@ -411,7 +442,7 @@ function gapRow(g: repo.curation.CurationGap, suggestions: string[], resolved: b
   }
 
   return html`
-    <tr>
+    <tr id="gap-${g.id}">
       <td>
         <a href="/admin/collections/${g.sourceHandle}">${g.sourceHandle}</a>
         <span class="sub">position ${String(g.position)}</span>
@@ -419,14 +450,15 @@ function gapRow(g: repo.curation.CurationGap, suggestions: string[], resolved: b
       <td class="mono">${g.missingHandle}</td>
       <td>
         ${suggestions.length
-          ? html`<span class="sub u-muted">Similar handles, to shorten the search:</span>
-              ${join(suggestions.map((s) => html`<span class="sub mono">${s}</span>`))}`
+          ? html`<span class="sub u-muted">Similar handles — tap one to fill the box:</span>
+              ${join(suggestions.map((s) => html`<a class="sub mono suggestion"
+                href="${fillHref ? fillHref(g.id, s) : "#"}">${s}</a>`))}`
           : html`<span class="u-muted">No similar handles.</span>`}
       </td>
       <td>
         <form method="post" action="/admin/curation/${g.id}/resolve" class="row">
           <input name="productHandle" placeholder="Replacement handle" aria-label="Replacement product handle"
-                 list="products-${g.id}">
+                 value="${fillValue}" list="products-${g.id}">
           <datalist id="products-${g.id}">
             ${join(suggestions.map((s) => html`<option value="${s}"></option>`))}
           </datalist>

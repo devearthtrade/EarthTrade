@@ -3,7 +3,7 @@
 import { html, join, raw, type Child, type SafeHtml } from "../lib/html.ts";
 import { money, priceRange } from "../lib/format.ts";
 import type { Badge, FaqItem, Product } from "../lib/types.ts";
-import { brandIndex, cardName, productPrice } from "../data/catalog.ts";
+import { brandIndex, cardName, displayBenefit, productPrice } from "../data/catalog.ts";
 import { icon } from "./icons.ts";
 
 const BADGE_LABEL: Record<Badge, string> = {
@@ -105,7 +105,10 @@ export function productCard(p: Product, opts: CardOptions = {}): SafeHtml {
       <div class="card__body">
         <p class="card__brand">${brand?.name ?? "EarthTrade"}</p>
         <h3 class="card__title"><a href="/products/${p.handle}">${cardName(p)}</a></h3>
-        <p class="card__benefit">${p.shortBenefit}</p>
+        ${(() => {
+          const benefit = displayBenefit(p, 110);
+          return benefit ? html`<p class="card__benefit">${benefit}</p>` : raw("");
+        })()}
         <div class="card__foot">
           <span class="card__price">
             ${compare ? html`<s>${money(compare)}</s>` : ""}${priceRange(p.variants.map((v) => v.price))}

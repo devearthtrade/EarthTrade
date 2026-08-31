@@ -99,6 +99,22 @@ data-layer checks, 153 tests, both builds and their diff). It uses
 Debian-style `pg_ctlcluster` to start PostgreSQL if needed; on other systems,
 start PostgreSQL yourself first and the rest is portable.
 
+### If you see "Read-only snapshot"
+
+That message never comes from your local Dashboard — it comes from the hosted
+**snapshot** of the Dashboard on claude.ai, which shows the data but disables
+every form by construction. The two are easy to confuse because they look
+identical:
+
+| | URL | Can edit? |
+|---|---|---|
+| Live Dashboard | `http://127.0.0.1:4000/admin` — started by *you*, above | Yes |
+| Hosted snapshot | `https://claude.ai/code/artifact/…` | Never |
+
+If a page refuses to save and shows that message, check the address bar: you
+are on claude.ai. Start the live Dashboard with the command above and use
+`127.0.0.1:4000` instead.
+
 ---
 
 ## Working on the branch from two places

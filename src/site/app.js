@@ -461,6 +461,24 @@
         input.focus();
       });
     });
+
+    /* Deep links. /search/?q=term opens the overlay pre-filled and runs the
+       query, so a shared or bookmarked search address actually searches; and
+       typing on the search page keeps the address bar shareable. Other pages
+       leave the address alone. */
+    if (location.pathname.replace(/\/+$/, "") === "/search") {
+      const q = new URLSearchParams(location.search).get("q");
+      if (q && q.trim()) {
+        const opener = $('[data-open-drawer="search"]');
+        if (opener instanceof HTMLElement) opener.click();
+        input.value = q.trim();
+        loadIndex().then(render);
+      }
+      input.addEventListener("input", () => {
+        const term = input.value.trim();
+        history.replaceState(null, "", term ? `?q=${encodeURIComponent(term)}` : location.pathname);
+      });
+    }
   }
 
   /* ------------------------------- drawers ------------------------------- */

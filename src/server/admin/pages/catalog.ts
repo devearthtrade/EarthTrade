@@ -368,7 +368,8 @@ export async function inventoryPage(
   counts: Counts,
 ): Promise<string> {
   const state = query.get("state") ?? "";
-  const [summary, levels, locations] = await Promise.all([
+  const q = query.get("q")?.trim().toLowerCase() ?? "";
+  const [summary, allLevels, locations] = await Promise.all([
     repo.inventory.stockSummary(),
     repo.inventory.listStock({
       ...(state ? { state: state as repo.inventory.StockState } : {}),
@@ -376,6 +377,13 @@ export async function inventoryPage(
     }),
     repo.inventory.listLocations(),
   ]);
+  // Counting stock means finding one product among 110 — that is a search box,
+  // not a scroll. Matches the same fields a person would try.
+  const levels = q
+    ? allLevels.filter((l) =>
+        [l.productTitle, l.variantTitle, l.sku ?? "", l.productHandle]
+          .some((s) => s.toLowerCase().includes(q)))
+    : allLevels;
 
   const body = html`
     <div class="notice">
@@ -395,6 +403,10 @@ export async function inventoryPage(
     </div>
 
     <form class="toolbar" method="get" action="/admin/inventory">
+      <div class="field">
+        <label for="inv-q">Search</label>
+        <input id="inv-q" type="search" name="q" value="${q}" placeholder="Product, variant or SKU">
+      </div>
       ${select("state", "State", state, [
         { value: "unknown", label: "Not counted" },
         { value: "zero", label: "None in stock" },
@@ -421,11 +433,17 @@ export async function inventoryPage(
                       <td class="num">${l.onHand === null ? html`<span class="u-muted">—</span>` : String(l.onHand)}</td>
                       <td>
                         <form method="post" action="/admin/variants/${l.variantRef}/stock" class="actions actions--inline">
-                          <input type="hidden" name="return" value="/admin/inventory${state ? `?state=${state}` : ""}">
+                          <input type="hidden" name="return" value="/admin/inventory${(() => {
+                            const back = new URLSearchParams();
+                            if (state) back.set("state", state);
+                            if (q) back.set("q", q);
+                            const s = back.toString();
+                            return s ? `?${s}` : "";
+                          })()}">
                           <input name="onHand" type="number" min="0" step="1"
                                  value="${l.onHand === null ? "" : String(l.onHand)}"
                                  placeholder="not counted" aria-label="Units on hand for ${l.variantRef}"
-                                 style="max-width:7rem">
+                                 class="stock-input">
                           <button class="ghost sm" type="submit" name="intent" value="set">Set</button>
                           ${l.state !== "unknown"
                             ? html`<button class="ghost sm" type="submit" name="intent" value="clear">Uncount</button>`
@@ -436,7 +454,9 @@ export async function inventoryPage(
                   `,
                 ),
               )
-            : html`<tr><td colspan="6"><p class="empty">Nothing matches.</p></td></tr>`}
+            : html`<tr><td colspan="6"><p class="empty">
+                Nothing matches. <a href="/admin/inventory">Clear the search</a>
+              </p></td></tr>`}
         </tbody>
       </table>
     </div>
@@ -506,7 +526,7 @@ export async function auditPage(
 
     <div class="table-wrap">
       <table>
-        <thead><tr><th>When</th><th>Action</th><th>Entity</th><th>Before</th><th>After</th><th>Actor</th></tr></thead>
+        <thead><tr><th>When</th><th>Action</th><th>Entity</th><th>What changed</th><th>Actor</th></tr></thead>
         <tbody>
           ${entries.length
             ? join(
@@ -514,16 +534,15 @@ export async function auditPage(
                   (a) => html`
                     <tr>
                       <td class="u-nowrap mono">${timestamp(a.createdAt)}</td>
-                      <td><code>${a.action}</code></td>
+                      <td class="u-nowrap"><code>${a.action}</code></td>
                       <td>${a.entityType}</td>
-                      <td><p class="diff">${jsonPreview(a.before)}</p></td>
-                      <td><p class="diff">${jsonPreview(a.after)}</p></td>
+                      <td><div class="changes">${changeLines(a.before, a.after)}</div></td>
                       <td class="u-muted">${a.actor}</td>
                     </tr>
                   `,
                 ),
               )
-            : html`<tr><td colspan="6"><p class="empty">Nothing recorded yet.</p></td></tr>`}
+            : html`<tr><td colspan="5"><p class="empty">Nothing recorded yet.</p></td></tr>`}
         </tbody>
       </table>
     </div>
@@ -540,8 +559,43 @@ export async function auditPage(
   return page({ title: "Audit trail", section: "audit", flash, counts }, body);
 }
 
-function jsonPreview(v: Record<string, unknown> | null): string {
-  if (!v) return "—";
-  const s = JSON.stringify(v, null, 1).replaceAll("\n", " ").replaceAll(/\s+/g, " ");
-  return s.length > 160 ? `${s.slice(0, 157)}…` : s;
+/** One value, short enough to sit on a line. */
+function shortValue(v: unknown): string {
+  const s = JSON.stringify(v) ?? "null";
+  return s.length > 48 ? `${s.slice(0, 45)}…` : s;
+}
+
+/**
+ * The trail as a reader wants it: which fields, from what, to what.
+ *
+ * Updates store only the keys that changed, so the per-key rendering is small
+ * by construction. Creations and deletions carry a full snapshot; the first
+ * few meaningful fields identify the entity and the rest fold into a count.
+ */
+function changeLines(
+  before: Record<string, unknown> | null,
+  after: Record<string, unknown> | null,
+): SafeHtml {
+  const MAX = 5;
+  const line = (k: string, text: string) =>
+    html`<span class="change"><code>${k}</code> ${text}</span>`;
+
+  if (before && after) {
+    const keys = [...new Set([...Object.keys(before), ...Object.keys(after)])]
+      .filter((k) => JSON.stringify(before[k]) !== JSON.stringify(after[k]));
+    if (!keys.length) return html`<span class="u-muted">no field changes</span>`;
+    return html`
+      ${join(keys.slice(0, MAX).map((k) => line(k, `${shortValue(before[k])} → ${shortValue(after[k])}`)))}
+      ${keys.length > MAX ? html`<span class="u-muted">+${String(keys.length - MAX)} more</span>` : ""}
+    `;
+  }
+
+  const snap = after ?? before;
+  if (!snap) return html`<span class="u-muted">—</span>`;
+  const keys = Object.keys(snap).filter((k) => snap[k] !== null && snap[k] !== undefined && snap[k] !== false);
+  return html`
+    ${before ? html`<span class="u-muted">removed — it was:</span>` : ""}
+    ${join(keys.slice(0, MAX).map((k) => line(k, shortValue(snap[k]))))}
+    ${keys.length > MAX ? html`<span class="u-muted">+${String(keys.length - MAX)} more</span>` : ""}
+  `;
 }

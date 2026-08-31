@@ -43,6 +43,32 @@ export function cardName(p: Product): string {
 }
 
 /**
+ * The short benefit as it should be *displayed*, or null when showing it would
+ * only repeat the description.
+ *
+ * Much of the imported catalog has no hand-written benefit; the importer filled
+ * the field with the clipped head of the description ("…using Reverse Osmo...")
+ * or its first fragment verbatim ("Versatile Beverage Creation:"). Rendering
+ * that under a title reads as a glitch, and on product pages the same words
+ * appear again one screen later. The stored value is untouched — this only
+ * decides what the page shows.
+ *
+ * When a real, distinct benefit is longer than a card wants, it is cut at a
+ * word boundary, never mid-word.
+ */
+export function displayBenefit(p: Product, max = 140): string | null {
+  const benefit = p.shortBenefit?.trim();
+  if (!benefit) return null;
+  const first = p.description[0]?.trim() ?? "";
+  const stem = benefit.replace(/(\.\.\.|…)\s*$/, "").trim();
+  if (stem && (first === benefit || first.startsWith(stem))) return null;
+  if (benefit.length <= max) return benefit;
+  const cut = benefit.slice(0, max + 1);
+  const atWord = cut.slice(0, cut.lastIndexOf(" "));
+  return `${(atWord || cut.slice(0, max)).replace(/[,;:.\s]+$/, "")}…`;
+}
+
+/**
  * Brands and collections are read from the database, not written here.
  *
  * They used to be literals in this file, which meant that changing a

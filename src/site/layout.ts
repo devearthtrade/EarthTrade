@@ -52,11 +52,25 @@ function header(opts: LayoutOptions): SafeHtml {
   return html`
     <div class="announce">
       Free shipping on orders over $${String(FREE_SHIP_THRESHOLD)}.
-      <a href="/collections/subscribe">Never run out with Auto-Ship</a>
+      <span class="announce__more"><a href="/collections/subscribe">Never run out with Auto-Ship</a></span>
     </div>
     <header class="header ${opts.transparentHeader ? "header--over" : ""}">
       <div class="wrap header__bar">
         <a class="header__brand" href="/">
+          <img
+            class="header__brand-logo"
+            src="/images/Earthtrade%20logo.avif"
+            alt="EarthTrade"
+            width="260" height="84"
+            decoding="async"
+          >
+          <img
+            class="header__brand-mark"
+            src="/images/earthtrade-favicon-192.png"
+            alt=""
+            width="192" height="192"
+            decoding="async"
+          >
           <b>Earth<em style="font-style:normal">Trade</em></b>
           <span>Naturally engineered</span>
         </a>
@@ -78,8 +92,8 @@ function header(opts: LayoutOptions): SafeHtml {
           <button class="icon-btn" type="button" data-open-drawer="search" aria-label="Search">
             ${icon("search")}
           </button>
-          <a class="icon-btn" href="/account" aria-label="Account">${icon("user")}</a>
-          <a class="icon-btn" href="/account#wishlist" aria-label="Wishlist">
+          <a class="icon-btn icon-btn--secondary" href="/account" aria-label="Account">${icon("user")}</a>
+          <a class="icon-btn icon-btn--secondary" href="/account#wishlist" aria-label="Wishlist">
             ${icon("heart")}
             <span class="icon-btn__count" data-wish-count data-empty="true">0</span>
           </a>
@@ -140,6 +154,10 @@ function mobileDrawer(): SafeHtml {
           <div class="u-mt-lg">
             <a class="btn btn--block" href="/quiz">Find the right solution</a>
           </div>
+          <ul class="mnav mnav--meta">
+            <li><a class="mnav__top" href="/account">Account</a></li>
+            <li><a class="mnav__top" href="/account#wishlist">Wishlist</a></li>
+          </ul>
         </div>
         <div class="drawer__foot">
           <p class="small" style="margin:0">
@@ -263,7 +281,13 @@ function footer(): SafeHtml {
       <div class="wrap">
         <div class="footer__grid">
           <div>
-            <div class="footer__brand">EarthTrade</div>
+            <img
+              class="footer__logo"
+              src="/images/Earthtrade%20logo.avif"
+              alt="EarthTrade — Environmental &amp; Life Solutions"
+              width="260" height="84"
+              loading="lazy" decoding="async"
+            >
             <p>
               Better solutions for water, home, wellness and organic living. Five brands, one
               standard: products that do the job and last.
@@ -329,7 +353,9 @@ ${opts.noindex ? raw('<meta name="robots" content="noindex,follow">') : raw('<me
 <meta name="twitter:description" content="${opts.description}">
 <meta name="twitter:image" content="${ogImage}">
 
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/images/earthtrade-favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/images/earthtrade-favicon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="/images/earthtrade-apple-touch.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@400;500;600&display=swap">

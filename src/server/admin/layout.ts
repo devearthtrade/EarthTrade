@@ -59,7 +59,7 @@ function sidebar(section: string, counts: Record<string, NavCount>): SafeHtml {
   return html`
     <nav class="sidebar" aria-label="Admin sections">
       <a class="sidebar__brand" href="/admin">
-        EarthTrade
+        <img src="/images/Earthtrade%20logo.avif" alt="EarthTrade" width="260" height="84">
         <small>Admin</small>
       </a>
       ${join(
@@ -103,6 +103,7 @@ export function page(options: PageOptions, body: SafeHtml): string {
 <!-- Nothing here should ever be indexed, and nothing here is reachable off this machine. -->
 <meta name="robots" content="noindex, nofollow">
 <title>${escapeText(options.title)} · EarthTrade Admin</title>
+<link rel="icon" href="/images/earthtrade-favicon-32.png" sizes="32x32" type="image/png">
 <link rel="stylesheet" href="/admin/admin.css">
 </head>
 <body>
@@ -250,7 +251,9 @@ export function stockLabel(state: string, onHand: number | null): SafeHtml {
 
 export function timestamp(d: Date | string): string {
   const date = typeof d === "string" ? new Date(d) : d;
-  return date.toISOString().replace("T", " ").slice(0, 16);
+  // Seconds included: many audit rows land in the same minute, and the trail
+  // is only as good as its ordering is legible.
+  return date.toISOString().replace("T", " ").slice(0, 19);
 }
 
 /** Reads ?ok= / ?error= into a flash message. */

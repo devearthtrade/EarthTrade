@@ -243,7 +243,7 @@ suite("product: create → database → storefront", () => {
   test("edit → database → storefront", async () => {
     const h = handle("edit-flow");
     await form("/admin/products", { handle: h, title: "Before Edit", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "1500" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "15.00" });
     await form(`/admin/products/${h}/publish`, {});
 
     await form(`/admin/products/${h}`, {
@@ -262,7 +262,7 @@ suite("product: create → database → storefront", () => {
   test("publish → storefront", async () => {
     const h = handle("publish-flow");
     await form("/admin/products", { handle: h, title: "Publish Flow", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "999" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "9.99" });
 
     ok(!(await storefront()).products.some((p) => p.handle === h), "not there yet");
     const res = await form(`/admin/products/${h}/publish`, {});
@@ -276,7 +276,7 @@ suite("product: create → database → storefront", () => {
   test("unpublishing demands a real reason", async () => {
     const h = handle("unpublish-reason");
     await form("/admin/products", { handle: h, title: "Reasoned", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "500" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "5.00" });
     await form(`/admin/products/${h}/publish`, {});
 
     const refused = await form(`/admin/products/${h}/unpublish`, { reason: "" });
@@ -290,7 +290,7 @@ suite("product: create → database → storefront", () => {
   test("unpublish → storefront", async () => {
     const h = handle("unpublish-flow");
     await form("/admin/products", { handle: h, title: "Unpublish Flow", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "999" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "9.99" });
     await form(`/admin/products/${h}/publish`, {});
     ok((await storefront()).products.some((p) => p.handle === h));
 
@@ -302,7 +302,7 @@ suite("product: create → database → storefront", () => {
   test("archive → storefront, and nothing is deleted", async () => {
     const h = handle("archive-flow");
     await form("/admin/products", { handle: h, title: "Archive Flow", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "999" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "9.99" });
     await form(`/admin/products/${h}/publish`, {});
 
     await form(`/admin/products/${h}/archive`, {});
@@ -317,7 +317,7 @@ suite("product: create → database → storefront", () => {
   test("refuses to delete anything that has been published", async () => {
     const h = handle("delete-guard");
     await form("/admin/products", { handle: h, title: "Delete Guard", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "500" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "5.00" });
     await form(`/admin/products/${h}/publish`, {});
     await form(`/admin/products/${h}/unpublish`, { reason: "Testing" });
 
@@ -342,7 +342,7 @@ suite("product: create → database → storefront", () => {
     // the catalog, with archiving the only way out.
     const h = handle("delete-with-stock");
     await form("/admin/products", { handle: h, title: "Delete With Stock", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "500" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "5.00" });
     const ref = (await repo.catalog.loadProduct(h))!.variants[0]!.ref;
     await form(`/admin/variants/${ref}/stock`, { intent: "set", onHand: "7" });
 
@@ -359,7 +359,7 @@ suite("product: create → database → storefront", () => {
   test("a product that has been published is still archived, never deleted", async () => {
     const h = handle("delete-after-publish");
     await form("/admin/products", { handle: h, title: "Was Live", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "500" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "5.00" });
     await form(`/admin/products/${h}/publish`, {});
     await form(`/admin/products/${h}/unpublish`, { reason: "Testing" });
 
@@ -385,6 +385,131 @@ suite("product: create → database → storefront", () => {
   });
 });
 
+/* ======================= the complete create-product flow ================ */
+
+suite("complete create-product flow", () => {
+  test("the create form offers every field the backend accepts at create time", async () => {
+    const { html } = await get("/admin/products/new");
+    for (const name of [
+      "handle", "title", "cardTitle", "brandSlug", "categorySlug", "productType",
+      "shortBenefit", "description", "seoTitle", "seoDescription", "tags", "subscription",
+    ]) {
+      ok(html.includes(`name="${name}"`), `the create form is missing ${name}`);
+    }
+  });
+
+  test("create-time fields all persist from the form", async () => {
+    const h = handle("create-all-fields");
+    const res = await form("/admin/products", {
+      handle: h,
+      title: "Complete Creation",
+      cardTitle: "Complete",
+      brandSlug: "solutionshocl",
+      categorySlug: "cleaning",
+      productType: "Cleaner",
+      shortBenefit: "One line of benefit.",
+      description: "First paragraph.\n\nSecond paragraph.",
+      seoTitle: "Complete Creation SEO",
+      seoDescription: "A meta description for the complete product.",
+      tags: "zeta, alpha",
+      subscription: "true",
+    });
+    equal(res.status, 303);
+
+    const p = await repo.catalog.loadProduct(h);
+    equal(p!.title, "Complete Creation");
+    equal(p!.cardTitle, "Complete");
+    equal(p!.brandId, "solutionshocl");
+    equal(p!.categoryId, "cleaning");
+    equal(p!.productType, "Cleaner");
+    equal(p!.shortBenefit, "One line of benefit.");
+    deepEqual(p!.description, ["First paragraph.", "Second paragraph."]);
+    equal(p!.seo.title, "Complete Creation SEO");
+    equal(p!.seo.description, "A meta description for the complete product.");
+    deepEqual(p!.sourceTags, ["zeta", "alpha"], "tag order as entered");
+    equal(p!.subscription, true, "subscription eligibility persists");
+  });
+
+  test("subscription eligibility is editable and round-trips through the editor", async () => {
+    const h = handle("create-subscription-edit");
+    await form("/admin/products", {
+      handle: h, title: "Sub Edit", brandSlug: "solutionshocl", subscription: "true",
+    });
+    equal((await repo.catalog.loadProduct(h))!.subscription, true);
+
+    await form(`/admin/products/${h}`, {
+      ...(await editorForm(h)), subscription: "false",
+    });
+    equal((await repo.catalog.loadProduct(h))!.subscription, false);
+  });
+
+  test("form to PostgreSQL to storefront, every field the schema supports", async () => {
+    const h = handle("create-e2e");
+
+    // 1. Create with every create-time field.
+    await form("/admin/products", {
+      handle: h, title: "End To End Widget", cardTitle: "E2E Widget",
+      brandSlug: "solutionshocl", categorySlug: "cleaning", productType: "Cleaner",
+      shortBenefit: "Cleans end to end.",
+      description: "The whole flow in one product.",
+      seoTitle: "E2E SEO", seoDescription: "E2E meta.",
+      tags: "e2e-marker, cleaning", subscription: "true",
+    });
+
+    // 2. Variant carries price, SKU and weight; its ref is the public identity.
+    await form(`/admin/products/${h}/variants`, {
+      title: "500 g", price: "24.95", sku: "ZZ-E2E-500", weightGrams: "500",
+    });
+    const created = await repo.catalog.loadProduct(h);
+    const ref = created!.variants[0]!.ref;
+    equal(created!.variants[0]!.priceCents, 2495);
+    equal(created!.variants[0]!.sku, "ZZ-E2E-500");
+    equal(created!.variants[0]!.weightGrams, 500);
+
+    // 3. Inventory: counted stock on the variant.
+    await form(`/admin/variants/${ref}/stock`, { intent: "set", onHand: "12" });
+    equal((await repo.inventory.stockFor(ref))!.onHand, 12);
+
+    // 4. Media, with required alt text.
+    await form(`/admin/products/${h}/media`, { src: "/images/lotus.png", alt: "E2E product photo" });
+
+    // 5. Curated into a collection.
+    await form(`/admin/products/${h}/collections`, { collections: ["accessories"] });
+
+    // 6. Publish — allowed because a priced variant now exists.
+    const pub = await form(`/admin/products/${h}/publish`, {});
+    equal(pub.status, 303);
+
+    // PostgreSQL holds all of it.
+    const p = await repo.catalog.loadProduct(h);
+    equal(p!.publishable, true, "published");
+    equal(p!.status, "active");
+    equal(p!.needsReview, false, "clean copy has no review flags that gate it");
+    deepEqual(p!.quarantinedContent, [], "compliance held nothing back");
+    equal(p!.images[0]!.alt, "E2E product photo");
+    ok(p!.collections.includes("accessories"));
+
+    // The storefront renders it after a rebuild of the catalog.
+    const catalog = await storefront();
+    const rendered = catalog.products.find((x) => x.handle === h);
+    ok(rendered, "the new product reaches the storefront");
+    equal(rendered!.title, "End To End Widget");
+    equal(rendered!.variants[0]!.price, 24.95, "cents become dollars at the display boundary only");
+    equal(rendered!.variants[0]!.sku, "ZZ-E2E-500");
+    equal(rendered!.images[0]!.src, "/images/lotus.png");
+    ok(rendered!.searchTerms!.includes("e2e-marker"), "its tags are searchable");
+    ok(
+      catalog.collections.find((c) => c.handle === "accessories")!.productHandles.includes(h),
+      "and the collection page lists it",
+    );
+
+    // Compliance still cannot be routed around from this flow: a banned name
+    // in an edit withdraws it, exactly as on any other path.
+    await form(`/admin/products/${h}`, { ...(await editorForm(h)), title: "End To End Fogger" });
+    equal((await repo.catalog.loadProduct(h))!.publishable, false, "banned name withdraws it");
+  });
+});
+
 /* ========================= editor round-trip fidelity ==================== */
 
 suite("editor round-trip", () => {
@@ -394,6 +519,19 @@ suite("editor round-trip", () => {
     const withHeld = (await repo.catalog.loadProducts({ publishable: true }))
       .find((p) => p.quarantinedContent.length > 0);
     ok(withHeld, "the seeded catalog has a product with held-back copy");
+
+    // Saving recomputes this product's review flags, and the import left ~50
+    // products with a `missing_image_alt` flag their media rows contradict
+    // (the seeder derived alt text the CSV lacked). The recompute is correct,
+    // but it would leave the database one flag away from catalog.json and
+    // break the JSON-vs-PG parity check — so the seeded flags are put back
+    // exactly as found. The contradiction itself is an import-data question,
+    // not this test's to resolve.
+    const flagRows = await rows<{ flag: string; resolved_at: string | null }>(
+      `SELECT flag, resolved_at FROM product_flags pf
+        JOIN products p ON p.id = pf.product_id WHERE p.handle = $1`,
+      [withHeld!.handle],
+    );
 
     const before = await repo.catalog.loadProduct(withHeld!.handle);
     const res = await form(`/admin/products/${withHeld!.handle}`, await editorForm(withHeld!.handle));
@@ -406,6 +544,18 @@ suite("editor round-trip", () => {
     deepEqual(after!.sourceTags, before!.sourceTags);
     equal(after!.publishable, before!.publishable);
     equal(after!.seo.title, before!.seo.title);
+
+    await rows(
+      `DELETE FROM product_flags WHERE product_id = (SELECT id FROM products WHERE handle = $1)`,
+      [withHeld!.handle],
+    );
+    for (const f of flagRows) {
+      await rows(
+        `INSERT INTO product_flags (product_id, flag, resolved_at)
+         SELECT id, $2, $3 FROM products WHERE handle = $1 ON CONFLICT DO NOTHING`,
+        [withHeld!.handle, f.flag, f.resolved_at],
+      );
+    }
   });
 
   test("held-back copy can be fixed through the editor", async () => {
@@ -502,7 +652,7 @@ suite("variants: create → edit → deactivate", () => {
     const h = handle("variant-create");
     await form("/admin/products", { handle: h, title: "Variant Create", brandSlug: "solutionshocl" });
     const res = await form(`/admin/products/${h}/variants`, {
-      title: "500 g", priceCents: "2495", sku: "ZZ-VAR-1", weightGrams: "500",
+      title: "500 g", price: "24.95", sku: "ZZ-VAR-1", weightGrams: "500",
     });
     equal(res.status, 303);
 
@@ -516,11 +666,11 @@ suite("variants: create → edit → deactivate", () => {
   test("edits a variant", async () => {
     const h = handle("variant-edit");
     await form("/admin/products", { handle: h, title: "Variant Edit", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Small", priceCents: "1000", sku: "ZZ-VAR-2" });
+    await form(`/admin/products/${h}/variants`, { title: "Small", price: "10.00", sku: "ZZ-VAR-2" });
 
     const ref = (await repo.catalog.loadProduct(h))!.variants[0]!.ref;
     await form(`/admin/variants/${ref}`, {
-      title: "Large", sku: "ZZ-VAR-2L", priceCents: "1800", weightGrams: "750",
+      title: "Large", sku: "ZZ-VAR-2L", price: "18.00", weightGrams: "750",
     });
 
     const v = (await repo.catalog.loadProduct(h))!.variants[0]!;
@@ -530,21 +680,28 @@ suite("variants: create → edit → deactivate", () => {
     equal(v.ref, ref, "the public reference does not change when the variant is edited");
   });
 
-  test("rejects a price that is not whole cents", async () => {
+  test("prices are typed in dollars and stored as integer cents", async () => {
     const h = handle("variant-money");
     await form("/admin/products", { handle: h, title: "Variant Money", brandSlug: "solutionshocl" });
 
-    const res = await form(`/admin/products/${h}/variants`, { title: "x", priceCents: "19.99" });
-    equal(res.status, 422);
-    includes(res.text, "whole number");
-    equal((await repo.catalog.loadProduct(h))!.variants.length, 0, "nothing was created");
+    // "19.99" is what a person types; 1999 is what the database keeps.
+    await form(`/admin/products/${h}/variants`, { title: "x", price: "19.99" });
+    equal((await repo.catalog.loadProduct(h))!.variants[0]!.priceCents, 1999);
+
+    // Sub-cent fractions, negatives and word salad are refused, not rounded.
+    for (const bad of ["19.999", "-1", "abc", "1,2,3"]) {
+      const res = await form(`/admin/products/${h}/variants`, { title: "y", price: bad });
+      equal(res.status, 422, `expected ${JSON.stringify(bad)} to be refused`);
+      includes(res.text, "dollar amount");
+    }
+    equal((await repo.catalog.loadProduct(h))!.variants.length, 1, "only the valid price created a variant");
   });
 
   test("deactivates a variant, keeping the row", async () => {
     const h = handle("variant-deactivate");
     await form("/admin/products", { handle: h, title: "Variant Deactivate", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Keep", priceCents: "500", sku: "ZZ-VAR-K" });
-    await form(`/admin/products/${h}/variants`, { title: "Drop", priceCents: "700", sku: "ZZ-VAR-D" });
+    await form(`/admin/products/${h}/variants`, { title: "Keep", price: "5.00", sku: "ZZ-VAR-K" });
+    await form(`/admin/products/${h}/variants`, { title: "Drop", price: "7.00", sku: "ZZ-VAR-D" });
 
     const before = (await repo.catalog.loadProduct(h))!.variants;
     const dropped = before.find((v) => v.title === "Drop")!;
@@ -565,7 +722,7 @@ suite("media: upload → database → product → storefront", () => {
   test("attaches an image and it reaches the storefront", async () => {
     const h = handle("media-flow");
     await form("/admin/products", { handle: h, title: "Media Flow", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "500" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "5.00" });
     await form(`/admin/products/${h}/media`, { src: "/images/zz-test-hero.jpg", alt: "A test hero image" });
     await form(`/admin/products/${h}/publish`, {});
 
@@ -599,7 +756,7 @@ suite("media: upload → database → product → storefront", () => {
   test("reorder → storefront", async () => {
     const h = handle("media-reorder");
     await form("/admin/products", { handle: h, title: "Media Reorder", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "500" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "5.00" });
     for (const n of ["a", "b", "c"]) {
       await form(`/admin/products/${h}/media`, { src: `/images/zz-test-${n}.jpg`, alt: n.toUpperCase() });
     }
@@ -681,7 +838,7 @@ suite("collections: create → assign → collection page", () => {
 
     const h = handle("collection-member");
     await form("/admin/products", { handle: h, title: "Collection Member", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "500" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "5.00" });
     await form(`/admin/products/${h}/publish`, {});
     await form(`/admin/products/${h}/collections`, { collections: [c] });
 
@@ -698,7 +855,7 @@ suite("collections: create → assign → collection page", () => {
 
     const h = handle("collection-removed");
     await form("/admin/products", { handle: h, title: "Collection Removed", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "500" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "5.00" });
     await form(`/admin/products/${h}/publish`, {});
     await form(`/admin/products/${h}/collections`, { collections: [c] });
     ok((await storefront()).collections.find((x) => x.handle === c)!.productHandles.includes(h));
@@ -719,7 +876,7 @@ suite("collections: create → assign → collection page", () => {
     const b = handle("order-b");
     for (const [h, title] of [[a, "Order A"], [b, "Order B"]] as const) {
       await form("/admin/products", { handle: h, title, brandSlug: "solutionshocl" });
-      await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "500" });
+      await form(`/admin/products/${h}/variants`, { title: "Default", price: "5.00" });
       await form(`/admin/products/${h}/publish`, {});
     }
 
@@ -826,7 +983,7 @@ suite("compliance: the Dashboard cannot route around it", () => {
   test("flagged product → publication blocked", async () => {
     const h = handle("compliance-blocked");
     await form("/admin/products", { handle: h, title: "Atomizer", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "1000" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "10.00" });
 
     const res = await form(`/admin/products/${h}/publish`, {});
     equal(res.status, 409);
@@ -841,7 +998,7 @@ suite("compliance: the Dashboard cannot route around it", () => {
       handle: h, title: "Plain Cleaner", brandSlug: "solutionshocl",
       description: "An ordinary description with nothing to screen.",
     });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "1000" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "10.00" });
 
     const res = await form(`/admin/products/${h}/publish`, {});
     equal(res.status, 303);
@@ -851,7 +1008,7 @@ suite("compliance: the Dashboard cannot route around it", () => {
   test("editing a live product into a banned name withdraws it immediately", async () => {
     const h = handle("compliance-withdraw");
     await form("/admin/products", { handle: h, title: "Ordinary Spray", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "1000" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "10.00" });
     await form(`/admin/products/${h}/publish`, {});
     ok((await storefront()).products.some((p) => p.handle === h));
 
@@ -886,7 +1043,7 @@ suite("compliance: the Dashboard cannot route around it", () => {
   test("no Dashboard route can publish something the screen refused", async () => {
     const h = handle("compliance-no-backdoor");
     await form("/admin/products", { handle: h, title: "Fogger Deluxe", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "1000" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "10.00" });
 
     // Every route that touches publication, tried in turn.
     for (const path of [`/admin/products/${h}/publish`, `/admin/products/${h}/unarchive`]) {
@@ -905,7 +1062,7 @@ suite("inventory: unknown, zero and a number are three different things", () => 
   async function variantFor(name: string): Promise<string> {
     const h = handle(name);
     await form("/admin/products", { handle: h, title: `Stock ${name}`, brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "1000" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "10.00" });
     return (await repo.catalog.loadProduct(h))!.variants[0]!.ref;
   }
 
@@ -982,7 +1139,7 @@ suite("inventory: unknown, zero and a number are three different things", () => 
   test("the storefront reads availability from stock", async () => {
     const h = handle("stock-storefront");
     await form("/admin/products", { handle: h, title: "Stock Storefront", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "1000" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "10.00" });
     await form(`/admin/products/${h}/publish`, {});
     const ref = (await repo.catalog.loadProduct(h))!.variants[0]!.ref;
 
@@ -1011,7 +1168,7 @@ suite("audit: every mutation leaves a record", () => {
   test("creating, editing and publishing each record an entry", async () => {
     const h = handle("audit-lifecycle");
     await form("/admin/products", { handle: h, title: "Audit Lifecycle", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "1000" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "10.00" });
     await form(`/admin/products/${h}`, { title: "Audit Renamed", brandSlug: "solutionshocl" });
     await form(`/admin/products/${h}/publish`, {});
     await form(`/admin/products/${h}/unpublish`, { reason: "Testing" });
@@ -1061,7 +1218,7 @@ suite("audit: every mutation leaves a record", () => {
     await form("/admin/products", { handle: h, title: "Audit Rollback", brandSlug: "solutionshocl" });
     const before = (await repo.audit.listAudit({ limit: 500 })).length;
 
-    const res = await form(`/admin/products/${h}/variants`, { title: "x", priceCents: "not a number" });
+    const res = await form(`/admin/products/${h}/variants`, { title: "x", price: "not a number" });
     equal(res.status, 422);
 
     equal((await repo.audit.listAudit({ limit: 500 })).length, before, "the trail records only what happened");
@@ -1070,10 +1227,10 @@ suite("audit: every mutation leaves a record", () => {
   test("variant, media, collection and inventory changes are all recorded", async () => {
     const h = handle("audit-coverage");
     await form("/admin/products", { handle: h, title: "Audit Coverage", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${h}/variants`, { title: "Default", priceCents: "1000" });
+    await form(`/admin/products/${h}/variants`, { title: "Default", price: "10.00" });
     const ref = (await repo.catalog.loadProduct(h))!.variants[0]!.ref;
 
-    await form(`/admin/variants/${ref}`, { title: "Default", priceCents: "1500" });
+    await form(`/admin/variants/${ref}`, { title: "Default", price: "15.00" });
     await form(`/admin/products/${h}/media`, { src: "/images/zz-test-audit.jpg", alt: "Audit" });
     await form(`/admin/products/${h}/media/remove`, { src: "/images/zz-test-audit.jpg" });
     await form(`/admin/products/${h}/collections`, { collections: ["accessories"] });
@@ -1143,7 +1300,7 @@ suite("broken curation", () => {
 
     const replacement = handle("curation-replacement");
     await form("/admin/products", { handle: replacement, title: "Curation Replacement", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${replacement}/variants`, { title: "Default", priceCents: "500" });
+    await form(`/admin/products/${replacement}/variants`, { title: "Default", price: "5.00" });
     await form(`/admin/products/${replacement}/publish`, {});
 
     const res = await form(`/admin/curation/${gap.id}/resolve`, {
@@ -1185,7 +1342,7 @@ suite("broken curation", () => {
 
     const replacement = handle("reopen-replacement");
     await form("/admin/products", { handle: replacement, title: "Reopen", brandSlug: "solutionshocl" });
-    await form(`/admin/products/${replacement}/variants`, { title: "Default", priceCents: "500" });
+    await form(`/admin/products/${replacement}/variants`, { title: "Default", price: "5.00" });
     await form(`/admin/products/${replacement}/publish`, {});
 
     await form(`/admin/curation/${gap.id}/resolve`, { kind: "mapped", productHandle: replacement });
@@ -1266,9 +1423,9 @@ suite("security", () => {
 
     // A form can post anything. The server decides.
     for (const [fields, expected] of [
-      [{ title: "x", priceCents: "-100" }, "negative"],
-      [{ title: "x", priceCents: "1000", weightGrams: "0" }, "positive integer"],
-      [{ title: "", priceCents: "1000" }, "required"],
+      [{ title: "x", price: "-1" }, "dollar amount"],
+      [{ title: "x", price: "10.00", weightGrams: "0" }, "positive integer"],
+      [{ title: "", price: "10.00" }, "required"],
     ] as const) {
       const res = await form(`/admin/products/${h}/variants`, fields as Record<string, string>);
       equal(res.status, 422, `expected ${JSON.stringify(fields)} to be refused`);
@@ -1286,6 +1443,84 @@ suite("security", () => {
     equal(res.headers.get("x-frame-options"), "DENY");
     equal(res.headers.get("x-content-type-options"), "nosniff");
     equal(res.headers.get("cache-control"), "no-store");
+  });
+});
+
+/* ===================== dashboard ergonomics (phase 11) =================== */
+
+suite("dashboard ergonomics", () => {
+  test("a browser hitting a wrong admin URL gets a page, not raw JSON", async () => {
+    const { status, html: doc } = await get("/admin/no-such-screen");
+    equal(status, 404);
+    includes(doc, "EarthTrade Admin");
+    ok(!doc.trimStart().startsWith("{"), "the body must be a page, not a JSON blob");
+  });
+
+  test("deleting asks first, on its own page", async () => {
+    const h = handle("delete-confirm");
+    await form("/admin/products", { handle: h, title: "Delete Confirm", brandSlug: "solutionshocl" });
+
+    const { status, html: doc } = await get(`/admin/products/${h}/delete`);
+    equal(status, 200);
+    includes(doc, "Delete permanently");
+    includes(doc, "no undo");
+
+    // The confirm page is a question; the product is still there.
+    ok(await repo.catalog.loadProduct(h), "viewing the confirmation deletes nothing");
+
+    await form(`/admin/products/${h}/delete`, {});
+    equal(await repo.catalog.loadProduct(h), null, "the POST behind the button still deletes");
+  });
+
+  test("inventory can be searched by product name", async () => {
+    const { html: doc } = await get("/admin/inventory?q=borosilicate");
+    includes(doc, "Borosilicate Glass Pitcher");
+    ok(!doc.includes("Catchment Bomb"), "non-matching products are filtered out");
+  });
+
+  test("a curation suggestion can pre-fill the replacement box", async () => {
+    const [gap] = await repo.curation.listGaps({ open: true });
+    ok(gap, "the seeded catalog has open curation gaps");
+    const { html: doc } = await get(
+      `/admin/curation?gap=${gap!.id}&fill=zz-prefilled-handle`,
+    );
+    includes(doc, 'value="zz-prefilled-handle"');
+  });
+
+  test("collection membership is edited with checkboxes, not ctrl-click", async () => {
+    const h = handle("checkbox-collections");
+    await form("/admin/products", { handle: h, title: "Checkbox Collections", brandSlug: "solutionshocl" });
+    const { html: doc } = await get(`/admin/products/${h}`);
+    includes(doc, 'type="checkbox" name="collections"');
+    ok(!/<select[^>]*name="collections"/.test(doc), "the old multi-select is gone");
+  });
+});
+
+/* ==================== product photos on the admin origin ================= */
+
+suite("images: the Dashboard serves its own product photos, read-only", () => {
+  test("a real product photo comes back with its image type", async () => {
+    const res = await fetch(`${baseUrl}/images/3stagesfiltersystem.png`);
+    equal(res.status, 200);
+    equal(res.headers.get("content-type"), "image/png");
+    ok((await res.arrayBuffer()).byteLength > 1000, "expected actual image bytes");
+  });
+
+  test("nothing outside public/images is reachable", async () => {
+    for (const path of [
+      "/images/..%2F..%2Fpackage.json",
+      "/images/%2e%2e%2fdb%2fseed.ts",
+      "/images/x.ts",
+      "/images/no-such-file.png",
+    ]) {
+      const res = await fetch(`${baseUrl}${path}`);
+      equal(res.status, 404, `expected 404 for ${path}`);
+    }
+  });
+
+  test("the route is GET-only", async () => {
+    const res = await fetch(`${baseUrl}/images/3stagesfiltersystem.png`, { method: "POST" });
+    equal(res.status, 405);
   });
 });
 

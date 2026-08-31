@@ -397,7 +397,9 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
   text-transform: uppercase;
   color: var(--ink-3);
 }
-@media (min-width: 62rem) { .header__brand span { display: inline; } }
+/* With the globe mark in the brand, the tagline only fits once the header is
+   genuinely wide — below that it collided with the nav. */
+@media (min-width: 72rem) { .header__brand span { display: inline; } }
 @media (min-width: 62rem) { .header__brand { margin-right: 2.5rem; } }
 
 .nav { display: none; }
@@ -561,6 +563,10 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
 .header--over .icon-btn__count { background: var(--warm-white); color: var(--deep-green); }
 .header--over.is-stuck {
   position: fixed;
+  /* Without this the fixed header keeps its initial offset below the
+     announcement bar forever, and scrolled content — including dark hero
+     imagery — shows through the strip above it. Stuck means flush to the top. */
+  top: 0;
   background: var(--warm-white);
   color: var(--ink);
   border-color: var(--line-soft);

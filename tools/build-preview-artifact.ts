@@ -229,8 +229,10 @@ for (const file of pageFiles(dist)) {
     if (pages[clean] || images[clean] || KNOWN_ASSETS.has(clean)) continue;
     problems.push(`${file}: ${m[1]}`);
   }
-  for (const m of s.matchAll(/(?:data-psrc|data-gallery-thumb)="(\/images\/[^"]+)"/g)) {
-    if (!images[m[1]!]) problems.push(`${file}: missing image ${m[1]}`);
+  for (const m of s.matchAll(/(?:src|data-psrc|data-gallery-thumb)="(\/images\/[^"]+)"/g)) {
+    if (!images[m[1]!] && !images[decodeURIComponent(m[1]!)]) {
+      problems.push(`${file}: missing image ${m[1]}`);
+    }
   }
 }
 if (problems.length) {
@@ -351,7 +353,11 @@ const shell = `<title>EarthTrade Storefront</title>
 
   const resolveImages = (doc) => {
     for (const el of doc.querySelectorAll("[data-psrc]")) {
-      const b = BLOBS[el.getAttribute("data-psrc")];
+      // Pages reference percent-encoded paths ("Earthtrade%20logo.avif") while
+      // the table is keyed by raw filenames — accept either form, or a
+      // filename with a space mounts as a blank pixel.
+      const p = el.getAttribute("data-psrc");
+      const b = BLOBS[p] || BLOBS[decodeURIComponent(p)];
       if (b) { el.src = b; el.removeAttribute("data-psrc"); }
     }
     for (const el of doc.querySelectorAll('img[src^="/images/"]')) {

@@ -381,12 +381,16 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
 .header--over:not(.is-stuck) .header__brand-logo { display: block; }
 .header--over:not(.is-stuck) .header__brand b,
 .header--over:not(.is-stuck) .header__brand span { display: none; }
-/* On solid (cream) headers the white lockup cannot show, so the globe mark —
-   the original favicon asset — carries the brand beside the wordmark. Hidden
-   on narrow phones so it can never squeeze the cart or menu off the screen. */
-.header__brand-mark { display: none; height: 1.7rem; width: auto; align-self: center; }
-@media (min-width: 30rem) { .header__brand-mark { display: block; } }
-.header--over:not(.is-stuck) .header__brand-mark { display: none; }
+/* On solid (cream) headers the dark-wordmark lockup carries the brand — the
+   same mark, black type for light grounds. Hidden on narrow phones so it can
+   never squeeze the cart or menu off the screen; the text wordmark covers
+   those widths. */
+.header__brand-dark { display: none; height: 2.3rem; width: auto; align-self: center; }
+@media (min-width: 30rem) {
+  .header__brand-dark { display: block; }
+  .header__brand b { display: none; }
+}
+.header--over:not(.is-stuck) .header__brand-dark { display: none; }
 /* The tagline needs room the small header does not have; it returns with the
    full nav, where it also stays off busy hero photography until stuck. */
 .header__brand span {
@@ -397,9 +401,8 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
   text-transform: uppercase;
   color: var(--ink-3);
 }
-/* With the globe mark in the brand, the tagline only fits once the header is
-   genuinely wide — below that it collided with the nav. */
-@media (min-width: 72rem) { .header__brand span { display: inline; } }
+/* The tagline is baked into both lockup images now; the text version stays
+   retired so it cannot collide with the nav at any width. */
 @media (min-width: 62rem) { .header__brand { margin-right: 2.5rem; } }
 
 .nav { display: none; }

@@ -65,10 +65,10 @@ function header(opts: LayoutOptions): SafeHtml {
             decoding="async"
           >
           <img
-            class="header__brand-mark"
-            src="/images/earthtrade-favicon-192.png"
-            alt=""
-            width="192" height="192"
+            class="header__brand-dark"
+            src="/images/earthtrade-logo-dark.png"
+            alt="EarthTrade"
+            width="260" height="84"
             decoding="async"
           >
           <b>Earth<em style="font-style:normal">Trade</em></b>

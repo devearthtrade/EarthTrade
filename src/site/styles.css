@@ -547,6 +547,9 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
   font-size: 0.76rem;
   letter-spacing: 0.08em;
   padding: 0.6rem 1rem;
+  /* Keeps the bar and the header reading as two rows of one masthead when
+     they share the same ground. */
+  border-bottom: 1px solid rgba(250, 249, 245, 0.14);
 }
 .announce a { color: inherit; text-decoration-color: rgba(250, 249, 245, 0.5); }
 /* One line always: the Auto-Ship half waits for widths that fit it. */
@@ -554,12 +557,13 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
 @media (min-width: 34rem) { .announce__more { display: inline; } }
 
 /* Transparent header over a hero */
+/* The hero header is a color variant, not a different layout: it stays in the
+   normal sticky flow, sitting BELOW the announcement bar exactly like every
+   other page. Its old position:fixed inherited top:0 from the base header and
+   silently covered the announcement bar the whole time — the source of every
+   "bars overriding each other" report. */
 .header--over {
-  position: fixed;
-  left: 0; right: 0;
-  /* A quiet scrim of its own, so the white lockup and menu stay readable no
-     matter how light the hero imagery behind them gets. */
-  background: linear-gradient(to bottom, rgba(32, 39, 34, 0.6), rgba(32, 39, 34, 0));
+  background: var(--deep-green);
   border-color: transparent;
   color: var(--warm-white);
 }
@@ -567,11 +571,6 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
 .header--over .icon-btn:hover { background: rgba(250, 249, 245, 0.14); }
 .header--over .icon-btn__count { background: var(--warm-white); color: var(--deep-green); }
 .header--over.is-stuck {
-  position: fixed;
-  /* Without this the fixed header keeps its initial offset below the
-     announcement bar forever, and scrolled content — including dark hero
-     imagery — shows through the strip above it. Stuck means flush to the top. */
-  top: 0;
   background: var(--warm-white);
   color: var(--ink);
   border-color: var(--line-soft);

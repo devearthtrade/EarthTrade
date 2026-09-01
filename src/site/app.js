@@ -848,7 +848,10 @@
     if (!header && !rail) return;
 
     const onScroll = () => {
-      if (header) header.classList.toggle("is-stuck", window.scrollY > 40);
+      // Switch to the solid header almost immediately: the old 40px threshold
+      // left a dead zone where the transparent header floated over scrolled
+      // content with a sliver of the announcement bar still above it.
+      if (header) header.classList.toggle("is-stuck", window.scrollY > 8);
       if (rail) {
         const max = document.documentElement.scrollHeight - window.innerHeight;
         rail.style.width = max > 0 ? `${(window.scrollY / max) * 100}%` : "0%";
